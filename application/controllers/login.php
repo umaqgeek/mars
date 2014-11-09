@@ -94,7 +94,7 @@ class Login extends MY_Controller {
 		}
 	}
 
-		public function logout()
+	public function logout()
 	{
 		$this->simpleloginsecure->logout();
 		redirect(site_url());

@@ -1811,6 +1811,7 @@ $this->my_func->reCalculateFormula();
 		$this->load->model("m_tool");
 		$this->load->model('m_project');
 		$this->load->model('m_imported_project');
+		$this->load->model('m_material');
 
 		$this->load->view('template/header_datatable');
 		$this->load->view('template/nav');
@@ -1827,6 +1828,8 @@ $this->my_func->reCalculateFormula();
    		$this->session->set_userdata('layer_id', $layer_id);
 		$this->session->set_userdata('layer_name', $layer_name);
 		$data['layer_name'] = $layer_name;
+		$data['material'] = $this->m_material->get_sheet($structure_number, $layer_name);
+		$data['tdd'] = $this->m_imported_project->getAll($structure_number, $layer_name);
 
    		$tools=array();
    		$tools=$this->m_tool->getToolFromLayerId($layer_id);
