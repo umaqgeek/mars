@@ -1,1888 +1,1966 @@
-<?php if ( ! defined('BASEPATH')) die();
-class Admin extends MY_Controller {
+<?php
 
+if (!defined('BASEPATH')) die();
+class Admin extends MY_Controller
 
- function __construct()
-    {
-        parent::__construct();
- 		
-        $this->load->library('grocery_CRUD');
- 		$this->load->library('SimpleLoginSecure');
- 		$this->CI =& get_instance();
- 	}
-
+{
+	function __construct()
+	{
+		parent::__construct();
+		$this->load->library('grocery_CRUD');
+		$this->load->library('SimpleLoginSecure');
+		$this->CI = & get_instance();
+	}
 
 	public function index()
 	{
 		$this->load->view('template/header');
 		$this->load->view('template/nav');
-		$data['sidebar']=$this->load->view('template/sidebar');
+		$data['sidebar'] = $this->load->view('template/sidebar');
+		$this->load->view('dashboard', $data);
 
-		$this->load->view('dashboard',$data);
+		// $this->load->view('footer'); crash the js of  grocery crud
 
- 		
-	//$this->load->view('footer'); crash the js of  grocery crud
 	}
 
-	//display structure number form
+	// display structure number form
+
 	public function structureNumber()
 	{
 		$this->load->model('m_project');
 		$this->load->view('template/header_datatable');
 		$this->load->view('template/nav');
-		$data['sidebar']=$this->load->view('template/sidebar');
-		
-		//check if the previous staff have ever entered the structure number @ project table
+		$data['sidebar'] = $this->load->view('template/sidebar');
+
+		// check if the previous staff have ever entered the structure number @ project table
+
 		/*$projects=array();
 		$projects=$this->m_project->getAllProjects();
 		$data['projects']=$projects;
-		//print_r($this->session->all_userdata()); die();	
-		*/		
-		if($this->session->userdata('structure_number'))
-			$this->session->unset_userdata('structure_number');
 
-		if($this->session->userdata('transaction_number'))
-			$this->session->unset_userdata('transaction_number');
-		//search query number
-		 $this->load->view('structurenumber/viewStructureNumberForm',$data);
+		// print_r($this->session->all_userdata()); die();
+
+		*/
+		if ($this->session->userdata('structure_number')) $this->session->unset_userdata('structure_number');
+		if ($this->session->userdata('transaction_number')) $this->session->unset_userdata('transaction_number');
+
+		// search query number
+
+		$this->load->view('structurenumber/viewStructureNumberForm', $data);
 		$this->load->view('template/footer_datatable');
- 
-		}
+	}
 
-	public function addProjectView($structure_number="")
+	public function addProjectView($structure_number = "")
 	{
 		$this->load->model('m_project');
 		$this->load->view('template/header_datatable');
 		$this->load->view('template/nav');
-		$data['sidebar']=$this->load->view('template/sidebar');
-		
-		$structure_number=$this->input->post('txtStructureNumber');
-		$data['structure_number']=$structure_number;
+		$data['sidebar'] = $this->load->view('template/sidebar');
+		$structure_number = $this->input->post('txtStructureNumber');
+		$data['structure_number'] = $structure_number;
 
-		//delete existing structure number session
-		if($this->session->userdata('structure_number'))
-			$this->session->unset_userdata('structure_number');
-  
-  if(isset($_POST['search'])){
-    		
-    //search if previous query was exist
-		$data['projects']=$this->m_project->getProjects($structure_number);
-		    
+		// delete existing structure number session
+
+		if ($this->session->userdata('structure_number')) $this->session->unset_userdata('structure_number');
+		if (isset($_POST['search']))
+		{
+
+			// search if previous query was exist
+
+			$data['projects'] = $this->m_project->getProjects($structure_number);
 		}
-		elseif(isset($_POST['addproject'])){
-		  
-		  	$data['projects']=null;
+		elseif (isset($_POST['addproject']))
+		{
+			$data['projects'] = null;
 		}
-		
-		
 
-
-		$this->load->view('structurenumber/viewStructureNumberFormTwo',$data);
+		$this->load->view('structurenumber/viewStructureNumberFormTwo', $data);
 		$this->load->view('template/footer_datatable');
 	}
-	
-	public function addProjectDirect($structure_number=""){
-	  $this->load->model('m_project');
+
+	public function addProjectDirect($structure_number = "")
+	{
+		$this->load->model('m_project');
 		$this->load->view('template/header_datatable');
 		$this->load->view('template/nav');
-		$data['sidebar']=$this->load->view('template/sidebar');
-		$structure_number=$this->input->post('txtStructureNumber');
-		$data['structure_number']=$structure_number;
+		$data['sidebar'] = $this->load->view('template/sidebar');
+		$structure_number = $this->input->post('txtStructureNumber');
+		$data['structure_number'] = $structure_number;
 
-		//search if previous query was exist
-		$data['projects']=null;
+		// search if previous query was exist
 
-
-		$this->load->view('structurenumber/viewStructureNumberFormTwo',$data);
+		$data['projects'] = null;
+		$this->load->view('structurenumber/viewStructureNumberFormTwo', $data);
 		$this->load->view('template/footer_datatable');
-	  
 	}
-
 
 	public function addProject()
 	{
 		$this->load->view('template/header');
 		$this->load->view('template/nav');
-		$data['sidebar']=$this->load->view('template/sidebar');
-		$structure_number=$this->input->post('structure_number');
-		$data=array(
-			'project_name'=>$this->input->post('project_name'),
-			'structure_number'=>$this->input->post('structure_number'),
-			'project_number'=>$this->input->post('project_number'),
-			'section_number'=>$this->input->post('section_number'),
-			'plf_length'=>$this->input->post('plf_length'),
-			'transaction_id'=>time(),
-			'overlength'=>$this->input->post('overlength')
-			);
-
+		$data['sidebar'] = $this->load->view('template/sidebar');
+		$structure_number = $this->input->post('structure_number');
+		$data = array(
+			'project_name' => $this->input->post('project_name') ,
+			'structure_number' => $this->input->post('structure_number') ,
+			'project_number' => $this->input->post('project_number') ,
+			'section_number' => $this->input->post('section_number') ,
+			'plf_length' => $this->input->post('plf_length') ,
+			'transaction_id' => time() ,
+			'overlength' => $this->input->post('overlength')
+		);
 		$this->load->model('m_project');
-		$flag=$this->m_project->Add('project',$data);
-
-		$transaction_id=$data['transaction_id'];
-		$this->session->set_userdata('transaction_id',$transaction_id);
-
-		if($flag!=false)
+		$flag = $this->m_project->Add('project', $data);
+		$transaction_id = $data['transaction_id'];
+		$this->session->set_userdata('transaction_id', $transaction_id);
+		if ($flag != false)
 		{
 			$this->session->set_flashdata('project_add_sucess', 'Project is added successfully');
-		    $this->session->set_flashdata('structure_number', $structure_number);
-		    
-		    redirect('admin/displayLayer');
+			$this->session->set_flashdata('structure_number', $structure_number);
+			redirect('admin/displayLayer');
 		}
 		else
 		{
 			$this->session->set_flashdata('project_add_failed', 'Failed in adding project');
-		    redirect('admin/structureNumber');
+			redirect('admin/structureNumber');
 		}
-		//redirect to the next page
+
+		// redirect to the next page
+
 	}
 
-/*
-	//add the link into searchStructureNumber/add for only display add form
+	/*
+
+	// add the link into searchStructureNumber/add for only display add form
+
 	public function searchStructureNumber($structure_number=null)
+	{
+	$this->load->view('template/header');
+	$this->load->view('template/nav');
+	$data['sidebar']=$this->load->view('template/sidebar');
+	$crud = new grocery_CRUD();
+	$crud->set_theme('datatables');
+	$crud->set_table('project');
+	$crud->columns('structure_number','project_name','project_number','section_number','plf_length','overlength');
+	$crud->fields('structure_number','project_name','project_number','section_number','plf_length','overlength','transaction_id');
+	$structure_number=$this->input->get('txtStructureNumber');
+
+	// $structure_number=$this->input->post('txtStructureNumber');
+
+	$crud->change_field_type('transaction_id','hidden',time());
+	$crud->field_type('structure_number', 'hidden', $structure_number);
+	$crud->set_lang_string('insert_success_message',
+	'Your data has been successfully stored into the database.<br/>Please wait while you are redirecting to the list page.
+	<script type="text/javascript">
+	window.location = "'.site_url('admin/displayDistinctLayerTemp/').'";
+	</script>
+	<div style="display:none">
+	'
+	);
+	$crud->unset_back_to_list();
+
+	// $crud->unset_list();
+
+	try{
+	$output = $crud->render();
+	} catch(Exception $e) {
+	show_error($e->getMessage());
+	}
+
+	$this->_generate_table($output);
+	}
+
+	function _generate_table($output = null)
+	{
+	$this->load->view('structurenumber/addStructureNumber.php',$output);
+	}
+
+	*/
+	public function addProjectAjax($val = 0)
+	{
+		$this->load->model('m_project');
+		$this->load->view('template/header');
+		$this->load->view('template/nav');
+		$data['sidebar'] = $this->load->view('template/sidebar');
+
+		// get structure_number from transaction timestamp
+
+		$structure_number = $this->m_project->getTransIdByTransacId($val);
+		if ($this->session->userdata('structure_number')) $this->session->unset_userdata('structure_number');
+		if ($this->session->userdata('transaction_number')) $this->session->unset_userdata('transaction_number');
+		$this->session->set_userdata('structure_number', $structure_number);
+		$this->session->set_userdata('transaction_number', $val);
+	}
+
+	public function displayLayerDirect()
+	{
+		$this->load->model('m_layer');
+		$this->load->model('m_project');
+		$this->load->view('template/header_datatable');
+		$this->load->view('template/nav');
+		$data['sidebar'] = $this->load->view('template/sidebar');
+		$structure_number = $this->session->userdata('structure_number');
+		$transaction_number = $this->session->userdata('transaction_number');
+		$data['projects'] = $this->m_project->getProjectByTransId($transaction_number);
+		$distinctlayers = array();
+		$distinctlayers = $this->m_layer->getDistinctLayer($structure_number);
+		$data['layers'] = $distinctlayers;
+		$this->load->view('structurenumber/viewDistinctLayer', $data);
+		$this->load->view('template/footer_datatable');
+	}
+
+	public function displayLayer()
+	{
+		$this->load->model('m_layer');
+		$this->load->view('template/header_datatable');
+		$this->load->view('template/nav');
+		$data['sidebar'] = $this->load->view('template/sidebar');
+		$structure_number = $this->session->flashdata('structure_number');
+		$distinctlayers = array();
+		$distinctlayers = $this->m_layer->getDistinctLayer($structure_number);
+		$data['layers'] = $distinctlayers;
+		$this->load->view('structurenumber/viewDistinctLayer', $data);
+		$this->load->view('template/footer_datatable');
+	}
+
+	/*
+	public function layerManagement(){
+	$this->load->view('template/header');
+	$this->load->view('template/nav');
+	$data['sidebar']=$this->load->view('template/sidebar');
+	$crud = new grocery_CRUD();
+	$crud->set_theme('datatables');
+	$crud->set_table('layer');
+	try{
+	$output = $crud->render();
+	} catch(Exception $e) {
+	show_error($e->getMessage());
+	}
+
+	$this->_generate_table_layer_management($output);
+	}
+
+	function _generate_table_layer_management($output = null)
+	{
+	$this->load->view('layer/viewLayerManagement.php',$output);
+	}
+
+	*/
+	public function usermanagement()
 	{
 		$this->load->view('template/header');
 		$this->load->view('template/nav');
-		$data['sidebar']=$this->load->view('template/sidebar');
-
+		$data['sidebar'] = $this->load->view('template/sidebar');
 		$crud = new grocery_CRUD();
 		$crud->set_theme('datatables');
-
- 		 $crud->set_table('project');
- 		 $crud->columns('structure_number','project_name','project_number','section_number','plf_length','overlength');
- 		 $crud->fields('structure_number','project_name','project_number','section_number','plf_length','overlength','transaction_id');
-
- 		 	$structure_number=$this->input->get('txtStructureNumber');
-			
-  		 //$structure_number=$this->input->post('txtStructureNumber');
-  
-		$crud->change_field_type('transaction_id','hidden',time());
-
-
- 		$crud->field_type('structure_number', 'hidden', $structure_number);
-
-	    $crud->set_lang_string('insert_success_message',
-		 'Your data has been successfully stored into the database.<br/>Please wait while you are redirecting to the list page.
-		 <script type="text/javascript">
-		  window.location = "'.site_url('admin/displayDistinctLayerTemp/').'";
-		 </script>
-		 <div style="display:none">
-		 '
-   );
-
-	  	 $crud->unset_back_to_list();
-		//$crud->unset_list();
-	  		    try{
-		    $output = $crud->render();
-		} catch(Exception $e) {
-		    show_error($e->getMessage());
+		$crud->set_table('users');
+		$crud->set_relation('role_id', 'role', 'role_name');
+		$crud->columns('username', 'role_id');
+		$crud->fields('username', 'role_id', 'user_pass');
+		$crud->field_type('user_pass', 'password');
+		$crud->callback_insert(array(
+			$this,
+			'register_user'
+		));
+		try
+		{
+			$output = $crud->render();
 		}
-	    $this->_generate_table($output);
+
+		catch(Exception $e)
+		{
+			show_error($e->getMessage());
+		}
+
+		$this->_generate_table_user_management($output);
 	}
 
-	 function _generate_table($output = null)
- 
-    {
-        $this->load->view('structurenumber/addStructureNumber.php',$output);    
-    }
-*/
- 
- public function addProjectAjax($val=0){
-	$this->load->model('m_project');
- 	$this->load->view('template/header');
+	function register_user($post_array)
+	{
+		return $this->simpleloginsecure->create($post_array['username'], $post_array['user_pass']);
+	}
+
+	function _generate_table_user_management($output = null)
+	{
+		$this->load->view('userManagementView.php', $output);
+	}
+
+	public function materialManagement()
+	{
+		$this->load->view('template/header');
 		$this->load->view('template/nav');
-		$data['sidebar']=$this->load->view('template/sidebar');
-
-		//get structure_number from transaction timestamp
-		$structure_number=$this->m_project->getTransIdByTransacId($val);
-
-		
-
-
-		if($this->session->userdata('structure_number'))
-			$this->session->unset_userdata('structure_number');
-
-		if($this->session->userdata('transaction_number'))
-			$this->session->unset_userdata('transaction_number');
-
-		 $this->session->set_userdata('structure_number', $structure_number);
-		  $this->session->set_userdata('transaction_number', $val);
-		
- }
-
- public function displayLayerDirect(){
-    	$this->load->model('m_layer');
-    	$this->load->model('m_project');
-    	$this->load->view('template/header_datatable');
-		$this->load->view('template/nav');
-		$data['sidebar']=$this->load->view('template/sidebar');
-
-		$structure_number=$this->session->userdata('structure_number');
-		$transaction_number=$this->session->userdata('transaction_number');
-		$data['projects']=$this->m_project->getProjectByTransId($transaction_number);
-
-		$distinctlayers=array();
-		$distinctlayers=$this->m_layer->getDistinctLayer($structure_number);
-
-		$data['layers']=$distinctlayers;
-		
-
-		$this->load->view('structurenumber/viewDistinctLayer',$data);
-		$this->load->view('template/footer_datatable');
-
-    }
-
-    public function displayLayer(){
-    	$this->load->model('m_layer');
-    	$this->load->view('template/header_datatable');
-		$this->load->view('template/nav');
-		$data['sidebar']=$this->load->view('template/sidebar');
-
-		$structure_number=$this->session->flashdata('structure_number');
-
-		$distinctlayers=array();
-		$distinctlayers=$this->m_layer->getDistinctLayer($structure_number);
-
-		$data['layers']=$distinctlayers;
-
-		$this->load->view('structurenumber/viewDistinctLayer',$data);
-		$this->load->view('template/footer_datatable');
-
-    }
-
-/*
-    public function layerManagement(){
-    	$this->load->view('template/header');
-		$this->load->view('template/nav');
-		$data['sidebar']=$this->load->view('template/sidebar');
-
+		$data['sidebar'] = $this->load->view('template/sidebar');
 		$crud = new grocery_CRUD();
 		$crud->set_theme('datatables');
-
- 		 $crud->set_table('layer');
- 		
-  		  
-			    try{
-		    $output = $crud->render();
-		} catch(Exception $e) {
-		    show_error($e->getMessage());
-		}
-	    $this->_generate_table_layer_management($output);
-
-
-    }
-
-     function _generate_table_layer_management($output = null)
- 
-    {
-        $this->load->view('layer/viewLayerManagement.php',$output);    
-    }
-    */
-
-    public function usermanagement(){
-    	$this->load->view('template/header');
-		$this->load->view('template/nav');
-		$data['sidebar']=$this->load->view('template/sidebar');
-
-		$crud = new grocery_CRUD();
-		$crud->set_theme('datatables');
-
- 		 $crud->set_table('users');
- 		     $crud->set_relation('role_id','role','role_name');
- 		$crud->columns('username','role_id');
- 		$crud->fields('username','role_id','user_pass');
- 		   $crud->field_type('user_pass', 'password');
-  		   $crud->callback_insert(array($this,'register_user'));
-			    try{
-		    $output = $crud->render();
-		} catch(Exception $e) {
-		    show_error($e->getMessage());
+		$crud->set_table('material');
+		$crud->display_as('type_of_production', 'Type of Material');
+		$crud->display_as('type_of_production_size', 'Size');
+		$crud->display_as('code_one', 'Raw Material');
+		$crud->display_as('code_two', 'STA Code');
+		try
+		{
+			$output = $crud->render();
 		}
 
-		   
-	    $this->_generate_table_user_management($output);
-
-    }
-
-     function register_user($post_array) {
-	
-	return $this->simpleloginsecure->create($post_array['username'], $post_array['user_pass']);
-	
-	} 
-    
-function _generate_table_user_management($output = null)
- 
-    {
-        $this->load->view('userManagementView.php',$output);    
-    }
-
-    public function materialManagement(){
-    	$this->load->view('template/header');
-		$this->load->view('template/nav');
-		$data['sidebar']=$this->load->view('template/sidebar');
-
-		$crud = new grocery_CRUD();
-		$crud->set_theme('datatables');
-
- 		 $crud->set_table('material');
- 		$crud->display_as('type_of_production','Type of Material');
- 		$crud->display_as('type_of_production_size','Size');
- 		$crud->display_as('code_one','Raw Material');
- 		$crud->display_as('code_two','STA Code');
-  		  
-			    try{
-		    $output = $crud->render();
-		} catch(Exception $e) {
-		    show_error($e->getMessage());
+		catch(Exception $e)
+		{
+			show_error($e->getMessage());
 		}
-	    $this->_generate_table_material_management($output);
 
+		$this->_generate_table_material_management($output);
+	}
 
-    }
-function _generate_table_material_management($output = null)
- 
-    {
-        $this->load->view('material/viewMaterialManagement.php',$output);    
-    }
+	function _generate_table_material_management($output = null)
+	{
+		$this->load->view('material/viewMaterialManagement.php', $output);
+	}
 
-function _generate_table_layer($output = null)
- 
-    {
-        $this->load->view('layer/viewLayerManagement.php',$output);    
-    }
+	function _generate_table_layer($output = null)
+	{
+		$this->load->view('layer/viewLayerManagement.php', $output);
+	}
 
-    public function displayDistinctLayerTemp($structure_number=""){
-    	$this->load->view('template/header');
+	public function displayDistinctLayerTemp($structure_number = "")
+	{
+		$this->load->view('template/header');
 		$this->load->view('template/nav');
-		$data['sidebar']=$this->load->view('template/sidebar');
-
+		$data['sidebar'] = $this->load->view('template/sidebar');
 		$this->load->model('m_layer');
-		$results=array();
-		$results=$this->m_layer->getDistinctLayer($structure_number);
-		$data['results']=$results;
-		$data['structure_number']=$structure_number;
-		$this->load->view('layer/viewDistinctLayer',$data);
-    }
+		$results = array();
+		$results = $this->m_layer->getDistinctLayer($structure_number);
+		$data['results'] = $results;
+		$data['structure_number'] = $structure_number;
+		$this->load->view('layer/viewDistinctLayer', $data);
+	}
 
-      public function displayDistinctLayerTempTwo($data=array('layer_id'=>1,'material_id'=>20,'nominal_value'=>152.4)){
-    	$this->load->view('template/header');
+	public function displayDistinctLayerTempTwo($data = array(
+		'layer_id' => 1,
+		'material_id' => 20,
+		'nominal_value' => 152.4
+	))
+	{
+		$this->load->view('template/header');
 		$this->load->view('template/nav');
-		$data['sidebar']=$this->load->view('template/sidebar');
+		$data['sidebar'] = $this->load->view('template/sidebar');
 		$this->load->model('m_rule');
-		
-		$data['results']=$this->m_rule->getAllrule();
+		$data['results'] = $this->m_rule->getAllrule();
+		$this->load->view('layer/viewDistinctLayerTempTwo', $data);
+	}
 
-		$this->load->view('layer/viewDistinctLayerTempTwo',$data);
-		
-    }
-
-     public function displayDistinctLayerTempThree($data=array('layer_id'=>1,'material_id'=>20,'nominal_value'=>152.4)){
-    	$this->load->view('template/header');
+	public function displayDistinctLayerTempThree($data = array(
+		'layer_id' => 1,
+		'material_id' => 20,
+		'nominal_value' => 152.4
+	))
+	{
+		$this->load->view('template/header');
 		$this->load->view('template/nav');
-		$data['sidebar']=$this->load->view('template/sidebar');
+		$data['sidebar'] = $this->load->view('template/sidebar');
 		$this->load->model('m_rule');
-		
-		$data['results']=$this->m_rule->getAllrule();
+		$data['results'] = $this->m_rule->getAllrule();
+		$this->load->view('layer/viewDistinctLayerTempThree', $data);
+	}
 
-		$this->load->view('layer/viewDistinctLayerTempThree',$data);
-		
-    }
-
-    public function toolNominalTypeManagement(){
-
-    		$this->load->view('template/header');
+	public function toolNominalTypeManagement()
+	{
+		$this->load->view('template/header');
 		$this->load->view('template/nav');
-		$data['sidebar']=$this->load->view('template/sidebar');
-
+		$data['sidebar'] = $this->load->view('template/sidebar');
 		$crud = new grocery_CRUD();
 		$crud->set_theme('datatables');
-
 		$crud->set_table('tool_nominal_type');
- 		$crud->set_relation('tool_id','tool','tool_code');
- 		$crud->set_relation('nt_id','nominal_type','nt_name');
- 		$crud->columns('tool_id','nt_id','tnt_value');
- 		$crud->fields('tool_id','nt_id','tnt_value');
- 		$crud->display_as('nt_id','Nominal Type');
- 		$crud->display_as('tool_id','Tool');
- 		$crud->display_as('tnt_value','Nominal Type Value');
- 		$crud->field_type('tool_id','readonly');
- 	
-
- 		 $crud->set_lang_string('insert_success_message',
-		 'Your data has been successfully stored into the database.<br/>Please wait while you are redirecting to the list page.
+		$crud->set_relation('tool_id', 'tool', 'tool_code');
+		$crud->set_relation('nt_id', 'nominal_type', 'nt_name');
+		$crud->columns('tool_id', 'nt_id', 'tnt_value');
+		$crud->fields('tool_id', 'nt_id', 'tnt_value');
+		$crud->display_as('nt_id', 'Nominal Type');
+		$crud->display_as('tool_id', 'Tool');
+		$crud->display_as('tnt_value', 'Nominal Type Value');
+		$crud->field_type('tool_id', 'readonly');
+		$crud->set_lang_string('insert_success_message', 'Your data has been successfully stored into the database.<br/>Please wait while you are redirecting to the list page.
 		 <script type="text/javascript">
-		  window.location = "'.site_url('admin/toolManagement').'";
+		  window.location = "' . site_url('admin/toolManagement') . '";
 		 </script>
 		 <div style="display:none">
-		 '
-   );
-		
-		try{
-		    $output = $crud->render();
-		} catch(Exception $e) {
-		    show_error($e->getMessage());
+		 ');
+		try
+		{
+			$output = $crud->render();
 		}
 
-	    $this->_generate_table_tool_nominal_type($output);
-    }
+		catch(Exception $e)
+		{
+			show_error($e->getMessage());
+		}
 
-   
+		$this->_generate_table_tool_nominal_type($output);
+	}
 
-     function _generate_table_tool_nominal_type($output = null)
- 
-    {
-        $this->load->view('tool_nominal/viewToolNominalTypeManagement.php',$output);    
-    }
-   
-    public function toolManagement(){
-		
-    	$this->load->view('template/header');
+	function _generate_table_tool_nominal_type($output = null)
+	{
+		$this->load->view('tool_nominal/viewToolNominalTypeManagement.php', $output);
+	}
+
+	public function toolManagement()
+	{
+		$this->load->view('template/header');
 		$this->load->view('template/nav');
-		$data['sidebar']=$this->load->view('template/sidebar');
-
+		$data['sidebar'] = $this->load->view('template/sidebar');
 		$crud = new grocery_CRUD();
 		$crud->set_theme('datatables');
-
 		$crud->set_table('tool');
- 		$crud->set_relation_n_n('nc_id', 'tool_tool_nominal', 'nominal_column', 'tool_id', 'nc_id', 'nc_name','priority');
-    	
-    	$crud->set_relation_n_n('nt_id', 'tool_nominal_type', 'nominal_type', 'tool_id', 'nt_id', 'nt_name','priority');
-  		
-  		//$crud->set_relation('tool_id','tool_nominal_type','tnt_id');
+		$crud->set_relation_n_n('nc_id', 'tool_tool_nominal', 'nominal_column', 'tool_id', 'nc_id', 'nc_name', 'priority');
+		$crud->set_relation_n_n('nt_id', 'tool_nominal_type', 'nominal_type', 'tool_id', 'nt_id', 'nt_name', 'priority');
 
-    	$crud->display_as('nc_id','Nominal Column');
-    	$crud->display_as('nt_id','Nominal Type');
+		// $crud->set_relation('tool_id','tool_nominal_type','tnt_id');
 
-    	$crud->display_as('tool_description','Tool Name');
-    	$crud->display_as('file_url','Image');
-    	  	  $crud->callback_column('nt_id',array($this,'_callback_tnt_value'));
-
-    	    $crud->set_field_upload('file_url','assets/uploads/files');
-    	    $crud->unset_texteditor('tool_description','full_text');
-
-    	    
-		try{
-		    $output = $crud->render();
-		} catch(Exception $e) {
-		    show_error($e->getMessage());
+		$crud->display_as('nc_id', 'Nominal Column');
+		$crud->display_as('nt_id', 'Nominal Type');
+		$crud->display_as('tool_description', 'Tool Name');
+		$crud->display_as('file_url', 'Image');
+		$crud->callback_column('nt_id', array(
+			$this,
+			'_callback_tnt_value'
+		));
+		$crud->set_field_upload('file_url', 'assets/uploads/files');
+		$crud->unset_texteditor('tool_description', 'full_text');
+		try
+		{
+			$output = $crud->render();
 		}
 
-	    $this->_generate_table_tool_management($output);
-    }
+		catch(Exception $e)
+		{
+			show_error($e->getMessage());
+		}
 
-     public function _callback_tnt_value($value, $row)
+		$this->_generate_table_tool_management($output);
+	}
+
+	public function _callback_tnt_value($value, $row)
 	{
 		/*echo "value= "; print_r($value);
 		echo "<br/>";
 		print_r($row);
 		*/
-		//get the tnt_id from tool_id and nt_name
-		
-		$tool_id=$row->tool_id;
-		$output="";
 
-		if(!empty($value))
+		// get the tnt_id from tool_id and nt_name
+
+		$tool_id = $row->tool_id;
+		$output = "";
+		if (!empty($value))
 		{
-			$nt_names=array();
-			$nt_names=explode(',',$value);
+			$nt_names = array();
+			$nt_names = explode(',', $value);
+			foreach($nt_names as $n)
+			{
+				$tnts[] = array(
+					'nt_name' => $n,
+					'tnt_id' => $this->my_func->getTntId($tool_id, $n)
+				);
+			}
 
-
-					foreach($nt_names as $n)
-					{	
-						$tnts[]=array('nt_name'=>$n,
-									'tnt_id'=>$this->my_func->getTntId($tool_id,$n));
-				
-					}
-
-					if(!empty($tnts))
-					{
-
-						$x=1;
-						foreach($tnts as $n)
-						{
-							
-							 $output.= "<a href='".site_url('admin/toolNominalTypeManagement/edit/'.$n['tnt_id'])."'> ".$n['nt_name']." </a>";
-							 if(sizeof($n)!=$x)
-							 $output.=', ';
-
-
-							$x++;
-						
-						}
-
-						return $output;
-					}
+			if (!empty($tnts))
+			{
+				$x = 1;
+				foreach($tnts as $n)
+				{
+					$output.= "<a href='" . site_url('admin/toolNominalTypeManagement/edit/' . $n['tnt_id']) . "'> " . $n['nt_name'] . " </a>";
+					if (sizeof($n) != $x) $output.= ', ';
+					$x++;
 				}
+
+				return $output;
+			}
+		}
 		else
 		{
 			return $value;
 		}
-		
-		
-
 	}
 
-     function _generate_table_tool_management($output = null)
- 
-    {
-        $this->load->view('tool/viewToolManagement.php',$output);    
-    }
+	function _generate_table_tool_management($output = null)
+	{
+		$this->load->view('tool/viewToolManagement.php', $output);
+	}
 
-     public function nominalColumnManagement(){
-    	$this->load->view('template/header');
+	public function nominalColumnManagement()
+	{
+		$this->load->view('template/header');
 		$this->load->view('template/nav');
-		$data['sidebar']=$this->load->view('template/sidebar');
-
+		$data['sidebar'] = $this->load->view('template/sidebar');
 		$crud = new grocery_CRUD();
 		$crud->set_theme('datatables');
-
 		$crud->set_table('nominal_column');
- 		$crud->columns('nc_id','nc_name','nc_description');
- 		$crud->display_as('nc_id','Nominal Column Id (nc_id)');
- 		$crud->display_as('nc_name','Nominal Column Name');
- 		$crud->display_as('nc_description','Nominal Column Description');
- 		 $crud->unset_texteditor('nc_description','full_text');
-		//$crud->callback_column('nc_id',array($this,'_callback_display_nc_code'));
+		$crud->columns('nc_id', 'nc_name', 'nc_description');
+		$crud->display_as('nc_id', 'Nominal Column Id (nc_id)');
+		$crud->display_as('nc_name', 'Nominal Column Name');
+		$crud->display_as('nc_description', 'Nominal Column Description');
+		$crud->unset_texteditor('nc_description', 'full_text');
 
-		try{
-		    $output = $crud->render();
-		} catch(Exception $e) {
-		    show_error($e->getMessage());
+		// $crud->callback_column('nc_id',array($this,'_callback_display_nc_code'));
+
+		try
+		{
+			$output = $crud->render();
 		}
 
-	    $this->_generate_table_nominalcol_management($output);
-    }
+		catch(Exception $e)
+		{
+			show_error($e->getMessage());
+		}
 
-     function _generate_table_nominalcol_management($output = null)
- 
-    {
-        $this->load->view('template/view_displaytable.php',$output);    
-    }
-
-    public function _callback_display_nc_code($value, $row)
-	{
-	  return "nc_".$row->nc_id;
+		$this->_generate_table_nominalcol_management($output);
 	}
- 
 
-    public function layerManagement(){
-    	$this->load->view('template/header');
+	function _generate_table_nominalcol_management($output = null)
+	{
+		$this->load->view('template/view_displaytable.php', $output);
+	}
+
+	public function _callback_display_nc_code($value, $row)
+	{
+		return "nc_" . $row->nc_id;
+	}
+
+	public function layerManagement()
+	{
+		$this->load->view('template/header');
 		$this->load->view('template/nav');
-		$data['sidebar']=$this->load->view('template/sidebar');
-
+		$data['sidebar'] = $this->load->view('template/sidebar');
 		$crud = new grocery_CRUD();
 		$crud->set_theme('datatables');
 
 		// old, one to one relation
- 		// $crud->set_table('tool');
- 		//$crud->set_relation('rule_id','rule','rule_number');
-		$crud->display_as('layer_description','Layer Name');
+		// $crud->set_table('tool');
+		// $crud->set_relation('rule_id','rule','rule_number');
+
+		$crud->display_as('layer_description', 'Layer Name');
 		$crud->set_table('layer');
- 		
-		try{
-		    $output = $crud->render();
-		} catch(Exception $e) {
-		    show_error($e->getMessage());
+		try
+		{
+			$output = $crud->render();
 		}
 
-	    $this->_generate_table_layer_management($output);
-    }
+		catch(Exception $e)
+		{
+			show_error($e->getMessage());
+		}
 
-     function _generate_table_layer_management($output = null)
- 
-    {
-        $this->load->view('layer/viewLayerManagement.php',$output);    
-    }
+		$this->_generate_table_layer_management($output);
+	}
 
-     public function importedManagement(){
-    	$this->load->view('template/header');
+	function _generate_table_layer_management($output = null)
+	{
+		$this->load->view('layer/viewLayerManagement.php', $output);
+	}
+
+	public function importedManagement()
+	{
+		$this->load->view('template/header');
 		$this->load->view('template/nav');
-		$data['sidebar']=$this->load->view('template/sidebar');
-
+		$data['sidebar'] = $this->load->view('template/sidebar');
 		$crud = new grocery_CRUD();
 		$crud->set_theme('datatables');
-
 		$crud->unset_delete();
 		$crud->unset_edit();
-		
- 		 $crud->set_table('imported_project');
- 		
-		try{
-		    $output = $crud->render();
-		} catch(Exception $e) {
-		    show_error($e->getMessage());
+		$crud->set_table('imported_project');
+		try
+		{
+			$output = $crud->render();
 		}
 
-	    $this->_generate_table_imported_management($output);
-    }
+		catch(Exception $e)
+		{
+			show_error($e->getMessage());
+		}
 
-     function _generate_table_imported_management($output = null)
- 
-    {
-        $this->load->view('imported/viewImportedManagement.php',$output);    
-    }
+		$this->_generate_table_imported_management($output);
+	}
 
-     public function layerToolManagement(){
-    	$this->load->view('template/header');
+	function _generate_table_imported_management($output = null)
+	{
+		$this->load->view('imported/viewImportedManagement.php', $output);
+	}
+
+	public function layerToolManagement()
+	{
+		$this->load->view('template/header');
 		$this->load->view('template/nav');
-		$data['sidebar']=$this->load->view('template/sidebar');
-
+		$data['sidebar'] = $this->load->view('template/sidebar');
 		$crud = new grocery_CRUD();
 		$crud->set_theme('datatables');
-
- 		$crud->set_table('layer');
-
- 		$crud->set_relation_n_n('tool_code', 'layer_tool', 'tool', 'layer_id','tool_id','tool_code','priority');
-    
- 		$crud->unset_add();
- 		$crud->unset_delete();
-
-		try{
-		    $output = $crud->render();
-		} catch(Exception $e) {
-		    show_error($e->getMessage());
+		$crud->set_table('layer');
+		$crud->set_relation_n_n('tool_code', 'layer_tool', 'tool', 'layer_id', 'tool_id', 'tool_code', 'priority');
+		$crud->unset_add();
+		$crud->unset_delete();
+		try
+		{
+			$output = $crud->render();
 		}
 
-	    $this->_generate_table_layertool_management($output);
-    }
+		catch(Exception $e)
+		{
+			show_error($e->getMessage());
+		}
 
-     function _generate_table_layertool_management($output = null)
- 
-    {
-        $this->load->view('layer_tool/viewLayerToolManagement.php',$output);    
-    }
-/*
-	    public function layertoolNominalManagement(){
-	    	$this->load->view('template/header');
-			$this->load->view('template/nav');
-			$data['sidebar']=$this->load->view('template/sidebar');
+		$this->_generate_table_layertool_management($output);
+	}
 
-			$crud = new grocery_CRUD();
-			$crud->set_theme('datatables');
+	function _generate_table_layertool_management($output = null)
+	{
+		$this->load->view('layer_tool/viewLayerToolManagement.php', $output);
+	}
 
-	 		$crud->set_table('layer_tool');
-	 		$crud->columns('layer_id','tool_id','nc_name');
-	 		$crud->fields('layer_id','tool_id','nc_name');
+	/*
+	public function layertoolNominalManagement(){
+	$this->load->view('template/header');
+	$this->load->view('template/nav');
+	$data['sidebar']=$this->load->view('template/sidebar');
+	$crud = new grocery_CRUD();
+	$crud->set_theme('datatables');
+	$crud->set_table('layer_tool');
+	$crud->columns('layer_id','tool_id','nc_name');
+	$crud->fields('layer_id','tool_id','nc_name');
+	$crud->set_relation_n_n('nc_name', 'layer_tool_nominal', 'nominal_column', 'layer_tool_id', 'nc_id', 'nc_name','priority');
+	$crud->set_relation('tool_id','tool','tool_code');
+	$crud->set_relation('layer_id','layer','layer_description');
+	$crud->field_type('layer_id', 'readonly');
+	$crud->unset_add();
+	$crud->unset_delete();
+	try{
+	$output = $crud->render();
+	} catch(Exception $e) {
+	show_error($e->getMessage());
+	}
 
-	 		$crud->set_relation_n_n('nc_name', 'layer_tool_nominal', 'nominal_column', 'layer_tool_id', 'nc_id', 'nc_name','priority');
-	    	$crud->set_relation('tool_id','tool','tool_code');
-	 		$crud->set_relation('layer_id','layer','layer_description');
+	$this->_generate_table_layertoolnominal_management($output);
+	}
 
- 		$crud->field_type('layer_id', 'readonly');
- 		$crud->unset_add();
- 		$crud->unset_delete();
+	function _generate_table_layertoolnominal_management($output = null)
+	{
+	$this->load->view('tool_nominal/viewToolNominalManagement.php',$output);
+	}
 
-			try{
-			    $output = $crud->render();
-			} catch(Exception $e) {
-			    show_error($e->getMessage());
-			}
-
-		    $this->_generate_table_layertoolnominal_management($output);
-	    }
-     function _generate_table_layertoolnominal_management($output = null)
-     {
-        $this->load->view('tool_nominal/viewToolNominalManagement.php',$output);    
-    }
-    */
-
-     public function ruleManagement(){
-    	$this->load->view('template/header_datatable');
+	*/
+	public function ruleManagement()
+	{
+		$this->load->view('template/header_datatable');
 		$this->load->view('template/nav');
-		$data['sidebar']=$this->load->view('template/sidebar');
+		$data['sidebar'] = $this->load->view('template/sidebar');
 
-		//get the rule data
+		// get the rule data
+
 		$this->load->model('m_rule');
-		$rules=array();
-		$rules=$this->m_rule->getAllruleAndsTools();
-		$data['rules']=$rules;
+		$rules = array();
+		$rules = $this->m_rule->getAllruleAndsTools();
+		$data['rules'] = $rules;
 		/*
 		if($this->session->flashdata('delete_rule_sucess'))
 		$this->session->keep_flashdata('delete_rule_sucess');
-	elseif($this->session->flashdata('delete_rule_fail'))
+		elseif($this->session->flashdata('delete_rule_fail'))
 		$this->session->keep_flashdata('delete_rule_fail');
 		*/
-
-		$this->load->view('rule/ruleViewStatic',$data);
+		$this->load->view('rule/ruleViewStatic', $data);
 		$this->load->view('template/footer_datatable');
-    }
+	}
 
-     public function ruleManagementOld(){
-
-    	$this->load->view('template/header');
+	public function ruleManagementOld()
+	{
+		$this->load->view('template/header');
 		$this->load->view('template/nav');
-		$data['sidebar']=$this->load->view('template/sidebar');
-
+		$data['sidebar'] = $this->load->view('template/sidebar');
 		$crud = new grocery_CRUD();
 		$crud->set_theme('datatables');
-		 //set A rule as A table
- 		$crud->set_table('rule');
-		$state = $crud->getState();
-    	$state_info = $crud->getStateInfo();
 
-		//$crud->fields('rule_number','var1','cond','var2','param_id');
- 		//$crud->columns('rule_number','var1','cond','var2','param_id');
- 		//$crud->set_relation_n_n('param_id', 'rule_param', 'param', 'rule_id', 'param_id', '{param_code} (Tool:{param_tool_code} | Number:{param_number})','priority');
-		$crud->columns('rule_number','var1','cond','var2');
+		// set A rule as A table
+
+		$crud->set_table('rule');
+		$state = $crud->getState();
+		$state_info = $crud->getStateInfo();
+
+		// $crud->fields('rule_number','var1','cond','var2','param_id');
+		// $crud->columns('rule_number','var1','cond','var2','param_id');
+		// $crud->set_relation_n_n('param_id', 'rule_param', 'param', 'rule_id', 'param_id', '{param_code} (Tool:{param_tool_code} | Number:{param_number})','priority');
+
+		$crud->columns('rule_number', 'var1', 'cond', 'var2');
 		/*
 		if($state == 'add')
-	    {
-	    	 
-	         $crud->set_relation_n_n('param_id', 'rule_param', 'param', 'rule_id', 'param_id', '{param_code} (Tool:{param_tool_code} | Number:{param_number})','priority');
-	         
+		{
+		$crud->set_relation_n_n('param_id', 'rule_param', 'param', 'rule_id', 'param_id', '{param_code} (Tool:{param_tool_code} | Number:{param_number})','priority');
+		}
+		elseif($state == 'edit')
+		{
+		$primary_key = $state_info->primary_key;
 
-	    }
-	    elseif($state == 'edit')
-	    {
-	        $primary_key = $state_info->primary_key;
-	       
-	       //get the tool_id
-	        $this->load->model('m_tool');
-	        $result=array();
+		// get the tool_id
 
-	        $result=$this->m_tool->getToolId($primary_key);
-			$tool_id=$result['tool_id'];
+		$this->load->model('m_tool');
+		$result=array();
+		$result=$this->m_tool->getToolId($primary_key);
+		$tool_id=$result['tool_id'];
+		$crud->set_relation_n_n('param_id', 'rule_param', 'param', 'rule_id', 'param_id', '{param_code} (Tool:{param_tool_code} | Number:{param_number})','priority',array('tool_id'=>$tool_id));
+		}
 
-	       $crud->set_relation_n_n('param_id', 'rule_param', 'param', 'rule_id', 'param_id', '{param_code} (Tool:{param_tool_code} | Number:{param_number})','priority',array('tool_id'=>$tool_id));
-
-	    }
 		*/
-	      $crud->set_lang_string('insert_success_message',
-		 'Your data has been successfully stored into the database.<br/>Please wait while you are redirecting to the list page.
+		$crud->set_lang_string('insert_success_message', 'Your data has been successfully stored into the database.<br/>Please wait while you are redirecting to the list page.
 		 <script type="text/javascript">
-		  window.location = "'.site_url('admin/ruleManagement').'";
+		  window.location = "' . site_url('admin/ruleManagement') . '";
 		 </script>
 		 <div style="display:none">
-		 '
-   );
-		try{
-		    $output = $crud->render();
-		} catch(Exception $e) {
-		    show_error($e->getMessage());
-		}
-
-	    $this->_generate_table_rule_management($output);
-    }
-
-	  function _generate_table_rule_management($output = null)
- 
-    {
-        $this->load->view('rule/ruleView.php',$output);    
-    }
-
-
-    public function ruleParameterManagement(){
-
-    	$this->load->view('template/header');
-		$this->load->view('template/nav');
-		$data['sidebar']=$this->load->view('template/sidebar');
-
-		$crud = new grocery_CRUD();
-		$crud->set_theme('datatables');
-
- 		$crud->set_table('param');
- 		$crud->set_relation_n_n('rule_number', 'rule_param', 'rule', 'param_id', 'rule_id', 'rule_number','priority');
- 		$crud->fields('tool_id','param_tol_min','param_tol_plus','param_code','param_tool_code','param_number');
- 		
- 		$crud->columns('rule_number','param_number','param_tol_min','param_tol_plus','param_code');
- 	
- 		$crud->set_relation('tool_id','tool','tool_code');
- 
- 		$crud->field_type('param_tool_code','invisible');
- 		 $crud->callback_after_insert(array($this, 'update_toolcode_after_insert'));
- 		 $crud->callback_after_update(array($this, 'update_toolcode_after_insert'));
- 		 $crud->unset_add();
-	 		$crud->unset_delete();
-
-		try{
-		    $output = $crud->render();
-		} catch(Exception $e) {
-		    show_error($e->getMessage());
-		}
-
-	    $this->_generate_table_ruleparameter_management($output);
-    }
-
-		 function update_toolcode_after_insert($post_array,$primary_key)
+		 ');
+		try
 		{
-			//print_r($primary_key); print_r($post_array); 
-
-			//get tool_code
-			 $this->load->model('m_param');
-	        $result=array();
-
-	        $result=$this->m_param->getToolId($primary_key);
-			$tool_code=$result['tool_code'];
-
-		    $new_data = array(
-		        "param_tool_code" => $tool_code
-		    );
-	
-
-		    $this->db->where('param_id', $primary_key);
-			$this->db->update('param', $new_data); 
-		 
-		    return true;
+			$output = $crud->render();
 		}
 
-	 function _generate_table_ruleparameter_management($output = null)
-	     {
-	        $this->load->view('rule/ruleParameterview.php',$output);    
-	    }
+		catch(Exception $e)
+		{
+			show_error($e->getMessage());
+		}
 
- public function parameterManagement(){
+		$this->_generate_table_rule_management($output);
+	}
 
-    	$this->load->view('template/header');
+	function _generate_table_rule_management($output = null)
+	{
+		$this->load->view('rule/ruleView.php', $output);
+	}
+
+	public function ruleParameterManagement()
+	{
+		$this->load->view('template/header');
 		$this->load->view('template/nav');
-		$data['sidebar']=$this->load->view('template/sidebar');
-
-
+		$data['sidebar'] = $this->load->view('template/sidebar');
 		$crud = new grocery_CRUD();
 		$crud->set_theme('datatables');
-
- 		$crud->set_table('param');
- 		$crud->fields('param_number','tool_id','param_code','param_tool_code','param_tol_min','param_tol_plus');
-	 	$crud->columns('param_number','param_code','param_tool_code','param_tol_min','param_tol_plus');
-	 	$crud->set_relation('tool_id','tool','tool_code');
-
-	 	//$crud->set_relation('param_tool_code','tool','tool_code');
-	 	$crud->field_type('param_tool_code','invisible');
-	 	$crud->callback_before_insert(array($this,'parameter_callback_before_insert'));
-	 	$crud->callback_before_update(array($this,'parameter_callback_before_update'));
-
-	 	$crud->callback_after_insert(array($this,'parameter_callback_after_insert'));
-	 	$crud->callback_after_update(array($this,'parameter_callback_after_update'));
-
-
-	 	$crud->display_as ( 'param_tol_min','Tol-');
-	 	$crud->display_as ( 'param_tol_plus','Tol+');
-	
-		try{
-		    $output = $crud->render();
-		} catch(Exception $e) {
-		    show_error($e->getMessage());
+		$crud->set_table('param');
+		$crud->set_relation_n_n('rule_number', 'rule_param', 'rule', 'param_id', 'rule_id', 'rule_number', 'priority');
+		$crud->fields('tool_id', 'param_tol_min', 'param_tol_plus', 'param_code', 'param_tool_code', 'param_number');
+		$crud->columns('rule_number', 'param_number', 'param_tol_min', 'param_tol_plus', 'param_code');
+		$crud->set_relation('tool_id', 'tool', 'tool_code');
+		$crud->field_type('param_tool_code', 'invisible');
+		$crud->callback_after_insert(array(
+			$this,
+			'update_toolcode_after_insert'
+		));
+		$crud->callback_after_update(array(
+			$this,
+			'update_toolcode_after_insert'
+		));
+		$crud->unset_add();
+		$crud->unset_delete();
+		try
+		{
+			$output = $crud->render();
 		}
 
-	    $this->_generate_table_parameter_management($output);
-    }
+		catch(Exception $e)
+		{
+			show_error($e->getMessage());
+		}
 
-    function parameter_callback_before_insert($post_array){
-    	$this->load->model('m_rule');
-    	$tool_id=$post_array['tool_id'];
-    	$post_array['param_tool_code']=$this->my_func->getToolCode($tool_id);
-    	$this->load->library('form_validation');
+		$this->_generate_table_ruleparameter_management($output);
+	}
 
-    	//firstly validate, can't add if there is a same param number
-    	//under the same tool, and the number of the param under
-    	//each tool must be not more than 10
-    	if($this->my_func->validate_add_param($post_array)!=false OR $this->my_func->validate_number_of_param($post_array)!=false)
-    	{
+	function update_toolcode_after_insert($post_array, $primary_key)
+	{
 
-	    	/* Bila add param, check da ada rule bwh tools id 
-	    	yg sama dngn param yg di add td x, lau ada, automatik 
-	    	rule_param akan trtambah lg.
-	    	*/
-	    	$rule_ids=array();
-	    	$rule_ids=$this->my_func->checkParamToolRule($tool_id);
-	    	if(sizeof($rule_ids)<=0){
-	  		return $post_array;
-	  		}
-	  		else
-	  		{
-	  			foreach($rule_ids as $r)
-	  			{
-	  				$data_rule_param=array(
-				    		'rule_id'=>$r,
-				    		'pio_id'=>1,
-				    		'rp_pre_value'=>0,
-				    		'rp_post_value'=>0
-				    		);
-	  				$rp_ids=array();
-	  				$rp_ids[]=$this->m_rule->addRuleParam($data_rule_param);
-	  			}
-	  				$post_array['rp_ids']=$rp_ids;
-	  				return $post_array;
-	  			
-	  		}
-	  	}
-	  	else{
+		// print_r($primary_key); print_r($post_array);
+		// get tool_code
 
-	  		$this->form_validation->set_message('Please take note that the maximum number of param for each tool is 10 and the same param number under same rool is forbiden');
-	  		return false;
-	  		//$this->session->set_flashdata('param_add_fail', 'Please take note that the maximum number of param for each tool is 10 and the same param number under same rool is forbiden');
-		  // redirect('admin/parameterManagement');
-	  	}
-}
-/*
-function parameter_callback_before_update($post_array,$primary_key)
-{
+		$this->load->model('m_param');
+		$result = array();
+		$result = $this->m_param->getToolId($primary_key);
+		$tool_code = $result['tool_code'];
+		$new_data = array(
+			"param_tool_code" => $tool_code
+		);
+		$this->db->where('param_id', $primary_key);
+		$this->db->update('param', $new_data);
+		return true;
+	}
 
+	function _generate_table_ruleparameter_management($output = null)
+	{
+		$this->load->view('rule/ruleParameterview.php', $output);
+	}
+
+	public function parameterManagement()
+	{
+		$this->load->view('template/header');
+		$this->load->view('template/nav');
+		$data['sidebar'] = $this->load->view('template/sidebar');
+		$crud = new grocery_CRUD();
+		$crud->set_theme('datatables');
+		$crud->set_table('param');
+		$crud->fields('param_number', 'tool_id', 'param_code', 'param_tool_code', 'param_tol_min', 'param_tol_plus');
+		$crud->columns('param_number', 'param_code', 'param_tool_code', 'param_tol_min', 'param_tol_plus');
+		$crud->set_relation('tool_id', 'tool', 'tool_code');
+
+		// $crud->set_relation('param_tool_code','tool','tool_code');
+
+		$crud->field_type('param_tool_code', 'invisible');
+		$crud->callback_before_insert(array(
+			$this,
+			'parameter_callback_before_insert'
+		));
+		$crud->callback_before_update(array(
+			$this,
+			'parameter_callback_before_update'
+		));
+		$crud->callback_after_insert(array(
+			$this,
+			'parameter_callback_after_insert'
+		));
+		$crud->callback_after_update(array(
+			$this,
+			'parameter_callback_after_update'
+		));
+		$crud->display_as('param_tol_min', 'Tol-');
+		$crud->display_as('param_tol_plus', 'Tol+');
+		try
+		{
+			$output = $crud->render();
+		}
+
+		catch(Exception $e)
+		{
+			show_error($e->getMessage());
+		}
+
+		$this->_generate_table_parameter_management($output);
+	}
+
+	function parameter_callback_before_insert($post_array)
+	{
+		$this->load->model('m_rule');
+		$tool_id = $post_array['tool_id'];
+		$post_array['param_tool_code'] = $this->my_func->getToolCode($tool_id);
+		$this->load->library('form_validation');
+
+		// firstly validate, can't add if there is a same param number
+		// under the same tool, and the number of the param under
+		// each tool must be not more than 10
+
+		if ($this->my_func->validate_add_param($post_array) != false OR $this->my_func->validate_number_of_param($post_array) != false)
+		{
+			/* Bila add param, check da ada rule bwh tools id
+			yg sama dngn param yg di add td x, lau ada, automatik
+			rule_param akan trtambah lg.
+			*/
+			$rule_ids = array();
+			$rule_ids = $this->my_func->checkParamToolRule($tool_id);
+			if (sizeof($rule_ids) <= 0)
+			{
+				return $post_array;
+			}
+			else
+			{
+				foreach($rule_ids as $r)
+				{
+					$data_rule_param = array(
+						'rule_id' => $r,
+						'pio_id' => 1,
+						'rp_pre_value' => 0,
+						'rp_post_value' => 0
+					);
+					$rp_ids = array();
+					$rp_ids[] = $this->m_rule->addRuleParam($data_rule_param);
+				}
+
+				$post_array['rp_ids'] = $rp_ids;
+				return $post_array;
+			}
+		}
+		else
+		{
+			$this->form_validation->set_message('Please take note that the maximum number of param for each tool is 10 and the same param number under same rool is forbiden');
+			return false;
+
+			// $this->session->set_flashdata('param_add_fail', 'Please take note that the maximum number of param for each tool is 10 and the same param number under same rool is forbiden');
+			// redirect('admin/parameterManagement');
+
+		}
+	}
+
+	/*
+	function parameter_callback_before_update($post_array,$primary_key)
+	{
 	$this->load->model('m_rule');
 	$param_id=$primary_key;
 	$tool_id=$post_array['tool_id'];
 	$rule_ids=array();
 	$rule_ids=$this->my_func->checkParamToolRule($tool_id);
-
 	foreach($rule_ids as $r)
 	{
-		  $data_rule_param = array(
-        	"param_id" => $primary_key
-  		  );
-  		  $where=array($r,0);
- 
-   		$this->m_rule->updateRuleParam($data_rule_param,$where);
+	$data_rule_param = array(
+	"param_id" => $primary_key
+	);
+	$where=array($r,0);
+	$this->m_rule->updateRuleParam($data_rule_param,$where);
 	}
-  
-    return true;
-}*/
 
-function parameter_callback_after_insert($post_array,$primary_key)
-{
-	$this->load->model('m_rule');
-	$rp_ids=$post_array['rp_ids'];
-	if(!empty($rp_ids)){
-		foreach($rp_ids as $r)
+	return true;
+	}*/
+	function parameter_callback_after_insert($post_array, $primary_key)
+	{
+		$this->load->model('m_rule');
+		$rp_ids = $post_array['rp_ids'];
+		if (!empty($rp_ids))
 		{
-			  $data_rule_param = array(
-	        	"param_id" => $primary_key
-	  		  );
-	  		  $where=$r;
-	 
-	   		$this->m_rule->updateRuleParam($data_rule_param,$where);
+			foreach($rp_ids as $r)
+			{
+				$data_rule_param = array(
+					"param_id" => $primary_key
+				);
+				$where = $r;
+				$this->m_rule->updateRuleParam($data_rule_param, $where);
+			}
+		}
+
+		return true;
+	}
+
+	function parameter_callback_before_update($post_array, $primary_key)
+	{
+		$this->load->model('m_rule');
+		$this->load->model('m_param');
+		$tool_id = $post_array['tool_id'];
+		/*
+		if($this->my_func->validate_add_param($post_array)!=false OR $this->my_func->validate_number_of_param($post_array)!=false)
+		{
+		return false;
+		}
+		else
+		{
+		return true;
+		}
+
+		*/
+		return true;
+	}
+
+	function parameter_callback_after_update($post_array, $primary_key)
+	{
+		$this->load->model('m_rule');
+		$this->load->model('m_param');
+		$tool_id = $post_array['tool_id'];
+		$param_id = $primary_key;
+		$tool_id = $post_array['tool_id'];
+		$post_array['param_tool_code'] = $this->my_func->getToolCode($tool_id);
+		$this->m_param->updateParam($post_array, $param_id);
+		/* Bila add param, check da ada rule bwh tools id
+		yg sama dngn param yg di add td x, lau ada, automatik
+		rule_param akan trtambah lg.
+		*/
+		$rule_ids = array();
+		$rule_ids = $this->my_func->checkParamToolRule($tool_id);
+		if (sizeof($rule_ids) <= 0)
+		{
+
+			// delete existing param
+
+			$this->m_rule->deleteRuleParamBasedOnParam_id($param_id);
+			return true;
+		}
+		else
+		{
+			foreach($rule_ids as $r)
+			{
+
+				// update the rule_id of existing param
+
+				$data_rule_param = array(
+					'rule_id' => $r
+				);
+				$this->m_rule->updateRuleParamBasedOnParam_id($data_rule_param, $param_id);
+				/*
+				$data_rule_param=array(
+				'rule_id'=>$r,
+				'pio_id'=>1,
+				'param_id'=>$primary_key,
+				'rp_pre_value'=>0,
+				'rp_post_value'=>0
+				);
+				$rp_ids=array();
+				$rp_ids[]=$this->m_rule->addRuleParam($data_rule_param);
+				*/
+			}
+
+			return $post_array;
 		}
 	}
-  
-    return true;
-}
 
-function parameter_callback_before_update($post_array,$primary_key)
-{
-	$this->load->model('m_rule');
-	$this->load->model('m_param');
-	$tool_id=$post_array['tool_id'];
+	function _generate_table_parameter_management($output = null)
+	{
+		$this->load->view('rule/ruleParameterview.php', $output);
+	}
 
-	/*
-		if($this->my_func->validate_add_param($post_array)!=false OR $this->my_func->validate_number_of_param($post_array)!=false)
-    	{
-    	
-    		return false;
-    	}
-    	else
-    	{
-    		 return true;
-    	}
-	*/
-	return true;	
-  		
-}
+	public function rulemanagementDelete($rule_id = 0)
+	{
+		$this->load->model('m_rule');
 
-function parameter_callback_after_update($post_array,$primary_key)
-{
-	$this->load->model('m_rule');
-	$this->load->model('m_param');
-	$tool_id=$post_array['tool_id'];
-	$param_id=$primary_key;
+		// delete in rule table
 
-		$tool_id=$post_array['tool_id'];
-    	$post_array['param_tool_code']=$this->my_func->getToolCode($tool_id);
-    	$this->m_param->updateParam($post_array,$param_id);
-    	
-    	/* Bila add param, check da ada rule bwh tools id 
-    	yg sama dngn param yg di add td x, lau ada, automatik 
-    	rule_param akan trtambah lg.
-    	*/
-    	$rule_ids=array();
-    	$rule_ids=$this->my_func->checkParamToolRule($tool_id);
-    	if(sizeof($rule_ids)<=0){
-    		
-    		//delete existing param
-    		$this->m_rule->deleteRuleParamBasedOnParam_id($param_id);
-  			return true;
-  		
-  		}
-  		else
-  		{
-  			foreach($rule_ids as $r)
-  			{
-  				//update the rule_id of existing param
-  				$data_rule_param=array(
-			    		'rule_id'=>$r
-			    		);
-    			$this->m_rule->updateRuleParamBasedOnParam_id($data_rule_param,$param_id);
+		$flag = 0;
+		if ($this->m_rule->deleteRulebyId($rule_id) != false)
+		{
+			$flag = 0;
+		}
+		else
+		{
+			$flag = 1;
+		}
 
-  				/*
-  				$data_rule_param=array(
-			    		'rule_id'=>$r,
-			    		'pio_id'=>1,
-			    		'param_id'=>$primary_key,
-			    		'rp_pre_value'=>0,
-			    		'rp_post_value'=>0
-			    		);
-  				$rp_ids=array();
-  				$rp_ids[]=$this->m_rule->addRuleParam($data_rule_param);
-  				*/
+		// delete in rule_param
 
-  			}
-  				return $post_array;
-  			
-  		}
-}
+		if ($this->m_rule->deleteRuleParamById($rule_id) != false)
+		{
+			$flag = 0;
+		}
+		else
+		{
+			$flag = 1;
+		}
 
-     function _generate_table_parameter_management($output = null)
-	     {
-	        $this->load->view('rule/ruleParameterview.php',$output);    
-	    }
+		// delete in tool_rule
 
-	    public function rulemanagementDelete($rule_id=0){
-	    	$this->load->model('m_rule');
+		if ($this->m_rule->deleteToolRule($rule_id) != false)
+		{
+			$flag = 0;
+		}
+		else
+		{
+			$flag = 1;
+		}
 
-	    	//delete in rule table
-	    	$flag=0;
+		if ($flag != 1)
+		{
 
-	    	if($this->m_rule->deleteRulebyId($rule_id)!=false)
-	    	{
-	    		$flag=0;
-	    	}
-	    	else{
-	    		$flag=1;
-	    	}
+			// true
 
+			$this->session->set_flashdata('delete_rule_sucess', 'Rule is deleted');
+		}
+		else
+		{
+			$this->session->set_flashdata('delete_rule_fail', 'There is problem when deleting rule');
+		}
 
-	    	//delete in rule_param
-	    	if($this->m_rule->deleteRuleParamById($rule_id)!=false)
-	    	{
-	    		$flag=0;
-	    	}
-	    	else
-	    	{
-	    		$flag=1;
-	    	}
+		redirect('admin/ruleManagement');
+	}
 
-	    	// delete in tool_rule
-	    	if($this->m_rule->deleteToolRule($rule_id)!=false)
-	    	{
-	    		$flag=0;
-	    	}
-	    	else
-	    	{
-	    		$flag=1;
-	    	}
+	public
 
+	function ruleValueManagement()
+	{
+		$this->load->view('template/header_datatable');
+		$this->load->view('template/nav');
+		$data['sidebar'] = $this->load->view('template/sidebar');
+		$crud = new grocery_CRUD();
+		$crud->set_theme('datatables');
+		$crud->set_table('rule_param');
+		$crud->set_relation('param_id', 'param', '{param_code} (Tool:{param_tool_code} | Number:{param_number})');
+		$crud->set_relation('rule_id', 'rule', 'rule_number');
+		$crud->fields('rule_id', 'param_id', 'pio_id', 'rp_formula', 'rp_pre_value', 'rp_post_value');
+		$crud->columns('rule_id', 'param_id', 'pio_id', 'rp_formula', 'rp_pre_value', 'rp_post_value');
+		$crud->set_relation('pio_id', 'param_input_options', 'pio_code');
+		$crud->field_type('rule_id', 'readonly');
+		$crud->field_type('param_id', 'readonly');
+		$crud->callback_field('rp_pre_value', array(
+			$this,
+			'callback_pre_value'
+		));
 
-	    	if($flag!=1)
-	    	{
-	    		//true
-	    		$this->session->set_flashdata('delete_rule_sucess','Rule is deleted');
+		// $crud->unset_edit_fields('priority');
 
-	    	}
-	    	else
-	    	{
-	    		$this->session->set_flashdata('delete_rule_fail','There is problem when deleting rule');
-	    	}
+		/*
+		$state = $crud->getState();
+		$state_info = $crud->getStateInfo();
+		if($state == 'edit')
+		{
+		$primary_key = $state_info->primary_key;
+		$pio_id=$this->my_func->getPioID($primary_key);
+		if($pio_id!=3)
+		{
+		$crud->unset_edit_fields(array('rp_formula'));
+		$crud->field_type('rp_formula','invisible');
+		}
 
-	    	redirect('admin/ruleManagement');
-	    }
+		// Do your awesome coding here.
 
-	 
+		}
 
-	    public function ruleValueManagement(){
-
-	    	$this->load->view('template/header_datatable');
-			$this->load->view('template/nav');
-			$data['sidebar']=$this->load->view('template/sidebar');
-
-			$crud = new grocery_CRUD();
-			$crud->set_theme('datatables');
-
-	 		$crud->set_table('rule_param');
-	 		
-	 		$crud->set_relation('param_id','param','{param_code} (Tool:{param_tool_code} | Number:{param_number})');
-	 		$crud->set_relation('rule_id','rule','rule_number');
-	 		
-	 		$crud->fields('rule_id','param_id','pio_id','rp_formula','rp_pre_value','rp_post_value');
-	 		$crud->columns('rule_id','param_id','pio_id','rp_formula','rp_pre_value','rp_post_value');
-	 	
-	 		$crud->set_relation('pio_id','param_input_options','pio_code');
-	 		$crud->field_type('rule_id','readonly');
-	 		$crud->field_type('param_id','readonly');
-$crud->callback_field('rp_pre_value',array($this,'callback_pre_value'));
-	 		//$crud->unset_edit_fields('priority');
-	 		
-/*
-	 		  $state = $crud->getState();
-			    $state_info = $crud->getStateInfo();
-			 
-			   if($state == 'edit')
-			    {
-			        $primary_key = $state_info->primary_key;
-			        $pio_id=$this->my_func->getPioID($primary_key);
-			        if($pio_id!=3)
-			        {
-			        $crud->unset_edit_fields(array('rp_formula'));
-			        	$crud->field_type('rp_formula','invisible');
-			  	  }
-			        //Do your awesome coding here. 
-			    }
-*/
-	 		
-			     $crud->field_type('rp_formula', 'hidden');
-	 		 $crud->field_type('rp_post_value', 'hidden', null);
-	 		 
-	 		$crud->callback_after_insert(array($this,'callback_after_insert_or_update_rulevalue'));
-	  		$crud->callback_after_update(array($this,'callback_after_insert_or_update_rulevalue'));
-
-	  		$crud->callback_before_update(array($this,'callback_before_update_rulevalue'));
-
-	  		$crud->unset_add();
-	 		$crud->unset_delete();
-
-	 		    $crud->set_lang_string('insert_success_message',
-		 'Your data has been successfully stored into the database.<br/>Please wait while you are redirecting to the list page.
+		*/
+		$crud->field_type('rp_formula', 'hidden');
+		$crud->field_type('rp_post_value', 'hidden', null);
+		$crud->callback_after_insert(array(
+			$this,
+			'callback_after_insert_or_update_rulevalue'
+		));
+		$crud->callback_after_update(array(
+			$this,
+			'callback_after_insert_or_update_rulevalue'
+		));
+		$crud->callback_before_update(array(
+			$this,
+			'callback_before_update_rulevalue'
+		));
+		$crud->unset_add();
+		$crud->unset_delete();
+		$crud->set_lang_string('insert_success_message', 'Your data has been successfully stored into the database.<br/>Please wait while you are redirecting to the list page.
 		 <script type="text/javascript">
-		  window.location = "'.site_url('admin/ruleManagement').'";
+		  window.location = "' . site_url('admin/ruleManagement') . '";
 		 </script>
 		 <div style="display:none">
-		 '
-   );
-	 		     $crud->unset_list();
-  		
-			try{
-			    $output = $crud->render();
-			} catch(Exception $e) {
-			     if($e->getCode() == 14) //The 14 is the code of the "You don't have permissions" error on grocery CRUD.
-			   {
-			       redirect('admin/ruleManagement');
-			   }
-			   else
-			   {
-			    show_error($e->getMessage());
-			   }
+		 ');
+		$crud->unset_list();
+		try
+		{
+			$output = $crud->render();
+		}
+
+		catch(Exception $e)
+		{
+			if ($e->getCode() == 14) //The 14 is the code of the "You don't have permissions" error on grocery CRUD.
+			{
+				redirect('admin/ruleManagement');
 			}
-
-		    $this->_generate_table_rulevalue_management($output);
-	    }
-
-	     function _generate_table_rulevalue_management($output = null)
-	     {
-	        $this->load->view('rule/ruleValueManagementView.php',$output);    
-	    }
-
-	    public function viewAddRuleValueManagement()
-	    {
-	    	$this->load->view('template/header');
-			$this->load->view('template/nav');
-			$data['sidebar']=$this->load->view('template/sidebar');
-	    	
-	    	//get all tool
-	    	$tools=array();
-	    	$this->load->model('m_tool');
-	    	$tools=$this->m_tool->getAlltools();
-	    	$data['tools']=$tools;
-
-	    	$this->load->view('rule/ruleAddView.php',$data);
-
-	    }
-
-	    public function addRuleProcess($data=null){
-
-	    	$this->load->model('m_rule');
-	    	$this->load->model('m_tool');
-	    	$this->load->model('m_param');
-
-	    	$tool_code_i=$this->input->post('tool_code');
-	    	$tool_code=str_replace(' ','',strtolower($tool_code_i));
-
-
-	    	//rule_number=tool_code._.rule_number
-	    	$rule_number=$this->input->post('rule_number');
-
-	    	$real_rule_number=$tool_code.'_'.$rule_number;
-	    	$data=array(
-	    		'rule_number'=>$real_rule_number,
-	    		'var1'=>$this->input->post('var1'),
-	    		'cond'=>trim($this->input->post('cond')),
-	    		'var2'=>$this->input->post('var2')
-	    		);
-	    
-
-	    	$rule_id=$this->m_rule->addRule($data);
-
-	    	$flag=0;
-
-	    	if($rule_id!=0)
-	    	{
-	    		$tool_id=$this->m_tool->getToolIdFromToolCode($tool_code_i);
-
-	    	
-
-	    			$data_tool_rule=array(
-	    					'rule_id'=>$rule_id,
-	    					'tool_id'=>$tool_id
-	    		);
-
-			    	/*
-			    	bila add rule, maka add table rule_param dan 
-			    	check rule yang tool_id dia sama dengan tool_id param 
-			    	(check dari table param, dan table rule->tool_rule).
-			    	map kan table rule_param dengan param yang ada tool_rule.tool_id
-			    	*/
-
-			    	if($tool_rule_id=$this->m_rule->addToolRule($data_tool_rule)){
-					
-			    	//cari param yang tool_id sama dengan rule yang
-			    	//baru dimasukan
-			    		$params=array();
-			    		
-			    	$params=$this->m_param->getParamBasedOnToolId($tool_id);
-
-					if(empty($params))
-					{
-						//cannot add rule_param, because there is no param yet
-						$this->session->set_flashdata('rule_add_fail', 'Please create param first to add rule');
-		    			redirect('admin/ruleManagement');
-					}
-
-			    	foreach($params as $key=>$value)
-			    	{
-			    		$data_rule_param=array(
-			    		'rule_id'=>$rule_id,
-			    		'param_id'=>$value->param_id,
-			    		'pio_id'=>1,
-			    		'rp_pre_value'=>0,
-			    		'rp_post_value'=>0
-			    		);
-
-			    		$rule_param_id=$this->m_rule->addRuleParam($data_rule_param);
-			    	}
-			    }
-			}
-
-
-		    	$this->session->set_flashdata('rule_add_sucess', 'Rule is added successfully');
-		    	redirect('admin/ruleManagement');
-	    	
-
-
-	    }
-
-	    public function calculate_string($string)    {
-		    $string = trim($string);
-		 
-		    $string = preg_replace('/[^0-9\+\-\*\/\(\)[46] ]/i', '', $string);
-		   
-		    $compute = create_function('', 'return (' . $string . ');' );
-
-			if($compute!=false)
-		    return 0 + $compute();
 			else
-			return false;
-		}
-
-	    function callback_after_insert_or_update_rulevalue($post_array, $primary_key = null)
-		{
-		 // $this->my_func->reCalculateFormula();
-			$this->load->model('m_tool');
-			$this->load->model('m_param');
-			  	if($post_array['pio_id']=='1')//constant
-			  	{
-
-				  	$post_array['rp_post_value']=$post_array['rp_pre_value'];
-				  	$post_array['rp_formula']=null;
-				  	$this->db->where('rp_id', $primary_key);
-					$this->db->update('rule_param', $post_array); 
-				$this->my_func->reCalculateFormula();
-
-						//$this->session->set_flashdata('rule_add_sucess', 'Rule is updated successfully');
-		    	//redirect('admin/ruleManagement');
-
-				}elseif($post_array['pio_id']=='2') //nominal_column
-				{
-					$temp=array();
-					$temp = explode("_", $post_array['rp_pre_value']);
-					$nominal_column_id=$temp[1];
-					//get the column_nominal value from the nominal_column_id
-					$nc_nameArr=$this->m_tool->getNominalColumnName($nominal_column_id);
-					$nc_name=$nc_nameArr[0]->nc_name;
-					$nc_valueArr=$this->m_tool->getNominalColumnValueFromImportedProject($nc_name);
-					$nc_value=$nc_valueArr[0]->$nc_name;
-					
-					//after get the nc_value then update
-					$post_array['rp_post_value']=$nc_value;
-				  	$this->db->where('rp_id', $primary_key);
-					$this->db->update('rule_param', $post_array); 
-					$this->my_func->reCalculateFormula();
-				}
-				elseif($post_array['pio_id']=='3') //formula
-				{
-					$formulastring=$post_array['rp_post_value'];
-					$post_array['rp_pre_value']=$formulastring;
-					unset($post_array['example_length']);
-					unset($post_array['example2_length']);
-					unset($post_array['example3_length']);
-		
-					
-
-					$hasil_value=$this->calculate_string($formulastring);
-					$post_array['rp_post_value']=$hasil_value;
-					/*$data=array(
-						'rp_pre_value'=>$post_array['rp_pre_value'],
-						'rp_post_value'=>$hasil_value
-						);*/
-				  	$this->db->where('rp_id', $primary_key);
-					$this->db->update('rule_param', $post_array); 
-$this->my_func->reCalculateFormula();
-						$this->session->set_flashdata('rule_add_sucess', 'Rule is updated successfully');
-		    	redirect('admin/ruleManagement');
-
-					//get the  param_n value
-					//dont confuse, param_id is the existing param_id, the param_number
-					//is the param_id that the admin wants to refer to
-					/*
-					$temp=array();
-					$rule_id=$post_array['rule_id'];
-					$formulastring="";
-					//firstly get the value of param_number
-					$param_collection=array('param_1',
-											'param_2',
-											'param_3',
-											'param_4',
-											'param_5',
-											'param_6',
-											'param_7',
-											'param_8',
-											'param_9',
-											'param_10',
-												);
-
-					$nc_collection=array();
-					$nc_collection=$this->m_param->getAllNcId();
-
-					//search the param_number inside the formula string
-					foreach($param_collection as $param){
-						//search the string
-						
-						//this is formula translation for parameter
-						if(strstr($post_array['rp_pre_value'],$param)!=false)
-						{
-							//get the value for the param
-							$param_values=array();
-							$param_value=0;
-							//get the param_id
-							$temp_param=array();
-							$temp_param=explode('_',$param);
-							$param_id=$temp_param[1];
-
-							$param_values=$this->m_param->getParamValue($rule_id,$param_id);
-							
-
-							foreach($param_values as $r=>$v)
-							{
-								$param_value=$v->rp_post_value;
-							}
-
-							//replace the param
-							$formulastring.=str_replace($param,$param_value,$post_array['rp_pre_value']);
-						}
-
-					}
-
-					//search the param_number inside the formula string
-					foreach($nc_collection as $ncs){
-						$ncs='nc_'.$ncs->nc_id;
-						
-						//search the string
-						if(strstr($post_array['rp_pre_value'],$ncs)!=false)
-						{
-							$temp=array();
-							$temp = explode("_", $ncs);
-							$nominal_column_id=$temp[1];
-							
-
-							//get the column_nominal value from the nominal_column_id
-							$nc_nameArr=$this->m_tool->getNominalColumnName($nominal_column_id);
-							$nc_name=$nc_nameArr[0]->nc_name;
-							$nc_valueArr=$this->m_tool->getNominalColumnValueFromImportedProject($nc_name);
-							$nc_value=$nc_valueArr[0]->$nc_name;
-
-							//replace the param
-							
-							$formulastring.=str_replace($ncs,$nc_value,$post_array['rp_pre_value']);
-								
-						}
-					}
-
-
-					$hasil_value=$this->calculate_string($formulastring);
-					
-					
-					$post_array['rp_post_value']=$hasil_value;
-				  	$this->db->where('rp_id', $primary_key);
-					$this->db->update('rule_param', $post_array); 
-					*/
-			
-				}
-				elseif($post_array['pio_id']=='4'){ //text
-					$post_array['rp_post_value']=$post_array['rp_pre_value'];
-				  	$this->db->where('rp_id', $primary_key);
-					$this->db->update('rule_param', $post_array); 
-					$this->my_func->reCalculateFormula();
-				}
-		  
-		  return $post_array;
-		}
-
-  function callback_before_update_rulevalue($post_array, $primary_key = null)
-		{
-		
-
-			$this->load->model('m_tool');
-			$this->load->model('m_param');
-			  	if($post_array['pio_id']=='1')//constant
-			  	{
-
-			  		
-				  	$post_array['rp_post_value']=$post_array['rp_pre_value'];
-				  	$post_array['rp_formula']=null;
-
-				  	$this->db->where('rp_id', $primary_key);
-					$this->db->update('rule_param', $post_array); 
-
-						//$this->session->set_flashdata('rule_add_sucess', 'Rule is updated successfully');
-		    	//redirect('admin/ruleManagement');
-
-				}elseif($post_array['pio_id']=='2') //nominal_column
-				{
-					$temp=array();
-					$temp = explode("_", $post_array['rp_pre_value']);
-					$nominal_column_id=$temp[1];
-					//get the column_nominal value from the nominal_column_id
-					$nc_nameArr=$this->m_tool->getNominalColumnName($nominal_column_id);
-					$nc_name=$nc_nameArr[0]->nc_name;
-					$nc_valueArr=$this->m_tool->getNominalColumnValueFromImportedProject($nc_name);
-					$nc_value=$nc_valueArr[0]->$nc_name;
-					
-					//after get the nc_value then update
-					$post_array['rp_post_value']=$nc_value;
-				  	$this->db->where('rp_id', $primary_key);
-					$this->db->update('rule_param', $post_array); 
-				}
-				elseif($post_array['pio_id']=='3') //formula
-				{
-					$formulastring=$post_array['rp_post_value'];
-					$post_array['rp_pre_value']=$formulastring;
-					unset($post_array['example_length']);
-					unset($post_array['example2_length']);
-					unset($post_array['example3_length']);
-		
-					
-
-					$hasil_value=$this->calculate_string($formulastring);
-
- 					
-
-					if($hasil_value==false AND $hasil_value!=0)
-					{
-
-								$this->session->set_flashdata('rule_add_fail', 'Pay attention to the formula');
-		    	redirect('admin/ruleManagement');
-					}
-
-					$post_array['rp_post_value']=$hasil_value;
-
-					/*$data=array(
-						'rp_pre_value'=>$post_array['rp_pre_value'],
-						'rp_post_value'=>$hasil_value
-						);*/
-				  	$this->db->where('rp_id', $primary_key);
-					$this->db->update('rule_param', $post_array); 
-
-						$this->session->set_flashdata('rule_add_sucess', 'Rule is updated successfully');
-		    	redirect('admin/ruleManagement');
-
-				
-			
-				}
-				elseif($post_array['pio_id']=='4'){ //text
-					$post_array['rp_post_value']=$post_array['rp_pre_value'];
-				  	$this->db->where('rp_id', $primary_key);
-					$this->db->update('rule_param', $post_array); 
-				}
-
-		   
-		  return $post_array;
-		}
-
-
-		function viewAjaxRule($pio_id=0)
-		{
-			$data['primary_key']=$pio_id;
-			$this->load->view('rule/ruleValueAjaxView',$data,true);
-		}
-
-
-		function callback_pre_value($value = null, $primary_key = null)
-		{
-		//$output .= "<input type='text' name='test1' value='test' id='test1'/>";
-
-		//Or with a view
-			$data['primary_key']=$primary_key;
-		$output = $this->load->view('rule/ruleValueAjaxView',$data,true);
-			//$output="<input type='text'/> ";
-		return $output;
-		}
-
-	    public function ajaxGetRuleValue($pio_id=0,$rp_id=0){
-	    	$this->load->model('m_tool');
-	    	$this->load->model('m_rule');
-	    	if($pio_id==1) //constant
-	    	{	
-	    		//check if existing constant value
-	    		if($rp_id!=0)
-	    		{
-	    			
-	    			$result=$this->m_rule->getNcValueFromRuleValueMg($rp_id);
-	    			foreach($result as $r=>$v)
-					{
-						echo "<input type='text' id='field-rp_pre_value' value='".$v->rp_pre_value."' name='rp_pre_value' />";
-						
-						/*if($rp_id==3)
-						{
-							echo "<input type='text' id='field-rp_formula' value='".$v->rp_formula."' name='rp_formula' />";
-						}*/
-					}
-	    		}
-	    		else
-	    		{
-	    			echo "<input type='text' id='field-rp_pre_value' name='rp_pre_value' />";
-	    			
-	    		}
-	    		
-	    	}
-	    	elseif($pio_id==2) //nominal column
-	    	{
-	    		
-	    		$result=array();
-	    		$hasil="";
-				$result=$this->m_tool->getWholeNominalColumn();
-				//print_r($result);
-				$hasil="<select id='field-rp_pre_value' name='rp_pre_value'>";
-				foreach($result as $r=>$v)
-				{
-					$hasil.="<option value='nc_".$v->nc_id."'>".$v->nc_name."</option>";
-				}
-				$hasil.="</select>";
-				echo $hasil;
-	    	}
-	    	elseif($pio_id==3) //formula
-	    	{
-	    		
-	    		//get the param_id from rp_id
-	    			$result=$this->m_rule->getRuleIdFromRuleParam($rp_id);
-	    			$hasil=$this->m_rule->getPreValueForFormula($rp_id);
-	    			$nominal_columns=$this->m_tool->getWholeNominalColumn();
-	    			$layer_name=strtoupper($this->m_rule->getLayerNameFromRpId($rp_id));
-	    			$formula=$this->m_rule->getFormula($rp_id);
-	    			//$nc_valueArr=$this->m_tool->getNominalColumnValueFromImportedProject($nc_name);
-
-	    			$rule_ids=$this->m_rule->getRuleIdFromRuleParam($rp_id);
-	    			foreach($rule_ids as $r)
-	    			{
-	    				$rule_id=$r->rule_id;
-	    			}
-
-	    			$params=$this->m_rule->getRulesAndParams($rule_id);
-
-					$data['result']=$result;
-					$data['hasil']=$hasil;
-					$data['nominal_columns']=$nominal_columns;
-					$data['params']=$params;
-					$data['layer_name']=$layer_name;
-					$data['formula']=$formula;
-
-					//here list all the required formula paramters
-					$output = $this->load->view('formula/viewConstructFormula',$data,true);
-					echo $output;
-
-
+			{
+				show_error($e->getMessage());
 			}
-			elseif($pio_id==4){ //text
-				if($rp_id!=0)
-	    		{
-	    			
-	    			$result=$this->m_rule->getNcValueFromRuleValueMg($rp_id);
-	    			foreach($result as $r=>$v)
-					{
-						echo "<input type='text' id='field-rp_pre_value' value='".$v->rp_pre_value."' name='rp_pre_value' />";
-					}
-	    		}
-	    		else
-	    		{
-	    			echo "<input type='text' id='field-rp_pre_value' name='rp_pre_value' />";
-	    			
-	    		}
-			}
-	    }
-	   
-	   public function ajaxGetNominalColumnValue($nc_name='',$layer_name=''){
-	   	$this->load->model('m_layer');
-	   	$value=$this->m_layer->getNominalFromLayerName($nc_name,urldecode($layer_name));
-	   	if(!empty($value))
-	   	{
-	   		foreach($value as $v)
-	   		{
-	   			echo $v->$nc_name;
-	   		}
-	   	}
-	   }
+		}
 
-    //show tools which will be shown their rules
-	public function showRulesFromTool()
+		$this->_generate_table_rulevalue_management($output);
+	}
+
+	function _generate_table_rulevalue_management($output = null)
+	{
+		$this->load->view('rule/ruleValueManagementView.php', $output);
+	}
+
+	public
+
+	function viewAddRuleValueManagement()
 	{
 		$this->load->view('template/header');
 		$this->load->view('template/nav');
-		$data['sidebar']=$this->load->view('template/sidebar');
+		$data['sidebar'] = $this->load->view('template/sidebar');
+
+		// get all tool
+
+		$tools = array();
 		$this->load->model('m_tool');
-		$data['rules']=$this->m_tool->getAlltools();
-		$this->load->view('rule/toolForRuleView',$data);
+		$tools = $this->m_tool->getAlltools();
+		$data['tools'] = $tools;
+		$this->load->view('rule/ruleAddView.php', $data);
 	}
 
-	public function ajaxDisplayTool($val=''){
-		$value=array();
-		$value=explode('seperator',$val);
-		
-				$selectedArray = array(
-                   'layer_name'  => str_replace('%20',' ',$value[0]),
-                   'diaintercouche'     => $value[1]
-               );
-			$this->session->set_userdata($selectedArray);
-			//redirect('admin/DisplayTool');
+	public
+
+	function addRuleProcess($data = null)
+	{
+		$this->load->model('m_rule');
+		$this->load->model('m_tool');
+		$this->load->model('m_param');
+		$tool_code_i = $this->input->post('tool_code');
+		$tool_code = str_replace(' ', '', strtolower($tool_code_i));
+
+		// rule_number=tool_code._.rule_number
+
+		$rule_number = $this->input->post('rule_number');
+		$real_rule_number = $tool_code . '_' . $rule_number;
+		$data = array(
+			'rule_number' => $real_rule_number,
+			'var1' => $this->input->post('var1') ,
+			'cond' => trim($this->input->post('cond')) ,
+			'var2' => $this->input->post('var2')
+		);
+		$rule_id = $this->m_rule->addRule($data);
+		$flag = 0;
+		if ($rule_id != 0)
+		{
+			$tool_id = $this->m_tool->getToolIdFromToolCode($tool_code_i);
+			$data_tool_rule = array(
+				'rule_id' => $rule_id,
+				'tool_id' => $tool_id
+			);
+			/*
+			bila add rule, maka add table rule_param dan
+			check rule yang tool_id dia sama dengan tool_id param
+			(check dari table param, dan table rule->tool_rule).
+			map kan table rule_param dengan param yang ada tool_rule.tool_id
+			*/
+			if ($tool_rule_id = $this->m_rule->addToolRule($data_tool_rule))
+			{
+
+				// cari param yang tool_id sama dengan rule yang
+				// baru dimasukan
+
+				$params = array();
+				$params = $this->m_param->getParamBasedOnToolId($tool_id);
+				if (empty($params))
+				{
+
+					// cannot add rule_param, because there is no param yet
+
+					$this->session->set_flashdata('rule_add_fail', 'Please create param first to add rule');
+					redirect('admin/ruleManagement');
+				}
+
+				foreach($params as $key => $value)
+				{
+					$data_rule_param = array(
+						'rule_id' => $rule_id,
+						'param_id' => $value->param_id,
+						'pio_id' => 1,
+						'rp_pre_value' => 0,
+						'rp_post_value' => 0
+					);
+					$rule_param_id = $this->m_rule->addRuleParam($data_rule_param);
+				}
+			}
+		}
+
+		$this->session->set_flashdata('rule_add_sucess', 'Rule is added successfully');
+		redirect('admin/ruleManagement');
 	}
 
-		public function ajaxDisplayToolSheet($tool_id=''){
+	public
 
-				
-				$this->session->set_userdata('selected_tool_id', $tool_id);
-			
+	function calculate_string($string)
+	{
+		/*$string = trim($string);
+		$string = preg_replace('/[^0-9\+\-\*\/\(\)[46] ]/i', '', $string);
+		$string = ltrim($string, '0');
+		$compute = create_function('', 'return (' . $string . ');');
+		if ($compute != false) return 0 + $compute();
+		else return false;*/
+		return 0;
 	}
 
-	public function ajaxDisplayToolSheetDirect($transaction_id=''){
-	$this->load->model('m_project');
-		$projectdetails=array();
-		$projects=array();
+	function callback_after_insert_or_update_rulevalue($post_array, $primary_key = null)
+	{
 
-		$projectdetails=$this->m_project->getProjectByTransId($transaction_id);
+		// $this->my_func->reCalculateFormula();
 
+		$this->load->model('m_tool');
+		$this->load->model('m_param');
+		if ($post_array['pio_id'] == '1') //constant
+		{
+			$post_array['rp_post_value'] = $post_array['rp_pre_value'];
+			$post_array['rp_formula'] = $post_array['rp_pre_value'];
+			$this->db->where('rp_id', $primary_key);
+			$this->db->update('rule_param', $post_array);
+			$this->my_func->reCalculateFormula();
+
+			// $this->session->set_flashdata('rule_add_sucess', 'Rule is updated successfully');
+			// redirect('admin/ruleManagement');
+
+		}
+		elseif ($post_array['pio_id'] == '2') //nominal_column
+		{
+			$temp = array();
+			$temp = explode("_", $post_array['rp_pre_value']);
+			$nominal_column_id = $temp[1];
+
+			// get the column_nominal value from the nominal_column_id
+
+			$nc_nameArr = $this->m_tool->getNominalColumnName($nominal_column_id);
+			$nc_name = $nc_nameArr[0]->nc_name;
+			$nc_valueArr = $this->m_tool->getNominalColumnValueFromImportedProject($nc_name);
+			$nc_value = $nc_valueArr[0]->$nc_name;
+
+			// after get the nc_value then update
+
+			$post_array['rp_post_value'] = $nc_value;
+			$post_array['rp_formula'] = $nc_name;
+			$this->db->where('rp_id', $primary_key);
+			$this->db->update('rule_param', $post_array);
+			$this->my_func->reCalculateFormula();
+		}
+		elseif ($post_array['pio_id'] == '3') //formula
+		{
+			$formulastring = $post_array['rp_post_value'];
+			$post_array['rp_pre_value'] = $formulastring;
+			unset($post_array['example_length']);
+			unset($post_array['example2_length']);
+			unset($post_array['example3_length']);
+			$hasil_value = $this->calculate_string($formulastring);
+			$post_array['rp_post_value'] = $hasil_value;
+			/*$data=array(
+			'rp_pre_value'=>$post_array['rp_pre_value'],
+			'rp_post_value'=>$hasil_value
+			);*/
+			$this->db->where('rp_id', $primary_key);
+			$this->db->update('rule_param', $post_array);
+			$this->my_func->reCalculateFormula();
+			$this->session->set_flashdata('rule_add_sucess', 'Rule is updated successfully');
+			redirect('admin/ruleManagement');
+
+			// get the  param_n value
+			// dont confuse, param_id is the existing param_id, the param_number
+			// is the param_id that the admin wants to refer to
+
+			/*
+			$temp=array();
+			$rule_id=$post_array['rule_id'];
+			$formulastring="";
+
+			// firstly get the value of param_number
+
+			$param_collection=array('param_1',
+			'param_2',
+			'param_3',
+			'param_4',
+			'param_5',
+			'param_6',
+			'param_7',
+			'param_8',
+			'param_9',
+			'param_10',
+			);
+			$nc_collection=array();
+			$nc_collection=$this->m_param->getAllNcId();
+
+			// search the param_number inside the formula string
+
+			foreach($param_collection as $param){
+
+			// search the string
+			// this is formula translation for parameter
+
+			if(strstr($post_array['rp_pre_value'],$param)!=false)
+			{
+
+			// get the value for the param
+
+			$param_values=array();
+			$param_value=0;
+
+			// get the param_id
+
+			$temp_param=array();
+			$temp_param=explode('_',$param);
+			$param_id=$temp_param[1];
+			$param_values=$this->m_param->getParamValue($rule_id,$param_id);
+			foreach($param_values as $r=>$v)
+			{
+			$param_value=$v->rp_post_value;
+			}
+
+			// replace the param
+
+			$formulastring.=str_replace($param,$param_value,$post_array['rp_pre_value']);
+			}
+			}
+
+			// search the param_number inside the formula string
+
+			foreach($nc_collection as $ncs){
+			$ncs='nc_'.$ncs->nc_id;
+
+			// search the string
+
+			if(strstr($post_array['rp_pre_value'],$ncs)!=false)
+			{
+			$temp=array();
+			$temp = explode("_", $ncs);
+			$nominal_column_id=$temp[1];
+
+			// get the column_nominal value from the nominal_column_id
+
+			$nc_nameArr=$this->m_tool->getNominalColumnName($nominal_column_id);
+			$nc_name=$nc_nameArr[0]->nc_name;
+			$nc_valueArr=$this->m_tool->getNominalColumnValueFromImportedProject($nc_name);
+			$nc_value=$nc_valueArr[0]->$nc_name;
+
+			// replace the param
+
+			$formulastring.=str_replace($ncs,$nc_value,$post_array['rp_pre_value']);
+			}
+			}
+
+			$hasil_value=$this->calculate_string($formulastring);
+			$post_array['rp_post_value']=$hasil_value;
+			$this->db->where('rp_id', $primary_key);
+			$this->db->update('rule_param', $post_array);
+			*/
+		}
+		elseif ($post_array['pio_id'] == '4')
+		{ //text
+			$post_array['rp_post_value'] = $post_array['rp_pre_value'];
+			$post_array['rp_formula'] = $post_array['rp_pre_value'];
+			$this->db->where('rp_id', $primary_key);
+			$this->db->update('rule_param', $post_array);
+			$this->my_func->reCalculateFormula();
+		}
+
+		return $post_array;
+	}
+
+	function callback_before_update_rulevalue($post_array, $primary_key = null)
+	{
+		$this->load->model('m_tool');
+		$this->load->model('m_param');
+		if ($post_array['pio_id'] == '1') //constant
+		{
+			$post_array['rp_post_value'] = $post_array['rp_pre_value'];
+			$post_array['rp_formula'] = null;
+			$this->db->where('rp_id', $primary_key);
+			$this->db->update('rule_param', $post_array);
+
+			// $this->session->set_flashdata('rule_add_sucess', 'Rule is updated successfully');
+			// redirect('admin/ruleManagement');
+
+		}
+		elseif ($post_array['pio_id'] == '2') //nominal_column
+		{
+			$temp = array();
+			$temp = explode("_", $post_array['rp_pre_value']);
+			$nominal_column_id = $temp[1];
+
+			// get the column_nominal value from the nominal_column_id
+
+			$nc_nameArr = $this->m_tool->getNominalColumnName($nominal_column_id);
+			$nc_name = $nc_nameArr[0]->nc_name;
+			$nc_valueArr = $this->m_tool->getNominalColumnValueFromImportedProject($nc_name);
+			$nc_value = $nc_valueArr[0]->$nc_name;
+
+			// after get the nc_value then update
+
+			$post_array['rp_post_value'] = $nc_value;
+			$this->db->where('rp_id', $primary_key);
+			$this->db->update('rule_param', $post_array);
+		}
+		elseif ($post_array['pio_id'] == '3') //formula
+		{
+			$formulastring = $post_array['rp_post_value'];
+			$post_array['rp_pre_value'] = $formulastring;
+			unset($post_array['example_length']);
+			unset($post_array['example2_length']);
+			unset($post_array['example3_length']);
+			$hasil_value = $this->calculate_string($formulastring);
+			if ($hasil_value == false AND $hasil_value != 0)
+			{
+				$this->session->set_flashdata('rule_add_fail', 'Pay attention to the formula');
+				redirect('admin/ruleManagement');
+			}
+
+			$post_array['rp_post_value'] = $hasil_value;
+			/*$data=array(
+			'rp_pre_value'=>$post_array['rp_pre_value'],
+			'rp_post_value'=>$hasil_value
+			);*/
+			$this->db->where('rp_id', $primary_key);
+			$this->db->update('rule_param', $post_array);
+			$this->session->set_flashdata('rule_add_sucess', 'Rule is updated successfully');
+			redirect('admin/ruleManagement');
+		}
+		elseif ($post_array['pio_id'] == '4')
+		{ //text
+			$post_array['rp_post_value'] = $post_array['rp_pre_value'];
+			$this->db->where('rp_id', $primary_key);
+			$this->db->update('rule_param', $post_array);
+		}
+
+		return $post_array;
+	}
+
+	function viewAjaxRule($pio_id = 0)
+	{
+		$data['primary_key'] = $pio_id;
+		$this->load->view('rule/ruleValueAjaxView', $data, true);
+	}
+
+	function callback_pre_value($value = null, $primary_key = null)
+	{
+
+		// $output .= "<input type='text' name='test1' value='test' id='test1'/>";
+		// Or with a view
+
+		$data['primary_key'] = $primary_key;
+		$output = $this->load->view('rule/ruleValueAjaxView', $data, true);
+
+		// $output="<input type='text'/> ";
+
+		return $output;
+	}
+
+	public
+
+	function ajaxGetRuleValue($pio_id = 0, $rp_id = 0)
+	{
+		$this->load->model('m_tool');
+		$this->load->model('m_rule');
+		if ($pio_id == 1) //constant
+		{
+
+			// check if existing constant value
+
+			if ($rp_id != 0)
+			{
+				$result = $this->m_rule->getNcValueFromRuleValueMg($rp_id);
+				foreach($result as $r => $v)
+				{
+					echo "<input type='text' id='field-rp_pre_value' value='" . $v->rp_pre_value . "' name='rp_pre_value' />";
+					/*if($rp_id==3)
+					{
+					echo "<input type='text' id='field-rp_formula' value='".$v->rp_formula."' name='rp_formula' />";
+					}*/
+				}
+			}
+			else
+			{
+				echo "<input type='text' id='field-rp_pre_value' name='rp_pre_value' />";
+			}
+		}
+		elseif ($pio_id == 2) //nominal column
+		{
+			$result = array();
+			$hasil = "";
+			$result = $this->m_tool->getWholeNominalColumn();
+
+			// print_r($result);
+
+			$hasil = "<select id='field-rp_pre_value' name='rp_pre_value'>";
+			foreach($result as $r => $v)
+			{
+				$hasil.= "<option value='nc_" . $v->nc_id . "'>" . $v->nc_name . "</option>";
+			}
+
+			$hasil.= "</select>";
+			echo $hasil;
+		}
+		elseif ($pio_id == 3) //formula
+		{
+
+			// get the param_id from rp_id
+
+			$result = $this->m_rule->getRuleIdFromRuleParam($rp_id);
+			$hasil = $this->m_rule->getPreValueForFormula($rp_id);
+			$nominal_columns = $this->m_tool->getWholeNominalColumn();
+			$layer_name = strtoupper($this->m_rule->getLayerNameFromRpId($rp_id));
+			$formula = $this->m_rule->getFormula($rp_id);
+
+			// $nc_valueArr=$this->m_tool->getNominalColumnValueFromImportedProject($nc_name);
+
+			$rule_ids = $this->m_rule->getRuleIdFromRuleParam($rp_id);
+			foreach($rule_ids as $r)
+			{
+				$rule_id = $r->rule_id;
+			}
+
+			$params = $this->m_rule->getRulesAndParams($rule_id);
+			$data['result'] = $result;
+			$data['hasil'] = $hasil;
+			$data['nominal_columns'] = $nominal_columns;
+			$data['params'] = $params;
+			$data['layer_name'] = $layer_name;
+			$data['formula'] = $formula;
+
+			// here list all the required formula paramters
+
+			$output = $this->load->view('formula/viewConstructFormula', $data, true);
+			echo $output;
+		}
+		elseif ($pio_id == 4)
+		{ //text
+			if ($rp_id != 0)
+			{
+				$result = $this->m_rule->getNcValueFromRuleValueMg($rp_id);
+				foreach($result as $r => $v)
+				{
+					echo "<input type='text' id='field-rp_pre_value' value='" . $v->rp_pre_value . "' name='rp_pre_value' />";
+				}
+			}
+			else
+			{
+				echo "<input type='text' id='field-rp_pre_value' name='rp_pre_value' />";
+			}
+		}
+	}
+	
+	public function test1()
+	{
+		$string = ltrim('08 * 03', '0');
+		$formula = create_function('', 'return ('.$string.');');
+		echo 0 + $formula();
+	}
+
+	public function ajaxGetNominalColumnValue($nc_name = '', $layer_name = '')
+	{
+		$this->load->model('m_layer');
+		$value = $this->m_layer->getNominalFromLayerName($nc_name, urldecode($layer_name));
+		if (!empty($value))
+		{
+			foreach($value as $v)
+			{
+				echo $v->$nc_name;
+			}
+		}
+	}
+
+	// show tools which will be shown their rules
+
+	public
+
+	function showRulesFromTool()
+	{
+		$this->load->view('template/header');
+		$this->load->view('template/nav');
+		$data['sidebar'] = $this->load->view('template/sidebar');
+		$this->load->model('m_tool');
+		$data['rules'] = $this->m_tool->getAlltools();
+		$this->load->view('rule/toolForRuleView', $data);
+	}
+
+	public
+
+	function ajaxDisplayTool($val = '')
+	{
+		$value = array();
+		$value = explode('seperator', $val);
+		$selectedArray = array(
+			'layer_name' => str_replace('%20', ' ', $value[0]) ,
+			'diaintercouche' => $value[1]
+		);
+		$this->session->set_userdata($selectedArray);
+
+		// redirect('admin/DisplayTool');
+
+	}
+
+	public
+
+	function ajaxDisplayToolSheet($tool_id = '')
+	{
+		$this->session->set_userdata('selected_tool_id', $tool_id);
+	}
+
+	public
+
+	function ajaxDisplayToolSheetDirect($transaction_id = '')
+	{
+		$this->load->model('m_project');
+		$projectdetails = array();
+		$projects = array();
+		$projectdetails = $this->m_project->getProjectByTransId($transaction_id);
 		foreach($projectdetails as $row)
 		{
-			//get the layer name and diaintercouche
-			$layer_name=strtoupper($this->my_func->getlayerName($row->selected_layer_id));
-			$layer_id=$row->selected_layer_id;
-			$tool_id=$row->selected_tool_id;
-			$projectdetails=array(
-				'layer_name'=>$layer_name,
-				'diaintercouche'=>$row->idnom,
-				'layer_id'=>$row->layer_id
-				);
 
-			$this->session->set_userdata($projectdetails);
+			// get the layer name and diaintercouche
 
-			$data=array(
-			'project_name'=>$row->project_name,
-			'selected_tool_id'=>$row->selected_tool_id,
-			'selected_layer_id'=>$row->selected_layer_id,
-			'idnom'=>$row->idnom,
-			'structure_number'=>$row->structure_number,
-			'project_number'=>$row->project_number,
-			'section_number'=>$row->section_number,
-			'plf_length'=>$row->plf_length,
-			'transaction_id'=>time(),
-			'overlength'=>$row->overlength,
+			$layer_name = strtoupper($this->my_func->getlayerName($row->selected_layer_id));
+			$layer_id = $row->selected_layer_id;
+			$tool_id = $row->selected_tool_id;
+			$projectdetails = array(
+				'layer_name' => $layer_name,
+				'diaintercouche' => $row->idnom,
+				'layer_id' => $row->layer_id
 			);
-
+			$this->session->set_userdata($projectdetails);
+			$data = array(
+				'project_name' => $row->project_name,
+				'selected_tool_id' => $row->selected_tool_id,
+				'selected_layer_id' => $row->selected_layer_id,
+				'idnom' => $row->idnom,
+				'structure_number' => $row->structure_number,
+				'project_number' => $row->project_number,
+				'section_number' => $row->section_number,
+				'plf_length' => $row->plf_length,
+				'transaction_id' => time() ,
+				'overlength' => $row->overlength,
+			);
 			$this->session->set_userdata($data);
 		}
 
-		
-	
-		//$flag=$this->m_project->Add('project',$data);
+		// $flag=$this->m_project->Add('project',$data);
 
-   		$tools=array();
-   		$tools=$this->m_tool->getToolFromLayerId($layer_id);
-   		$data['tools']=$tools;
-   		//save to session
-   		$this->session->set_userdata($tools);
-   		$this->session->set_userdata('selected_tool_id', $tool_id);
+		$tools = array();
+		$tools = $this->m_tool->getToolFromLayerId($layer_id);
+		$data['tools'] = $tools;
+
+		// save to session
+
+		$this->session->set_userdata($tools);
+		$this->session->set_userdata('selected_tool_id', $tool_id);
 	}
 
-	public function displayToolSheet(){
+	public
 
+	function displayToolSheet()
+	{
 		$this->load->model("m_rule");
 		$this->load->model("m_tool");
 		$this->load->model("m_project");
-
 		$this->load->view('template/header_datatable');
 		$this->load->view('template/nav');
-		$data['sidebar']=$this->load->view('template/sidebar');
+		$data['sidebar'] = $this->load->view('template/sidebar');
+		$data = array(
+			'layer_name' => $this->session->userdata('layer_name') ,
+			'layer_id' => $this->session->userdata('layer_id') ,
+			'idnom' => $this->session->userdata('diaintercouche') ,
+			'selected_tool_id' => $this->session->userdata('selected_tool_id')
+		);
 
-		$data=array(
-					'layer_name'=>$this->session->userdata('layer_name'),
-					'layer_id'=>$this->session->userdata('layer_id'),
-					'idnom'=>$this->session->userdata('diaintercouche'),
-					'selected_tool_id'=>$this->session->userdata('selected_tool_id')
-					);
-		//print_r($this->session->all_userdata());
-		
+		// print_r($this->session->all_userdata());
+
 		/*
 		if(empty($layer_id) OR empty($selected_tool_id))
 		{
-			$this->session->set_flashdata('no_layer_or_tool', 'There is no layer or tool exist');
-		    redirect('admin/structureNumber');	
+		$this->session->set_flashdata('no_layer_or_tool', 'There is no layer or tool exist');
+		redirect('admin/structureNumber');
 		}
-		*/ 	 	
-		
-	
-			//get the tool image file
-			$data['file_url']=$this->m_tool->getToolImage($data['selected_tool_id']);
-	
-			$rule_id=$this->my_func->checkRule($data);
 
-			//in checkRule the idnom is updated based on the conversion
-			$idnom=$this->session->userdata('diaintercouche');
+		*/
 
-			$data_update_project=array(
-				'selected_layer_id'=>$data['layer_id'],
-				'selected_tool_id'=>$data['selected_tool_id'],
-				'idnom'=>$idnom
-				);
+		// get the tool image file
 
-			$transaction_id=$this->session->userdata('transaction_id');
+		$data['file_url'] = $this->m_tool->getToolImage($data['selected_tool_id']);
+		$rule_id = $this->my_func->checkRule($data);
 
-			$this->m_project->update('project',$data_update_project,'transaction_id',$transaction_id);
+		// in checkRule the idnom is updated based on the conversion
 
-			$rule_number=$this->my_func->getRuleNumber($rule_id);
-			$rules=array();
-			//print_r($rule_id);
-			//print_r(' - ');
-			//print_r($rule_number);
-			//here the rule_id = selected_rule_id
+		$idnom = $this->session->userdata('diaintercouche');
+		$data_update_project = array(
+			'selected_layer_id' => $data['layer_id'],
+			'selected_tool_id' => $data['selected_tool_id'],
+			'idnom' => $idnom
+		);
+		$transaction_id = $this->session->userdata('transaction_id');
+		$this->m_project->update('project', $data_update_project, 'transaction_id', $transaction_id);
+		$rule_number = $this->my_func->getRuleNumber($rule_id);
+		$rules = array();
 
-			if($rule_id!=false){
-			$rules=$this->m_rule->getRulesAndParams($rule_id);
+		// print_r($rule_id);
+		// print_r(' - ');
+		// print_r($rule_number);
+		// here the rule_id = selected_rule_id
 
-			$data['rules']=$rules;
-			$data['rule_number']=$rule_number;
-			}
-			else
-			{
-				$data['rules']=null;
-			}
+		if ($rule_id != false)
+		{
+			$rules = $this->m_rule->getRulesAndParams($rule_id);
+			$data['rules'] = $rules;
+			$data['rule_number'] = $rule_number;
+		}
+		else
+		{
+			$data['rules'] = NULL;
+		}
 
-			$nominal_types=$this->m_tool->getNominalTypes($data_update_project['selected_tool_id']);
-			if(empty($nominal_types))
-			{
-				$this->session->set_flashdata('error','Please choose the right data (No Nominal Type found on this tool');
-				redirect('admin/showError');
-			}
+		$nominal_types = $this->m_tool->getNominalTypes($data_update_project['selected_tool_id']);
+		if (empty($nominal_types))
+		{
+			$this->session->set_flashdata('error', 'Please choose the right data (No Nominal Type found on this tool');
+			redirect('admin/showError');
+		}
 
-			$nominal_type_results=$this->m_tool->getToolingMaster($nominal_types);
-			if(!empty($nominal_type_results))
-			{
-				$data['nominal_type_results']=$nominal_type_results;
-			}
-			else
-			{
-				$data['nominal_type_results']=null;
-			}
-		
-        $structure_number=$this->session->userdata('structure_number');
-        $transaction_number=$this->session->userdata('transaction_number');
-		$data['projects']=$this->m_project->getProjectByTransId($transaction_number);
-		$this->load->view('tool/viewToolSheet',$data);
+		$nominal_type_results = $this->m_tool->getToolingMaster($nominal_types);
+		if (!empty($nominal_type_results))
+		{
+			$data['nominal_type_results'] = $nominal_type_results;
+		}
+		else
+		{
+			$data['nominal_type_results'] = null;
+		}
+
+		$structure_number = $this->session->userdata('structure_number');
+		$transaction_number = $this->session->userdata('transaction_number');
+		$data['projects'] = $this->m_project->getProjectByTransId($transaction_number);
+		$this->load->view('tool/viewToolSheet', $data);
 		$this->load->view('template/footer_datatable');
 	}
 
-	public function showError()
+	public
+
+	function showError()
 	{
 		$this->load->view('template/error');
 	}
 
-	public function DisplayTool(){
+	public
 
+	function DisplayTool()
+	{
 		$this->load->model("m_layer");
 		$this->load->model("m_tool");
 		$this->load->model('m_project');
 		$this->load->model('m_imported_project');
 		$this->load->model('m_material');
-
 		$this->load->view('template/header_datatable');
 		$this->load->view('template/nav');
-		$data['sidebar']=$this->load->view('template/sidebar');
-		$layer_name=$this->session->userdata('layer_name');
-   		$diaintercouche=$this->session->userdata('diaintercouche');
-   		$structure_number=$this->session->userdata('structure_number');
-	$transaction_number=$this->session->userdata('transaction_number');
-		$data['projects']=$this->m_project->getProjectByTransId($transaction_number);
-   		//get layer_id from layer_name
-   		$layer_id=$this->m_layer->getLayerIdFromLayerName($layer_name);
-   	
-   		//save to session
-   		$this->session->set_userdata('layer_id', $layer_id);
+		$data['sidebar'] = $this->load->view('template/sidebar');
+		$layer_name = $this->session->userdata('layer_name');
+		$diaintercouche = $this->session->userdata('diaintercouche');
+		$structure_number = $this->session->userdata('structure_number');
+		$transaction_number = $this->session->userdata('transaction_number');
+		$data['projects'] = $this->m_project->getProjectByTransId($transaction_number);
+
+		// get layer_id from layer_name
+
+		$layer_id = $this->m_layer->getLayerIdFromLayerName($layer_name);
+
+		// save to session
+
+		$this->session->set_userdata('layer_id', $layer_id);
 		$this->session->set_userdata('layer_name', $layer_name);
 		$data['layer_name'] = $layer_name;
 		$data['material'] = $this->m_material->get_sheet($structure_number, $layer_name);
 		$data['tdd'] = $this->m_imported_project->getAll($structure_number, $layer_name);
+		$tools = array();
+		$tools = $this->m_tool->getToolFromLayerId($layer_id);
+		$data['tools'] = $tools;
 
-   		$tools=array();
-   		$tools=$this->m_tool->getToolFromLayerId($layer_id);
-   		$data['tools']=$tools;
+		// save to session
 
-   		//save to session
-   		$this->session->set_userdata($tools);
+		$this->session->set_userdata($tools);
 
-   		//$data['layer_name']=$layer_name;
-   		//$data['diaintercouche']=$diaintercouche;
-   		//print_r($this->session->all_userdata());
-		$this->load->view('tool/toolFromLayerView',$data);
-		$this->load->view('template/footer_datatable');
+		// $data['layer_name']=$layer_name;
+		// $data['diaintercouche']=$diaintercouche;
+		// print_r($this->session->all_userdata());
+
+		$dis = $this->m_imported_project->getLayers($structure_number);
+		$data['unique_layers'] = "";
+		if ($dis)
+		{
+			foreach($dis as $d)
+			{
+				$data['unique_layers'].= $this->my_func->getFirstWord($d->layer_name_unique) . ' ';
+			}
+		}
 		
+		$data['cumMass'] = $this->m_imported_project->getCumMass($structure_number);
+
+		$this->load->view('tool/toolFromLayerView', $data);
+		$this->load->view('template/footer_datatable');
 		/*remove previous session
 		$this->session->unset_userdata('layer_name');
 		$this->session->unset_userdata('diaintercouche');
 		*/
 	}
+	
+	public function exportSheet()
+	{
+		$this->load->model("m_layer");
+		$this->load->model("m_tool");
+		$this->load->model('m_project');
+		$this->load->model('m_imported_project');
+		$this->load->model('m_material');
+		
+		$layer_name = $this->session->userdata('layer_name');
+		$diaintercouche = $this->session->userdata('diaintercouche');
+		$structure_number = $this->session->userdata('structure_number');
+		$transaction_number = $this->session->userdata('transaction_number');
+		$data['projects'] = $this->m_project->getProjectByTransId($transaction_number);
 
+		// get layer_id from layer_name
 
-    //layer_tool management
-    public function toolRuleManagement(){
-    	$this->load->view('template/header');
+		$layer_id = $this->m_layer->getLayerIdFromLayerName($layer_name);
+
+		// save to session
+
+		$this->session->set_userdata('layer_id', $layer_id);
+		$this->session->set_userdata('layer_name', $layer_name);
+		$data['layer_name'] = $layer_name;
+		$data['material'] = $this->m_material->get_sheet($structure_number, $layer_name);
+		$data['tdd'] = $this->m_imported_project->getAll($structure_number, $layer_name);
+		$tools = array();
+		$tools = $this->m_tool->getToolFromLayerId($layer_id);
+		$data['tools'] = $tools;
+
+		// save to session
+
+		$this->session->set_userdata($tools);
+
+		// $data['layer_name']=$layer_name;
+		// $data['diaintercouche']=$diaintercouche;
+		// print_r($this->session->all_userdata());
+
+		$dis = $this->m_imported_project->getLayers($structure_number);
+		$data['unique_layers'] = "";
+		if ($dis)
+		{
+			foreach($dis as $d)
+			{
+				$data['unique_layers'].= $this->my_func->getFirstWord($d->layer_name_unique) . ' ';
+			}
+		}
+		
+		$data['cumMass'] = $this->m_imported_project->getCumMass($structure_number);
+		
+		$tarikh = date('YmdHis');
+		$filename ="SetupSheet_".$tarikh.".xls";
+		
+		$stat = $this->input->post('stat');
+		
+		if ($stat == 1) {
+			$filename ="MachineSetupSheet_".$tarikh.".xls";
+		} else if ($stat == 2) {
+			$filename ="RiggingSetupSheet_".$tarikh.".xls";
+		}
+		
+		header('Content-type: application/ms-excel');
+		header('Content-Disposition: attachment; filename='.$filename);
+		
+		if ($stat == 1) {
+			
+			$data['rev'] = $this->input->post('rev');
+			$data['checked_by'] = $this->input->post('checked_by');
+			$data['job_nrs'] = $this->input->post('job_nrs');
+			$data['plf_length'] = $this->input->post('plf_length');
+			$data['overlength'] = $this->input->post('overlength');
+			echo $this->load->view('tool/viewExportMachineSetupSheet', $data, true);
+			
+		} else if ($stat == 2) {
+			
+			$data['rev'] = $this->input->post('rev');
+			$data['checked_by'] = $this->input->post('checked_by');
+			$data['job_nrs'] = $this->input->post('job_nrs');
+			$data['cable_ref'] = $this->input->post('cable_ref');
+			$data['shackle_ref'] = $this->input->post('shackle_ref');
+			echo $this->load->view('tool/viewExportRiggingSheet', $data, true);
+			
+		}
+	}
+
+	// layer_tool management
+
+	public function toolRuleManagement()
+	{
+		$this->load->view('template/header');
 		$this->load->view('template/nav');
-		$data['sidebar']=$this->load->view('template/sidebar');
-
+		$data['sidebar'] = $this->load->view('template/sidebar');
 		$crud = new grocery_CRUD();
 		$crud->set_theme('datatables');
+		$crud->set_table('layer_tool');
+		$crud->set_relation('layer_id', 'layer', 'layer_code');
+		$crud->set_relation('tool_id', 'tool', 'tool_code');
+		$crud->set_relation('nc_id', 'nominal_column', 'nc_name');
+		$crud->display_as('layer_id', 'Layer Code');
+		$crud->display_as('tool_id', 'Tool Code');
+		$crud->display_as('nc_id', 'Nominal Column');
+		$crud->display_as('nc_value', 'Nominal Column Value');
 
- 		$crud->set_table('layer_tool');
- 		$crud->set_relation('layer_id','layer','layer_code');
- 		$crud->set_relation('tool_id','tool','tool_code');
- 		$crud->set_relation('nc_id','nominal_column','nc_name');
- 		
- 		$crud->display_as('layer_id','Layer Code');
- 		$crud->display_as('tool_id','Tool Code');
- 		$crud->display_as('nc_id','Nominal Column');
- 		$crud->display_as('nc_value','Nominal Column Value');
- 		//$crud->set_relation_n_n('Tools', 'layer_tool', 'tool', 'layer_id', 'tool_id', 'tool_code','layer_tool_id');
-    	
-		try{
-		    $output = $crud->render();
-		} catch(Exception $e) {
-		    show_error($e->getMessage());
+		// $crud->set_relation_n_n('Tools', 'layer_tool', 'tool', 'layer_id', 'tool_id', 'tool_code','layer_tool_id');
+
+		try
+		{
+			$output = $crud->render();
 		}
 
-	    $this->_generate_table_toolrule_management($output);
-    }
+		catch(Exception $e)
+		{
+			show_error($e->getMessage());
+		}
 
-     function _generate_table_toolrule_management($output = null)
- 
-    {
-        $this->load->view('layer_tool/viewToolRuleManagement.php',$output);    
-    }
+		$this->_generate_table_toolrule_management($output);
+	}
+
+	function _generate_table_toolrule_management($output = null)
+	{
+		$this->load->view('layer_tool/viewToolRuleManagement.php', $output);
+	}
 }

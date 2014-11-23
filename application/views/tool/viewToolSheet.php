@@ -12,11 +12,16 @@
 <div class="row">
    <div class="col-sm-5 col-sm-offset-3 col-md-10 col-md-offset-2 main">
       <?php
-         if(!empty($projects))
-         {
-          $structure_number="";
+	  	  $structure_number="";
           $project_name="";
           $project_number="";
+		  $layer_name="";
+		  
+         if(!empty($projects))
+         {
+			 //print_r($this->session->all_userdata());
+          	$structure_number = $this->session->all_userdata()['structure_number'];
+          	$layer_name = $this->session->all_userdata()['layer_name'];
          
              foreach($projects as $r)
                 {
@@ -108,13 +113,15 @@
                      <?php
                         if(!empty($rules))
                         {
+							//print_r($rules);
                            foreach($rules as $r)
                         {
                           ?>
                      <tr>
                         <td><?=$r->param_number?></td>
                         <td><?=$r->param_code?></td>
-                        <td><?=$r->rp_post_value?></td>
+                        <!--<td><?=$r->rp_post_value?></td>-->
+                        <td><?=$this->my_func->getFormulaValue($structure_number, $layer_name, $r->pio_id, $r->rp_formula, $r->param_code, $r->rule_id)?></td>
                         <td><?=$r->param_tol_min?></td>
                         <td><?=$r->param_tol_plus?></td>
                         <td></td>

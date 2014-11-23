@@ -49,6 +49,8 @@
 <div class="row">
    <div class="col-sm-5 col-sm-offset-3 col-md-10 col-md-offset-2 main">
       <?php
+	  
+$flex_diameter_setpoint = "";
 
 $mini_int_diameter = "";
 $mini_ext_diameter = "";
@@ -82,6 +84,7 @@ if (!empty($projects)) {
 		$max_int_diameter = $tdd[0]->DIAINTERCOUCHE + $tdd[0]->DIAINTERCOUCHETOLSUP;
 		$max_ext_diameter = $tdd[0]->DIAEXTERCOUCHE + $tdd[0]->DIAEXTERCOUCHETOLSUP;
 		
+		$flex_diameter_setpoint = ($tdd[0]->DIAEXTERCOUCHE - $tdd[0]->EPCOUCHE) * $this->config->item('PI');
 	}
 }
 
@@ -174,6 +177,8 @@ foreach($tools as $r) {
             </div>
          </div>
          <div class="tab-pane" id="machinesetup">
+         <form action="<?=site_url('admin/exportSheet'); ?>" method="post">
+         	<input type="hidden" name="stat" value="1" />
             <!-- machine setup -->
             <style>
                .table-bordered > thead > tr > th,
@@ -203,10 +208,7 @@ foreach($tools as $r) {
                         <td colspan="2"><b>Methods and Tooling</b></td>
                      </tr>
                      <tr>
-                        <td>&nbsp;</td>
-                        <td>&nbsp;</td>
-                        <td>&nbsp;</td>
-                        <td>&nbsp;</td>
+                        <td colspan="4">&nbsp;</td>
                      </tr>
                      <tr>
                         <td>Doc Code</td>
@@ -215,12 +217,16 @@ foreach($tools as $r) {
                      <tr>
                         <td>Prepared By</td>
                         <td><?=strtoupper($sess['fullname']); ?></td>
-                        <td>Rev*</td>
-                        <td>0</td>
+                        <td>Rev</td>
+                        <td><label>
+                            <input class="form-control" placeholder="Rev" type="text" name="rev" id="rev" />
+                          </label></td>
                      </tr>
                      <tr>
                         <td>Checked By</td>
-                        <td></td>
+                        <td><label>
+                            <input class="form-control" placeholder="Checked By" type="text" name="checked_by" id="checked_by" />
+                          </label></td>
                         <td>Date</td>
                         <td><?php
 $t = time();
@@ -230,20 +236,21 @@ echo (date("d-m-Y", $t));
                      <tr>
                         <td>Structure</td>
                         <td><?=$structure_number; ?></td>
-                        <td>Job nrs*</td>
-                        <td>&nbsp;</td>
+                        <td>Job nrs</td>
+                        <td>
+                          <label>
+                            <input class="form-control" placeholder="Job nrs" type="text" name="job_nrs" id="job_nrs" />
+                          </label>
+                        </td>
                      </tr>
                      <tr>
-                        <td>Composition*</td>
-                        <td>&nbsp;</td>
-                        <td>cum. Mass*</td>
-                        <td>&nbsp;</td>
+                        <td>Composition</td>
+                        <td><?=$unique_layers; ?>&nbsp;</td>
+                        <td>cum. Mass</td>
+                        <td><?=$cumMass; ?>&nbsp;</td>
                      </tr>
                      <tr>
-                        <td>&nbsp;</td>
-                        <td>&nbsp;</td>
-                        <td>&nbsp;</td>
-                        <td>&nbsp;</td>
+                        <td colspan="4">&nbsp;</td>
                      </tr>
                      <tr>
                         <td></td>
@@ -270,10 +277,7 @@ echo (date("d-m-Y", $t));
                         <td><?=$max_pitch; ?></td>
                      </tr>
                      <tr>
-                        <td>&nbsp;</td>
-                        <td>&nbsp;</td>
-                        <td>&nbsp;</td>
-                        <td>&nbsp;</td>
+                        <td colspan="4">&nbsp;</td>
                      </tr>
                      <tr>
                         <td>Material</td>
@@ -288,38 +292,33 @@ echo (date("d-m-Y", $t));
                         <td></td>
                      </tr>
                      <tr>
-                        <td>PLF Length (m)*</td>
-                        <td>&nbsp;</td>
+                        <td>PLF Length (m)</td>
+                        <td><label>
+                            <input class="form-control" placeholder="PLF Length (m)" type="text" name="plf_length" id="plf_length" />
+                          </label>&nbsp;</td>
                         <td>Overlength</td>
-                        <td>&nbsp;</td>
+                        <td><label>
+                            <input class="form-control" placeholder="Overlength" type="text" name="overlength" id="overlength" />
+                          </label>&nbsp;</td>
                      </tr>
                      <tr>
-                        <td>&nbsp;</td>
-                        <td>&nbsp;</td>
-                        <td>&nbsp;</td>
-                        <td>&nbsp;</td>
+                        <td colspan="4">&nbsp;</td>
                      </tr>
                      <tr>
                         <td>Machine</td>
                         <td colspan="3"><?=$material[0]->material_code; ?></td>
                      </tr>
                      <tr>
-                        <td>&nbsp;</td>
-                        <td>&nbsp;</td>
-                        <td>&nbsp;</td>
-                        <td>&nbsp;</td>
+                        <td colspan="4">&nbsp;</td>
                      </tr>
                      <tr>
-                        <td>Particular Instructions*</td>
+                        <td>Particular Instructions</td>
                         <td>cell is row 18, column 1</td>
                         <td>cell is row 18, column 2</td>
                         <td>cell is row 18, column 3</td>
                      </tr>
                      <tr>
-                        <td>&nbsp;</td>
-                        <td>&nbsp;</td>
-                        <td>&nbsp;</td>
-                        <td>&nbsp;</td>
+                        <td colspan="4">&nbsp;</td>
                      </tr>
                      <tr>
                         <td colspan="4">CONFIGURATION</td>
@@ -330,9 +329,22 @@ echo (date("d-m-Y", $t));
                        <td><?=$material[0]->ref_num; ?></td>
                      </tr>
                      <tr>
-                       <td colspan="2">&nbsp;</td>
-                       <td>&nbsp;</td>
-                       <td>&nbsp;</td>
+                       <td colspan="4"><img src="<?=base_url(); ?>assets/images/bawah_roller_set.png" /></td>
+                     </tr>
+                     <tr>
+                       <td colspan="2">Rollers</td>
+                       <td colspan="2">1,2,3,4,5,6,-,8</td>
+                     </tr>
+                     <tr>
+                       <td colspan="2">Intermediate roller 1</td>
+                       <td colspan="2">4&lt;I&lt;5</td>
+                     </tr>
+                     <tr>
+                       <td colspan="2">Intermediate roller 2</td>
+                       <td colspan="2">5&lt;I&lt;6</td>
+                     </tr>
+                     <tr>
+                       <td colspan="4">&nbsp;</td>
                      </tr>
                      <tr>
                        <td colspan="2">CRIMPING ROLLERS</td>
@@ -345,9 +357,7 @@ echo (date("d-m-Y", $t));
                        <td><?=$material[0]->crimping_rollers; ?> mm</td>
                      </tr>
                      <tr>
-                       <td colspan="2">&nbsp;</td>
-                       <td>&nbsp;</td>
-                       <td>&nbsp;</td>
+                       <td colspan="4">&nbsp;</td>
                      </tr>
                      <tr>
                        <td colspan="2">CINEMATIC OF THE MACHINE</td>
@@ -370,14 +380,12 @@ echo (date("d-m-Y", $t));
                        <td><?=$material[0]->ratio; ?></td>
                      </tr>
                      <tr>
-                       <td colspan="2">Flexible diameter set point*</td>
+                       <td colspan="2">Flexible diameter set point</td>
                        <td>&nbsp;</td>
-                       <td>939.1 mm</td>
+                       <td><?=$flex_diameter_setpoint; ?> mm</td>
                      </tr>
                      <tr>
-                       <td colspan="2">&nbsp;</td>
-                       <td>&nbsp;</td>
-                       <td>&nbsp;</td>
+                       <td colspan="4">&nbsp;</td>
                      </tr>
                      <tr>
                        <td colspan="2">LUBRICATION</td>
@@ -385,15 +393,23 @@ echo (date("d-m-Y", $t));
                        <td>&nbsp;</td>
                      </tr>
                      <tr>
-                       <td colspan="2">Type*</td>
+                       <td colspan="2">Type</td>
                        <td>&nbsp;</td>
-                       <td>PCRM7</td>
+                       <td><?=$material[0]->oil1; ?>&nbsp;</td>
                      </tr>
                   </tbody>
                </table>
             </div>
+            <div class="row">
+            	<div class="col-md-12" style="margin-bottom:5%;">
+                	<button class="btn btn-primary" type="submit">Export</button>
+                </div>
+            </div>
+         </form>
          </div>
          <div class="tab-pane" id="rigging">
+         <form action="<?=site_url('admin/exportSheet'); ?>" method="post">
+         <input type="hidden" name="stat" value="2" />
             <style>
                .table-bordered > thead > tr > th,
                .table-bordered > tbody > tr > th,
@@ -407,224 +423,184 @@ echo (date("d-m-Y", $t));
                }
             </style>
             <div class="table-responsive">
-               <table class="table table-bordered">
-                  <thead>
-                     <tr>
-                        <th rowspan="2">LOGO</th>
-                        <th colspan="2">RIGGING KIT FOR INNER CARCASS</th>
-                        <th>Dept</th>
-                     </tr>
-                  </thead>
-                  <tbody>
-                     <tr>
-                        <td>cell is row 0, column 2</td>
-                        <td colspan="2">4" Kuito (Riser and Flowline)</td>
-                        <td colspan="2"><b>Methods and Tooling</b></td>
-                     </tr>
-                     <tr>
-                        <td>&nbsp;</td>
-                        <td>&nbsp;</td>
-                        <td>&nbsp;</td>
-                        <td>&nbsp;</td>
-                     </tr>
-                     <tr>
-                        <td>Doc Code</td>
-                        <td colspan="3">1719-PSS-IND-SSC-10.11783</td>
-                     </tr>
-                     <tr>
-                        <td>Prepared By</td>
-                        <td>YAP HUI CHEK</td>
-                        <td>Rev</td>
-                        <td>0</td>
-                     </tr>
-                     <tr>
-                        <td>Checked By</td>
-                        <td></td>
-                        <td>Date</td>
-                        <td><?php
+              <table class="table table-bordered">
+                <thead>
+                  <tr>
+                    <th rowspan="2">LOGO</th>
+                    <th colspan="2">RIGGING KIT FOR INNER CARCASS</th>
+                    <th colspan="2">Dept</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>cell is row 0, column 2</td>
+                    <td>4&quot; Kuito</td>
+                    <td colspan="3"><b>Methods and Tooling</b></td>
+                  </tr>
+                  <tr>
+                    <td colspan="5">&nbsp;</td>
+                  </tr>
+                  <tr>
+                    <td>Doc Code</td>
+                    <td colspan="4"><?=$sess['transaction_number']; ?></td>
+                  </tr>
+                  <tr>
+                    <td>Prepared By</td>
+                    <td><?=strtoupper($sess['fullname']); ?></td>
+                    <td>Rev</td>
+                    <td colspan="2"><label>
+                      <input class="form-control" placeholder="Rev" type="text" name="rev" id="rev2" />
+                    </label></td>
+                  </tr>
+                  <tr>
+                    <td>Checked By</td>
+                    <td><label>
+                      <input class="form-control" placeholder="Checked By" type="text" name="checked_by" id="checked_by2" />
+                    </label></td>
+                    <td>Date</td>
+                    <td colspan="2"><?php
 $t = time();
 echo (date("d-m-Y", $t));
 ?></td>
-                     </tr>
-                     <tr>
-                        <td>Structure</td>
-                        <td>101.11788</td>
-                        <td>Job nrs</td>
-                        <td>17197 01</td>
-                     </tr>
-                     <tr>
-                        <td>Composition (SF 01)</td>
-                        <td>IC PS ZS TA EXS</td>
-                        <td>cum. Mass</td>
-                        <td>7.93</td>
-                     </tr>
-                     <tr>
-                        <td>&nbsp;</td>
-                        <td>&nbsp;</td>
-                        <td>&nbsp;</td>
-                        <td>&nbsp;</td>
-                     </tr>
-                     <tr>
-                        <td></td>
-                        <td>mini(mm)</td>
-                        <td>nominal(mm)</td>
-                        <td>maxi(mm)</td>
-                     </tr>
-                     <tr>
-                        <td>Int Diameter</td>
-                        <td>100.6</td>
-                        <td>100.6</td>
-                        <td>100.6</td>
-                     </tr>
-                     <tr>
-                        <td>Ext Diameter</td>
-                        <td>100.6</td>
-                        <td>100.6</td>
-                        <td>100.6</td>
-                     </tr>
-                     <tr>
-                        <td>Pitch for 20 rotations</td>
-                        <td>100.6</td>
-                        <td>100.6</td>
-                        <td>100.6</td>
-                     </tr>
-                     <tr>
-                        <td>&nbsp;</td>
-                        <td>&nbsp;</td>
-
-                        <td>&nbsp;</td>
-                        <td>&nbsp;</td>
-                     </tr>
-                     <tr>
-                        <td>Material</td>
-                        <td>DUPLEX</td>
-                        <td>DIMENSION</td>
-                        <td>48.0 x 1.0</td>
-                     </tr>
-                     <tr>
-                        <td>IC Thickness (mm)</td>
-                        <td>5</td>
-                        <td></td>
-                        <td></td>
-                     </tr>
-                     <tr>
-                        <td>PLF Length (m) (SF 01)</td>
-                        <td>780</td>
-                        <td>Overlength</td>
-                        <td>20</td>
-                     </tr>
-                     <tr>
-                        <td>&nbsp;</td>
-                        <td>&nbsp;</td>
-                        <td>&nbsp;</td>
-                        <td>&nbsp;</td>
-                     </tr>
-                     <tr>
-                        <td>Machine</td>
-                        <td colspan="3">SP 17</td>
-                     </tr>
-                     <tr>
-                        <td>&nbsp;</td>
-                        <td>&nbsp;</td>
-                        <td>&nbsp;</td>
-                        <td>&nbsp;</td>
-                     </tr>
-                     <tr>
-                        <td colspan="4">RIGGING KIT FOR THE BEGINNING LINE</td>
-                     </tr>
-                     <tr>
-                        <td>&nbsp;</td>
-                        <td>&nbsp;</td>
-                        <td>&nbsp;</td>
-                        <td>&nbsp;</td>
-                     </tr>
-                     <tr>
-                        <td>Int Diameter</td>
-                        <td>100.6</td>
-                        <td>100.6</td>
-                        <td>100.6</td>
-                     </tr>
-                     <tr>
-                        <td>Ext Diameter</td>
-                        <td>100.6</td>
-                        <td>100.6</td>
-                        <td>100.6</td>
-                     </tr>
-                     <tr>
-                        <td>Pitch for 20 rotations</td>
-                        <td>100.6</td>
-                        <td>100.6</td>
-                        <td>100.6</td>
-                     </tr>
-                     <tr>
-                        <td>&nbsp;</td>
-                        <td>&nbsp;</td>
-                        <td>&nbsp;</td>
-                        <td>&nbsp;</td>
-                     </tr>
-                     <tr>
-                        <td colspan="4">RIGGING KIT FOR THE END OF THE LINE</td>
-                     </tr>
-                     <tr>
-                        <td>&nbsp;</td>
-                        <td>&nbsp;</td>
-                        <td>&nbsp;</td>
-                        <td>&nbsp;</td>
-                     </tr>
-                     <tr>
-                        <td>Int Diameter</td>
-                        <td>100.6</td>
-                        <td>100.6</td>
-                        <td>100.6</td>
-                     </tr>
-                     <tr>
-                        <td>Ext Diameter</td>
-                        <td>100.6</td>
-                        <td>100.6</td>
-                        <td>100.6</td>
-                     </tr>
-                     <tr>
-                        <td>Pitch for 20 rotations</td>
-                        <td>100.6</td>
-                        <td>100.6</td>
-                        <td>100.6</td>
-                     </tr>
-                     <tr>
-                        <td>&nbsp;</td>
-                        <td>&nbsp;</td>
-                        <td>&nbsp;</td>
-                        <td>&nbsp;</td>
-                     </tr>
-                     <tr>
-                        <td colspan="4">RIGGING KIT FOR MANIPULATION</td>
-                     </tr>
-                     <tr>
-                        <td>&nbsp;</td>
-                        <td>&nbsp;</td>
-                        <td>&nbsp;</td>
-                        <td>&nbsp;</td>
-                     </tr>
-                     <tr>
-                        <td>Int Diameter</td>
-                        <td>100.6</td>
-                        <td>100.6</td>
-                        <td>100.6</td>
-                     </tr>
-                     <tr>
-                        <td>Ext Diameter</td>
-                        <td>100.6</td>
-                        <td>100.6</td>
-                        <td>100.6</td>
-                     </tr>
-                     <tr>
-                        <td>Pitch for 20 rotations</td>
-                        <td>100.6</td>
-                        <td>100.6</td>
-                        <td>100.6</td>
-                     </tr>
-                  </tbody>
-               </table>
+                  </tr>
+                  <tr>
+                    <td>Structure</td>
+                    <td><?=$structure_number; ?></td>
+                    <td>Job nrs</td>
+                    <td colspan="2"><label>
+                      <input class="form-control" placeholder="Job nrs" type="text" name="job_nrs" id="job_nrs2" />
+                    </label></td>
+                  </tr>
+                  <tr>
+                    <td>Composition</td>
+                    <td><?=$unique_layers; ?>
+                      &nbsp;</td>
+                    <td>cum. Mass</td>
+                    <td colspan="2"><?=$cumMass; ?>
+                      &nbsp;</td>
+                  </tr>
+                  <tr>
+                    <td colspan="5">&nbsp;</td>
+                  </tr>
+                  <tr>
+                    <td>Machine</td>
+                    <td colspan="4"><?=$material[0]->material_code; ?></td>
+                  </tr>
+                  <tr>
+                    <td colspan="5">&nbsp;</td>
+                  </tr>
+                  <tr>
+                    <td>&nbsp;</td>
+                    <td>Spec</td>
+                    <td>Max. working load</td>
+                    <td>Qty</td>
+                    <td>Ref</td>
+                  </tr>
+                  <tr>
+                    <td>Cable</td>
+                    <td>cable_spec</td>
+                    <td>cable_max_load</td>
+                    <td>1</td>
+                    <td><input class="form-control" placeholder="Job nrs" type="text" name="cable_ref" id="cable_ref" /></td>
+                  </tr>
+                  <tr>
+                    <td>Shackle</td>
+                    <td>shackle_spec</td>
+                    <td>shackle_max_load</td>
+                    <td>3</td>
+                    <td><input class="form-control" placeholder="Job nrs" type="text" name="shackle_ref" id="shackle_ref" /></td>
+                  </tr>
+                  <tr>
+                    <td>&nbsp;</td>
+                    <td>&nbsp;</td>
+                    <td>&nbsp;</td>
+                    <td>&nbsp;</td>
+                    <td>&nbsp;</td>
+                  </tr>
+                  <tr>
+                    <td>&nbsp;</td>
+                    <td>Spec</td>
+                    <td>Max. working load</td>
+                    <td>Qty</td>
+                    <td>Ref</td>
+                  </tr>
+                  <tr>
+                    <td>Mooring kit</td>
+                    <td>&nbsp;</td>
+                    <td>3.3 T</td>
+                    <td>2</td>
+                    <td>&nbsp;</td>
+                  </tr>
+                  <tr>
+                    <td>Reel flange kit</td>
+                    <td>Chain 1.44m x 4.8T,<br />
+                      Shackle 4.75 T, Masterlink<br />
+                      6.5 T</td>
+                    <td>4.75 T</td>
+                    <td>2</td>
+                    <td>&nbsp;</td>
+                  </tr>
+                  <tr>
+                    <td>Shackle</td>
+                    <td>&nbsp;</td>
+                    <td>4.75 T</td>
+                    <td>3</td>
+                    <td>&nbsp;</td>
+                  </tr>
+                  <tr>
+                    <td>Masterlink Assembly</td>
+                    <td>&nbsp;</td>
+                    <td>6.5 T</td>
+                    <td>1</td>
+                    <td>&nbsp;</td>
+                  </tr>
+                  <tr>
+                    <td>&nbsp;</td>
+                    <td>&nbsp;</td>
+                    <td>&nbsp;</td>
+                    <td>&nbsp;</td>
+                    <td>&nbsp;</td>
+                  </tr>
+                  <tr>
+                    <td>&nbsp;</td>
+                    <td>Spec</td>
+                    <td>Max. working load</td>
+                    <td>Qty</td>
+                    <td>Ref</td>
+                  </tr>
+                  <tr>
+                    <td>Master Link</td>
+                    <td>&nbsp;</td>
+                    <td>6.5 T</td>
+                    <td>1</td>
+                    <td>&nbsp;</td>
+                  </tr>
+                  <tr>
+                    <td>Round Sling</td>
+                    <td>lth. 5 m</td>
+                    <td>3 T</td>
+                    <td>1</td>
+                    <td>&nbsp;</td>
+                  </tr>
+                  <tr>
+                    <td>Pulling Strap</td>
+                    <td>lth. 10 m</td>
+                    <td>4 T</td>
+                    <td>1</td>
+                    <td>&nbsp;</td>
+                  </tr>
+                  <tr>
+                    <td colspan="5"><img src="<?=base_url(); ?>assets/images/rigging_sheet1.png" width="354" height="261" /></td>
+                  </tr>
+                </tbody>
+              </table>
             </div>
+            <div class="row">
+            	<div class="col-md-12" style="margin-bottom:5%;">
+                	<button class="btn btn-primary" type="submit">Export</button>
+                </div>
+            </div>
+         </form>
          </div>
          <div class="tab-pane" id="tooling">
             <style>
@@ -640,7 +616,7 @@ echo (date("d-m-Y", $t));
                }
             </style>
             <div class="table-responsive">
-               <table class="table table-bordered">
+               <!--<table class="table table-bordered">
                   <thead>
                      <tr>
                         <th rowspan="2">LOGO</th>
@@ -760,7 +736,7 @@ echo (date("d-m-Y", $t));
                         <td colspan"2">Dwg No</td>
                      </tr>
                   </tbody>
-               </table>
+               </table>-->
             </div>
          </div>
       </div>
