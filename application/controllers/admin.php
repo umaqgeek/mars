@@ -11,6 +11,17 @@ class Admin extends MY_Controller
 		$this->load->library('SimpleLoginSecure');
 		$this->CI = & get_instance();
 	}
+	
+	function test11()
+	{
+		$a = "5"; // var 1
+		$b = "13"; // var 2
+		$c = "3"; // var 3
+		$ayat = $a . " * " . $b . " - " . $c; // operation
+		$ayat = ltrim($ayat, "0"); // trim for leading zero
+		$hasil = create_function("", "return (" . $ayat . ");"); // calculate
+		echo $ayat . " = " . (0 + $hasil()); // output
+	}
 
 	public function index()
 	{
@@ -297,6 +308,7 @@ class Admin extends MY_Controller
 		$crud->display_as('type_of_production_size', 'Size');
 		$crud->display_as('code_one', 'Raw Material');
 		$crud->display_as('code_two', 'STA Code');
+		$crud->display_as('ref_num', 'Roller Set');
 		try
 		{
 			$output = $crud->render();
@@ -836,6 +848,7 @@ class Admin extends MY_Controller
 	{
 		$this->load->model('m_rule');
 		$tool_id = $post_array['tool_id'];
+		$post_array['param_code'] = str_replace(" ", "", $post_array['param_code']);
 		$post_array['param_tool_code'] = $this->my_func->getToolCode($tool_id);
 		$this->load->library('form_validation');
 
@@ -927,6 +940,7 @@ class Admin extends MY_Controller
 		$this->load->model('m_rule');
 		$this->load->model('m_param');
 		$tool_id = $post_array['tool_id'];
+		$post_array['param_code'] = str_replace(" ", "", $post_array['param_code']);
 		/*
 		if($this->my_func->validate_add_param($post_array)!=false OR $this->my_func->validate_number_of_param($post_array)!=false)
 		{
@@ -938,7 +952,7 @@ class Admin extends MY_Controller
 		}
 
 		*/
-		return true;
+		return $post_array;
 	}
 
 	function parameter_callback_after_update($post_array, $primary_key)
@@ -1741,7 +1755,7 @@ class Admin extends MY_Controller
 
 		if ($rule_id != false)
 		{
-			$rules = $this->m_rule->getRulesAndParams($rule_id);
+			$rules = $this->m_rule->getRulesAndParams2($rule_id);
 			$data['rules'] = $rules;
 			$data['rule_number'] = $rule_number;
 		}
@@ -1757,7 +1771,7 @@ class Admin extends MY_Controller
 			redirect('admin/showError');
 		}
 
-		$nominal_type_results = $this->m_tool->getToolingMaster($nominal_types);
+		/*$nominal_type_results = $this->m_tool->getToolingMaster($nominal_types);
 		if (!empty($nominal_type_results))
 		{
 			$data['nominal_type_results'] = $nominal_type_results;
@@ -1765,7 +1779,7 @@ class Admin extends MY_Controller
 		else
 		{
 			$data['nominal_type_results'] = null;
-		}
+		}*/
 
 		$structure_number = $this->session->userdata('structure_number');
 		$transaction_number = $this->session->userdata('transaction_number');

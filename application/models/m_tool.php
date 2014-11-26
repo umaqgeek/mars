@@ -166,9 +166,12 @@ class M_tool extends CI_Model  {
 	public function getToolFromLayerId($layer_id=0)
 	{
 		$this->db->select('*');
-		$this->db->from('layer_tool');
-		$this->db->join('tool', 'layer_tool.tool_id = tool.tool_id');
-		$this->db->where('layer_id', $layer_id);
+		$this->db->from('tool too');
+		$this->db->join('layer_tool lt', 'lt.tool_id = too.tool_id');
+		$this->db->join('tool_tool_nominal ttn', 'ttn.tool_id = too.tool_id', 'left');
+		$this->db->join('nominal_column nc', 'nc.nc_id = ttn.nc_id', 'left');
+		$this->db->where('lt.layer_id', $layer_id);
+		$this->db->group_by('too.tool_id');
 		$query = $this->db->get();
 		$result=$query->result();
 		return $result;

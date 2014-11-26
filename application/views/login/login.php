@@ -4,10 +4,10 @@
 
 				<!-- check for the flashdata -->
 				<?php
-				if($this->session->flashdata('error')!="")
+				/*if($this->session->flashdata('error')!="")
 					echo $this->session->flashdata('error');
 				elseif($this->session->flashdata('sucess')!="")
-				echo $this->session->flashdata('sucess');
+				echo $this->session->flashdata('sucess');*/
 			
 					$attributes = array('class' => 'form-signin', 'id' => 'login', 'method'=>'post', 'role'=>'form');
 

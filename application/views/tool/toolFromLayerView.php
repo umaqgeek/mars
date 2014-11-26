@@ -155,20 +155,19 @@ if (!empty($project_number)) {
                            </tr>
                         </thead>
                         <tbody>
-                           <?php
-
-foreach($tools as $r) {
-?>
-                           <tr value="<?php echo $r->tool_id
-?>">
-                              <td><?php echo $r->tool_code
-?></td>
-                              <td><?php echo $r->tool_description
-?></td>
-                           </tr>
-                           <?php
+<?php
+foreach($tools as $r) { 
+	$range = $this->my_func->getRangeIDNom($structure_number, $sess['layer_name'], $r->nc_name);
+	// list tools based on 
+	if($range >= $r->min_range && $range <= $r->max_range) {
+?>                           
+							<tr value="<?php echo $r->tool_id; ?>">
+								<td><?php echo $r->tool_code; ?></td>
+                              	<td><?php echo $r->tool_description; ?></td>
+                           	</tr>
+<?php
+	}
 }
-
 ?>
                         </tbody>
                      </table>

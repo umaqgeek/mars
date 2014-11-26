@@ -599,7 +599,7 @@ class My_Func
 		}
 	}
 	
-	public function getFormulaValue($structure_number, $layer_name, $pio_id, $formula, $param_code, $rule_id)
+	public function getFormulaValue($structure_number, $layer_name, $pio_id, $formula, $param_code, $rule_id, $sess_value)
 	{
 		$pecah = explode(' ', $formula);
 		$size_pecah = sizeof($pecah);
@@ -611,7 +611,7 @@ class My_Func
 				$formula_array[] = $pecah[$i];
 			} else {
 				if ($pecah[$i] != '') {
-					$formula_array[] = $this->getVariableValue($structure_number, $layer_name, $rule_id, $pecah[$i]);
+					$formula_array[] = $this->getVariableValue($structure_number, $layer_name, $rule_id, $pecah[$i], $sess_value);
 				} else {
 					$formula_array[] = 0;
 				}
@@ -654,41 +654,107 @@ class My_Func
 		}
 	}
 	
-	function getVariableValue($structure_number, $layer_name, $rule_id, $vcode)
+	function getRangeIDNom($structure_number, $layer_name, $nom_col)
+	{
+		$CI = $this->obj;
+		$CI->db->select('*');
+		$CI->db->from('nominal_column');
+		$CI->db->where('nc_name', utf8_decode($nom_col));
+		$query = $CI->db->get();
+		if (sizeof($query->result()) > 0) {
+			$CI->db->select(utf8_decode($nom_col).' AS col1');
+			$CI->db->from('imported_project');
+			$CI->db->where('structure', $structure_number);
+			$CI->db->where('layer_name', $layer_name);
+			$query = $CI->db->get();
+			return $query->result()[0]->col1;
+		} else {
+			return 0;
+		}
+	}
+	
+	function getVariableValue($structure_number, $layer_name, $rule_id, $vcode, $sess_value)
 	{
 		try {
 			$CI = $this->obj;
-			
-			$CI->db->select('*');
-			$CI->db->from('nominal_column');
-			$CI->db->where('nc_name', utf8_decode($vcode));
-			$query = $CI->db->get();
-			if (sizeof($query->result()) > 0) {
-				$CI->db->select(utf8_decode($vcode).' AS col1');
+			// check nom pitch
+			if (utf8_decode($vcode) == 'nom_pitch') {
+				$CI->db->select('*');
 				$CI->db->from('imported_project');
 				$CI->db->where('structure', $structure_number);
 				$CI->db->where('layer_name', $layer_name);
 				$query = $CI->db->get();
-				return $query->result()[0]->col1;
+				if (sizeof($query->result()) > 0) {
+					$codemp = $query->result()[0]->CODEMP;
+					$CI->db->select('*');
+					$CI->db->from('material');
+					$CI->db->where('material_code', $codemp);
+					$query = $CI->db->get();
+					return $query->result()[0]->nom_pitch;
+				} else {
+					return 0;
+				}
 			} else {
 				$CI->db->select('*');
-				$CI->db->from('param');
-				$CI->db->where('param_code', utf8_decode($vcode));
+				$CI->db->from('nominal_column');
+				$CI->db->where('nc_name', utf8_decode($vcode));
 				$query = $CI->db->get();
+				// check nominal column
 				if (sizeof($query->result()) > 0) {
-					$param_id = $query->result()[0]->param_id;
-					$CI->db->select('*');
-					$CI->db->from('rule_param');
-					$CI->db->where('param_id', $param_id);
-					$CI->db->where('rule_id', $rule_id);
+					$CI->db->select(utf8_decode($vcode).' AS col1');
+					$CI->db->from('imported_project');
+					$CI->db->where('structure', $structure_number);
+					$CI->db->where('layer_name', $layer_name);
 					$query = $CI->db->get();
+					return $query->result()[0]->col1;
+				} else {
+					$vcode = explode("_", utf8_decode($vcode));
+					$tool_id = $vcode[1];
+					$param_code = $vcode[2];
+					$CI->db->select('*');
+					$CI->db->from('param');
+					$CI->db->where('param_code', $param_code);
+					$CI->db->where('tool_id', $tool_id);
+					$query = $CI->db->get();
+					// check param
 					if (sizeof($query->result()) > 0) {
-						return $query->result()[0]->rp_post_value;
+						$param_id = $query->result()[0]->param_id;
+						$CI->db->select('*');
+						$CI->db->from('rule_param');
+						$CI->db->where('param_id', $param_id);
+						$query = $CI->db->get();
+						if (sizeof($query->result()) > 0) {
+							$rule_id = 0;
+							foreach($query->result() as $qr) {
+								$rule_id = $qr->rule_id;
+								$CI->db->select('*');
+								$CI->db->from('rule');
+								$CI->db->where('rule_id', $rule_id);
+								$query = $CI->db->get();
+								if (sizeof($query->result()) > 0) {
+									$min_range = $query->result()[0]->var1;
+									$max_range = $query->result()[0]->var2;
+									if ($sess_value >= $min_range && $sess_value <= $max_range) {
+										break;
+									}
+								}
+							}
+							$CI->db->select('*');
+							$CI->db->from('rule_param');
+							$CI->db->where('param_id', $param_id);
+							$CI->db->where('rule_id', $rule_id);
+							$query = $CI->db->get();
+							if (sizeof($query->result()) > 0) {
+								return $query->result()[0]->rp_post_value;
+							} else {
+								return 0;
+							}
+						} else {
+							return 0;
+						}
 					} else {
 						return 0;
 					}
-				} else {
-					return 0;
 				}
 			}
 		} catch (Exception $e) {

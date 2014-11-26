@@ -16,6 +16,8 @@
           $project_name="";
           $project_number="";
 		  $layer_name="";
+
+$sess = $this->session->all_userdata();
 		  
          if(!empty($projects))
          {
@@ -114,14 +116,15 @@
                         if(!empty($rules))
                         {
 							//print_r($rules);
-                           foreach($rules as $r)
+                        foreach($rules as $r)
                         {
                           ?>
                      <tr>
                         <td><?=$r->param_number?></td>
                         <td><?=$r->param_code?></td>
                         <!--<td><?=$r->rp_post_value?></td>-->
-                        <td><?=$this->my_func->getFormulaValue($structure_number, $layer_name, $r->pio_id, $r->rp_formula, $r->param_code, $r->rule_id)?></td>
+                        <td><?=$this->my_func->getFormulaValue($structure_number, $layer_name, $r->pio_id, $r->rp_formula, $r->param_code, $r->rule_id, 
+									 $sess['diaintercouche'])?></td>
                         <td><?=$r->param_tol_min?></td>
                         <td><?=$r->param_tol_plus?></td>
                         <td></td>

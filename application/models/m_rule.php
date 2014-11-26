@@ -168,12 +168,28 @@ public function getPreValueForFormula($rp_id)
 			$this->db->from('rule_param');
 			$this->db->join('rule', 'rule.rule_id = rule_param.rule_id');
 			$this->db->join('param', 'param.param_id = rule_param.param_id');
-			$this->db->where('rule.rule_id',$rule_id);
+			$this->db->join('tool', 'tool.tool_id = param.tool_id');
+			//$this->db->where('rule.rule_id',$rule_id);
+			$this->db->group_by('param.param_id');
 			$this->db->order_by('param.param_number','asc'); 
  			$query = $this->db->get();
  			
 			return $query->result();
 	}  
+	
+	 public function getRulesAndParams2($rule_id)
+    {
+        	$this->db->select('*');
+			$this->db->from('rule_param');
+			$this->db->join('rule', 'rule.rule_id = rule_param.rule_id');
+			$this->db->join('param', 'param.param_id = rule_param.param_id');
+			$this->db->where('rule.rule_id',$rule_id);
+			$this->db->group_by('param.param_id');
+			$this->db->order_by('param.param_number','asc'); 
+ 			$query = $this->db->get();
+ 			
+			return $query->result();
+	} 
 
 	public function deleteRule($data=array()){
 		$rule_id=$data['rule_id'];

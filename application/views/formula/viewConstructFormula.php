@@ -33,8 +33,20 @@
         });
 		
 		$("#addnompitch").click(function() {
+										 
+			var nom_pitch = 'nom_pitch';
 
-            
+            if ($('#formula').val() != '') {
+				$('#field-rp_pre_value').val($('#field-rp_pre_value').val() + ' ' + nom_pitch);
+                $('#field-rp_post_value').val($('#field-rp_post_value').val() + ' ' + nom_pitch);
+                $('#field-rp_formula').val($('#field-rp_formula').val() + ' ' + nom_pitch);
+                $('#formula').val($('#formula').val() + ' ' + nom_pitch);
+			} else {
+				$('#field-rp_pre_value').val(nom_pitch);
+                $('#field-rp_post_value').val(nom_pitch);
+                $('#field-rp_formula').val(nom_pitch);
+                $('#formula').val(nom_pitch);
+			}
         });
 		
 		$('#example tbody').on('click', 'tr', function() {
@@ -164,22 +176,23 @@
             var rp_id = result[0];
             var param_code = result[1];
             var param_value = result[2];
+			var tool_id = result[3];
             var base_url = "<?=site_url()?>";
 
 
             //write to the value #rp_pre_value
             if ($('#formula').val() != '') {
                 //$('#field-rp_pre_value').val($('#field-rp_pre_value').val() + param_code);
-                $('#field-rp_pre_value').val($('#field-rp_pre_value').val() + ' ' + param_value);
-                $('#field-rp_post_value').val($('#field-rp_post_value').val() + ' ' + param_value);
-                $('#field-rp_formula').val($('#field-rp_formula').val() + ' ' + param_code);
-                $('#formula').val($('#formula').val() + ' ' + param_code);
+                $('#field-rp_pre_value').val($('#field-rp_pre_value').val() + ' ' + 'TOOL_'+tool_id+'_'+param_value);
+                $('#field-rp_post_value').val($('#field-rp_post_value').val() + ' ' + 'TOOL_'+tool_id+'_'+param_value);
+                $('#field-rp_formula').val($('#field-rp_formula').val() + ' ' + 'TOOL_'+tool_id+'_'+param_code);
+                $('#formula').val($('#formula').val() + ' ' + 'TOOL_'+tool_id+'_'+param_code);
             } else {
                 //$('#field-rp_pre_value').val(param_code);
-                $('#field-rp_pre_value').val(param_value);
-                $('#field-rp_post_value').val(param_value);
-                $('#field-rp_formula').val(param_code);
-                $('#formula').val(param_code);
+                $('#field-rp_pre_value').val('TOOL_'+tool_id+'_'+param_value);
+                $('#field-rp_post_value').val('TOOL_'+tool_id+'_'+param_value);
+                $('#field-rp_formula').val('TOOL_'+tool_id+'_'+param_code);
+                $('#formula').val('TOOL_'+tool_id+'_'+param_code);
             }
 
 
@@ -273,6 +286,22 @@
                 </td>
 
             </tr>
+            <tr>
+                
+                <td>
+                    <!-- Standard button -->
+                    <button style="width:100%" value="(" type="button" class="btn btn-default">(</button>
+                </td>
+
+            </tr>
+            <tr>
+                
+                <td>
+                    <!-- Standard button -->
+                    <button style="width:100%" value=")" type="button" class="btn btn-default">)</button>
+                </td>
+
+            </tr>
         </table>
     </div>
 
@@ -341,7 +370,7 @@
         </tbody>
     </table>-->
 
-    <div class="col-sm-3">
+    <div class="col-sm-4">
 
         <table id="example3" class="display" cellspacing="0" width="100%">
             <thead>
@@ -349,6 +378,7 @@
 
                     <th>Parameter No</th>
                     <th>Parameter Code</th>
+                    <th>Tools</th>
                     <!--<th>Parameter Value</th>-->
 
 
@@ -359,11 +389,10 @@
 
 
                 <?php foreach($params as $r) { ?>
-                <tr value="<?=$r->rp_id?>%<?=$r->param_code?>%<?=$r->rp_post_value?>">
-                    <td>
-                        <?=$r->param_number?></td>
-                    <td>
-                        <?=$r->param_code?></td>
+                <tr value="<?=$r->rp_id?>%<?=$r->param_code?>%<?=$r->rp_post_value?>%<?=$r->tool_id?>">
+                    <td><?=$r->param_number?></td>
+                    <td><?=$r->param_code?></td>
+                    <td><?=$r->tool_code?></td>
                     <!--<td><?=$r->rp_post_value?></td>-->
                 </tr>
                 <?php } ?>
