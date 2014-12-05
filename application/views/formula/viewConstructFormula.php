@@ -79,15 +79,15 @@
 
                     if ($('#formula').val() != '') {
                         // $('#field-rp_pre_value').val($('#field-rp_pre_value').val() + nc_name);
-                        $('#field-rp_pre_value').val($('#field-rp_pre_value').val() + ' ' + response);
-                        $('#field-rp_post_value').val($('#field-rp_post_value').val() + ' ' + response);
+                        $('#field-rp_pre_value').val($('#field-rp_pre_value').val() + ' ' + nc_name);
+                        $('#field-rp_post_value').val($('#field-rp_post_value').val() + ' ' + nc_name);
                         $('#field-rp_formula').val($('#field-rp_formula').val() + ' ' + nc_name);
                         $('#formula').val($('#formula').val() + ' ' + nc_name);
 
                     } else {
                         //$('#field-rp_pre_value').val(nc_name);
-                        $('#field-rp_pre_value').val(response);
-                        $('#field-rp_post_value').val(response);
+                        $('#field-rp_pre_value').val(nc_name);
+                        $('#field-rp_post_value').val(nc_name);
                         $('#field-rp_formula').val(nc_name);
                         $('#formula').val(nc_name);
                     }
@@ -183,14 +183,14 @@
             //write to the value #rp_pre_value
             if ($('#formula').val() != '') {
                 //$('#field-rp_pre_value').val($('#field-rp_pre_value').val() + param_code);
-                $('#field-rp_pre_value').val($('#field-rp_pre_value').val() + ' ' + 'TOOL_'+tool_id+'_'+param_value);
-                $('#field-rp_post_value').val($('#field-rp_post_value').val() + ' ' + 'TOOL_'+tool_id+'_'+param_value);
+                $('#field-rp_pre_value').val($('#field-rp_pre_value').val() + ' ' + 'TOOL_'+tool_id+'_'+param_code);
+                $('#field-rp_post_value').val($('#field-rp_post_value').val() + ' ' + 'TOOL_'+tool_id+'_'+param_code);
                 $('#field-rp_formula').val($('#field-rp_formula').val() + ' ' + 'TOOL_'+tool_id+'_'+param_code);
                 $('#formula').val($('#formula').val() + ' ' + 'TOOL_'+tool_id+'_'+param_code);
             } else {
                 //$('#field-rp_pre_value').val(param_code);
-                $('#field-rp_pre_value').val('TOOL_'+tool_id+'_'+param_value);
-                $('#field-rp_post_value').val('TOOL_'+tool_id+'_'+param_value);
+                $('#field-rp_pre_value').val('TOOL_'+tool_id+'_'+param_code);
+                $('#field-rp_post_value').val('TOOL_'+tool_id+'_'+param_code);
                 $('#field-rp_formula').val('TOOL_'+tool_id+'_'+param_code);
                 $('#formula').val('TOOL_'+tool_id+'_'+param_code);
             }

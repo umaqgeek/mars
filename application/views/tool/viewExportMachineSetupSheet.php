@@ -154,32 +154,6 @@ echo (date("d-m-Y", $t));
                         <td>cell is row 18, column 3</td>
                      </tr>
                      <tr>
-                        <td colspan="4">&nbsp;</td>
-                     </tr>
-                     <tr>
-                        <td colspan="4">CONFIGURATION</td>
-                     </tr>
-                     <tr>
-                       <td colspan="2">ROLLERS SETS</td>
-                       <td>Dwg nr.</td>
-                       <td><?=$material[0]->ref_num; ?></td>
-                     </tr>
-                     <tr>
-                       <td colspan="4"><img src="<?=base_url(); ?>assets/images/bawah_roller_set.png" alt="" /></td>
-                     </tr>
-                     <tr>
-                       <td colspan="2">Rollers</td>
-                       <td colspan="2">1,2,3,4,5,6,-,8</td>
-                     </tr>
-                     <tr>
-                       <td colspan="2">Intermediate roller 1</td>
-                       <td colspan="2">4&lt;I&lt;5</td>
-                     </tr>
-                     <tr>
-                       <td colspan="2">Intermediate roller 2</td>
-                       <td colspan="2">5&lt;I&lt;6</td>
-                     </tr>
-                     <tr>
                        <td colspan="4">&nbsp;</td>
                      </tr>
                      <tr>
@@ -232,6 +206,35 @@ echo (date("d-m-Y", $t));
                        <td colspan="2">Type</td>
                        <td>&nbsp;</td>
                        <td><?=$material[0]->oil1; ?>&nbsp;</td>
+                     </tr>
+                     <tr>
+                       <td colspan="4">&nbsp;</td>
+                     </tr>
+                     <tr>
+                       <td colspan="4">CONFIGURATION</td>
+                     </tr>
+                     <tr>
+                       <td colspan="2">ROLLERS SETS</td>
+                       <td>Dwg nr.</td>
+                       <td><?=$material[0]->ref_num; ?></td>
+                     </tr>
+                     <tr>
+                       <td colspan="4">&nbsp;</td>
+                     </tr>
+                     <tr>
+                       <td colspan="2">Rollers</td>
+                       <td colspan="2">1,2,3,4,5,6,-,8</td>
+                     </tr>
+                     <tr>
+                       <td colspan="2">Intermediate roller 1</td>
+                       <td colspan="2">4&lt;I&lt;5</td>
+                     </tr>
+                     <tr>
+                       <td colspan="2">Intermediate roller 2</td>
+                       <td colspan="2">5&lt;I&lt;6</td>
+                     </tr>
+                     <tr>
+                       <td colspan="4"><img src="<?=base_url(); ?>assets/images/bawah_roller_set.png" alt="" /></td>
                      </tr>
                   </tbody>
                </table>

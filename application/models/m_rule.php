@@ -105,7 +105,7 @@ class M_rule extends CI_Model  {
 
 	public function getNcValueFromRuleValueMg($rp_id)
 	{
-		$this->db->select('rp_pre_value');
+		$this->db->select('*');
 		$this->db->from('rule_param');
 		$this->db->where('rp_id', $rp_id);
 		$query = $this->db->get();

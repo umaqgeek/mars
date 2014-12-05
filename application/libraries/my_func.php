@@ -1,14 +1,9 @@
 <?php
-
 if (!defined('BASEPATH')) exit('No direct script access allowed');
 
-if (!defined('BASEPATH')) exit('No direct script access allowed');
 class My_Func
-
 {
-	public
-
-	function __construct()
+	public function __construct()
 	{
 
 		// parent::__construct();
@@ -16,9 +11,7 @@ class My_Func
 		$this->obj = & get_instance();
 	}
 
-	public
-
-	function getFirstWord($str)
+	public function getFirstWord($str)
 	{
 		$a = explode(" ", $str);
 		$s = "";
@@ -30,9 +23,7 @@ class My_Func
 		return $s;
 	}
 
-	public
-
-	function getParamValue($rule_id = 0, $param_number = 0)
+	public function getParamValue($rule_id = 0, $param_number = 0)
 	{
 		$CI = $this->obj;
 
@@ -48,9 +39,7 @@ class My_Func
 		return $query->result();
 	}
 
-	public
-
-	function getRuleNumber($rule_id = 0)
+	public function getRuleNumber($rule_id = 0)
 	{
 		$CI = $this->obj;
 		$CI->db->select('rule_number');
@@ -601,47 +590,51 @@ class My_Func
 	
 	public function getFormulaValue($structure_number, $layer_name, $pio_id, $formula, $param_code, $rule_id, $sess_value)
 	{
-		$pecah = explode(' ', $formula);
-		$size_pecah = sizeof($pecah);
-		$a = '';
-		$formula_array = array();
-		for ($i=0; $i<$size_pecah; $i++) {
-			$a .= $pecah[$i];
-			if (is_numeric($pecah[$i]) || $this->isSymbol($pecah[$i])) {
-				$formula_array[] = $pecah[$i];
-			} else {
-				if ($pecah[$i] != '') {
-					$formula_array[] = $this->getVariableValue($structure_number, $layer_name, $rule_id, $pecah[$i], $sess_value);
+		if ($pio_id == 3) {
+			$pecah = explode(' ', $formula);
+			$size_pecah = sizeof($pecah);
+			$a = '';
+			$formula_array = array();
+			for ($i=0; $i<$size_pecah; $i++) {
+				$a .= $pecah[$i];
+				if (is_numeric($pecah[$i]) || $this->isSymbol($pecah[$i])) {
+					$formula_array[] = $pecah[$i];
 				} else {
-					$formula_array[] = 0;
+					if ($pecah[$i] != '') {
+						$formula_array[] = $this->getVariableValue($structure_number, $layer_name, $rule_id, $pecah[$i], $sess_value);
+					} else {
+						$formula_array[] = 0;
+					}
 				}
 			}
-		}
-		$str = "";
-		foreach ($formula_array as $fa) {
-			if ($fa == '0' || $fa == 0) {
-				$str .= $fa;
-			} else {
-				$str .= ltrim($fa, '0');
+			$str = "";
+			foreach ($formula_array as $fa) {
+				if ($fa == '0' || $fa == 0) {
+					$str .= $fa;
+				} else {
+					$str .= ltrim($fa, '0');
+				}
 			}
-		}
-		$compute = create_function('', 'return (' . $str . ');');
-		$post_data = array(
-			'rp_post_value' => (0 + $compute())
-		);
-		$CI = $this->obj;
-		$CI->db->select('*');
-		$CI->db->from('param');
-		$CI->db->where('param_code', utf8_decode($param_code));
-		$query = $CI->db->get();
-		if (sizeof($query->result()) > 0) {
-			$param_id = $query->result()[0]->param_id;
-			$CI->db->where('rule_id', $rule_id);
-			$CI->db->where('param_id', $param_id);
-			$CI->db->update('rule_param', $post_data); 
-			return 0 + $compute();// . '|' . $formula;
+			$compute = create_function('', 'return (' . $str . ');');
+			$post_data = array(
+				'rp_post_value' => (0 + $compute())
+			);
+			$CI = $this->obj;
+			$CI->db->select('*');
+			$CI->db->from('param');
+			$CI->db->where('param_code', utf8_decode($param_code));
+			$query = $CI->db->get();
+			if (sizeof($query->result()) > 0) {
+				$param_id = $query->result()[0]->param_id;
+				$CI->db->where('rule_id', $rule_id);
+				$CI->db->where('param_id', $param_id);
+				$CI->db->update('rule_param', $post_data); 
+				return 0 + $compute();// . '|' . $formula;
+			} else {
+				return 0;
+			}
 		} else {
-			return 0;
+			return $formula;
 		}
 	}
 	
@@ -759,6 +752,41 @@ class My_Func
 			}
 		} catch (Exception $e) {
 			return 0;
+		}
+	}
+	
+	function getRangeMPListCode($structure_number, $layer_name, $tool_id) {
+		try {
+			$CI = $this->obj;
+			$CI->db->select('*');
+			$CI->db->from('imported_project');
+			$CI->db->where('structure', $structure_number);
+			$CI->db->where('layer_name', $layer_name);
+			$query = $CI->db->get();
+			$MPList = array();
+			if (sizeof($query->result()) > 0) {
+				foreach($query->result() as $qr) {
+					$MPList[] = $qr->CODEMP;
+				}
+				$CI->db->select('*');
+				$CI->db->from('tool_material tm, material ma');
+				$CI->db->where('tm.material_id = ma.material_id');
+				$CI->db->where('tm.tool_id', $tool_id);
+				$CI->db->group_by('tm.tm_id');
+				$query = $CI->db->get();
+				if (sizeof($query->result()) > 0) {
+					foreach($query->result() as $qr) {
+						if (in_array($qr->material_code, $MPList)==true) {
+							return true;
+						}
+					}
+				}
+				return false;
+			} else {
+				return false;
+			}
+		} catch (Exception $e) {
+			return false;
 		}
 	}
 }

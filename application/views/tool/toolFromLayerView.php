@@ -158,8 +158,10 @@ if (!empty($project_number)) {
 <?php
 foreach($tools as $r) { 
 	$range = $this->my_func->getRangeIDNom($structure_number, $sess['layer_name'], $r->nc_name);
-	// list tools based on 
-	if($range >= $r->min_range && $range <= $r->max_range) {
+	$boolMPList = $this->my_func->getRangeMPListCode($structure_number, $sess['layer_name'], $r->tool_id);
+	// $boolMPList: list tools based on MP Code List
+	// $range: list tools based on ID Nom Range
+	if($boolMPList == true || ($range >= $r->min_range && $range <= $r->max_range)) {
 ?>                           
 							<tr value="<?php echo $r->tool_id; ?>">
 								<td><?php echo $r->tool_code; ?></td>
@@ -317,32 +319,6 @@ echo (date("d-m-Y", $t));
                         <td>cell is row 18, column 3</td>
                      </tr>
                      <tr>
-                        <td colspan="4">&nbsp;</td>
-                     </tr>
-                     <tr>
-                        <td colspan="4">CONFIGURATION</td>
-                     </tr>
-                     <tr>
-                       <td colspan="2">ROLLERS SETS</td>
-                       <td>Dwg nr.</td>
-                       <td><?=$material[0]->ref_num; ?></td>
-                     </tr>
-                     <tr>
-                       <td colspan="4"><img src="<?=base_url(); ?>assets/images/bawah_roller_set.png" /></td>
-                     </tr>
-                     <tr>
-                       <td colspan="2">Rollers</td>
-                       <td colspan="2">1,2,3,4,5,6,-,8</td>
-                     </tr>
-                     <tr>
-                       <td colspan="2">Intermediate roller 1</td>
-                       <td colspan="2">4&lt;I&lt;5</td>
-                     </tr>
-                     <tr>
-                       <td colspan="2">Intermediate roller 2</td>
-                       <td colspan="2">5&lt;I&lt;6</td>
-                     </tr>
-                     <tr>
                        <td colspan="4">&nbsp;</td>
                      </tr>
                      <tr>
@@ -396,9 +372,38 @@ echo (date("d-m-Y", $t));
                        <td>&nbsp;</td>
                        <td><?=$material[0]->oil1; ?>&nbsp;</td>
                      </tr>
+                     <tr>
+                       <td colspan="4">&nbsp;</td>
+                     </tr>
+                     <tr>
+                       <td colspan="4">CONFIGURATION</td>
+                     </tr>
+                     <tr>
+                       <td colspan="2">ROLLERS SETS</td>
+                       <td>Dwg nr.</td>
+                       <td><?=$material[0]->ref_num; ?></td>
+                     </tr>
+                     <tr>
+                       <td colspan="4">&nbsp;</td>
+                     </tr>
+                     <tr>
+                       <td colspan="2">Rollers</td>
+                       <td colspan="2">1,2,3,4,5,6,-,8</td>
+                     </tr>
+                     <tr>
+                       <td colspan="2">Intermediate roller 1</td>
+                       <td colspan="2">4&lt;I&lt;5</td>
+                     </tr>
+                     <tr>
+                       <td colspan="2">Intermediate roller 2</td>
+                       <td colspan="2">5&lt;I&lt;6</td>
+                     </tr>
+                     <tr>
+                       <td colspan="4"><img src="<?=base_url(); ?>assets/images/bawah_roller_set.png" alt="" /></td>
+                     </tr>
                   </tbody>
                </table>
-            </div>
+</div>
             <div class="row">
             	<div class="col-md-12" style="margin-bottom:5%;">
                 	<button class="btn btn-primary" type="submit">Export</button>

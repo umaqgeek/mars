@@ -1,0 +1,12 @@
+1. Guna atau donlod instant_client.
+2. Setting env path instant_client.
+3. Uncomment ext oci8 kt wamp server.
+4. Restart server.
+5. Da ok.
+
+
+$conn = oci_connect(
+'mars', <== user
+'qwerty', <== password
+'127.0.0.1:1521/XE' <== FIXED (localhost)
+);

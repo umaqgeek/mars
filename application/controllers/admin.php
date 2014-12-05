@@ -423,11 +423,13 @@ class Admin extends MY_Controller
 		$crud->set_table('tool');
 		$crud->set_relation_n_n('nc_id', 'tool_tool_nominal', 'nominal_column', 'tool_id', 'nc_id', 'nc_name', 'priority');
 		$crud->set_relation_n_n('nt_id', 'tool_nominal_type', 'nominal_type', 'tool_id', 'nt_id', 'nt_name', 'priority');
+		$crud->set_relation_n_n('tm_id', 'tool_material', 'material', 'tool_id', 'material_id', 'material_code');
 
 		// $crud->set_relation('tool_id','tool_nominal_type','tnt_id');
 
 		$crud->display_as('nc_id', 'Nominal Column');
 		$crud->display_as('nt_id', 'Nominal Type');
+		$crud->display_as('tm_id', 'Material Code');
 		$crud->display_as('tool_description', 'Tool Name');
 		$crud->display_as('file_url', 'Image');
 		$crud->callback_column('nt_id', array(
@@ -1267,7 +1269,7 @@ class Admin extends MY_Controller
 			$post_array['rp_formula'] = $post_array['rp_pre_value'];
 			$this->db->where('rp_id', $primary_key);
 			$this->db->update('rule_param', $post_array);
-			$this->my_func->reCalculateFormula();
+			//$this->my_func->reCalculateFormula();
 
 			// $this->session->set_flashdata('rule_add_sucess', 'Rule is updated successfully');
 			// redirect('admin/ruleManagement');
@@ -1292,7 +1294,7 @@ class Admin extends MY_Controller
 			$post_array['rp_formula'] = $nc_name;
 			$this->db->where('rp_id', $primary_key);
 			$this->db->update('rule_param', $post_array);
-			$this->my_func->reCalculateFormula();
+			//$this->my_func->reCalculateFormula();
 		}
 		elseif ($post_array['pio_id'] == '3') //formula
 		{
@@ -1309,7 +1311,7 @@ class Admin extends MY_Controller
 			);*/
 			$this->db->where('rp_id', $primary_key);
 			$this->db->update('rule_param', $post_array);
-			$this->my_func->reCalculateFormula();
+			//$this->my_func->reCalculateFormula();
 			$this->session->set_flashdata('rule_add_sucess', 'Rule is updated successfully');
 			redirect('admin/ruleManagement');
 
@@ -1408,7 +1410,7 @@ class Admin extends MY_Controller
 			$post_array['rp_formula'] = $post_array['rp_pre_value'];
 			$this->db->where('rp_id', $primary_key);
 			$this->db->update('rule_param', $post_array);
-			$this->my_func->reCalculateFormula();
+			//$this->my_func->reCalculateFormula();
 		}
 
 		return $post_array;
@@ -1516,14 +1518,11 @@ class Admin extends MY_Controller
 			if ($rp_id != 0)
 			{
 				$result = $this->m_rule->getNcValueFromRuleValueMg($rp_id);
-				foreach($result as $r => $v)
-				{
-					echo "<input type='text' id='field-rp_pre_value' value='" . $v->rp_pre_value . "' name='rp_pre_value' />";
+				echo "<input type='text' id='field-rp_pre_value' value='" . $result[0]->rp_formula . "' name='rp_pre_value' />";
 					/*if($rp_id==3)
 					{
 					echo "<input type='text' id='field-rp_formula' value='".$v->rp_formula."' name='rp_formula' />";
 					}*/
-				}
 			}
 			else
 			{
@@ -1976,5 +1975,25 @@ class Admin extends MY_Controller
 	function _generate_table_toolrule_management($output = null)
 	{
 		$this->load->view('layer_tool/viewToolRuleManagement.php', $output);
+	}
+	
+	function test_oracle()
+	{
+		//echo phpinfo();
+		echo "oracle<br />";
+		$conn = oci_connect('mars', 'qwerty', '127.0.0.1:1521/XE');
+		$sql = "SELECT * FROM CUBA1";
+		$r = oci_parse($conn, $sql);
+		oci_execute($r);
+		$d = oci_fetch_array($r);
+		if ($d['C_ID'] != '' && $d['C_ID'] != NULL) {
+			do {
+				echo $d['C_ID'] . "|" . $d['C_NAME'] . "<br />";
+			} while ($d = oci_fetch_array($r));
+			echo "Yeay!";
+		} else {
+			echo "Looo...";
+		}
+		//echo phpinfo();
 	}
 }

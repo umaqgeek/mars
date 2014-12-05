@@ -124,7 +124,7 @@ class M_tool extends CI_Model  {
 		return $result;
 	}
 
-		public function getWholeNominalColumn()
+	public function getWholeNominalColumn()
 	{
 		$this->db->select('*');
 		$this->db->from('nominal_column');
