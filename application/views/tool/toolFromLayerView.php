@@ -94,7 +94,7 @@ if (!empty($projects)) {
 if (!empty($structure_number)) {
 ?>
       <div class="col-md-3">
-         Structure Number : <?php echo $structure_number ?>
+         Structure Number : <?php echo $structure_number; ?>
       </div>
       <?php
 }
@@ -105,7 +105,7 @@ if (!empty($structure_number)) {
 if (!empty($project_name)) {
 ?>
       <div class="col-md-3">
-         Project Name : <?php echo $project_name ?>
+         Project Name : <?php echo $project_name; ?>
       </div>
       <?php
 }
@@ -116,7 +116,7 @@ if (!empty($project_name)) {
 if (!empty($project_number)) {
 ?>
       <div class="col-md-3">
-         Project Number : <?php echo $project_number ?>
+         Project Number : <?php echo $project_number; ?>
       </div>
       <?php
 }
@@ -152,6 +152,7 @@ if (!empty($project_number)) {
                            <tr>
                               <th>Tool Code</th>
                               <th>Tool Name</th>
+                              <th>Status</th>
                            </tr>
                         </thead>
                         <tbody>
@@ -166,6 +167,7 @@ foreach($tools as $r) {
 							<tr value="<?php echo $r->tool_id; ?>">
 								<td><?php echo $r->tool_code; ?></td>
                               	<td><?php echo $r->tool_description; ?></td>
+                                <td>Found</td>
                            	</tr>
 <?php
 	}
@@ -205,7 +207,7 @@ foreach($tools as $r) {
                   <tbody>
                      <tr>
                         <td>cell is row 0, column 2</td>
-                        <td>4" Kuito</td>
+                        <td><?php echo $project_name; ?></td>
                         <td colspan="2"><b>Methods and Tooling</b></td>
                      </tr>
                      <tr>

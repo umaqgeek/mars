@@ -1,6 +1,29 @@
 <?php
 class M_rule extends CI_Model  {
  
+ 	public function getRules($rule_id)
+	{
+		$this->db->select('*');
+		$this->db->from('rule ru');
+		$this->db->where('ru.rule_id',$rule_id);
+		$query = $this->db->get();
+ 		return $query->result();
+	}
+	
+	public function editRule($rule_id, $data)
+	{
+		$this->db->where('rule_id', $rule_id);
+		return $this->db->update('rule', $data); 
+	}
+	
+	public function getRules2($tool_name_code)
+	{
+		$this->db->select('*');
+		$this->db->from('rule ru');
+		$this->db->like('ru.rule_number', $tool_name_code, 'after'); 
+		$query = $this->db->get();
+ 		return $query->result();
+	}
 
     public function getAllrule()
     {

@@ -92,10 +92,10 @@ $(document).ready(function() {
                 <tr>
                     <td><?=$r->tool_code?></td>
 
-                    <td> <a href="<?=site_url('admin/ruleManagementold/edit/'.$r->rule_id)?>"><?=$r->rule_number?></a></td>
+                    <td> <a href="<?=site_url('admin/viewEditRuleValueManagement/'.$r->rule_id)?>"><?=$r->rule_number?></a></td>
                             
                        <td><?=$r->var1?></td>
-                        <td><?=$r->cond?></td>
+                        <td>> =<</td>
                         <td><?=$r->var2?></td>
                         <?php
                          for($i=1;$i<=10;$i++){
@@ -108,19 +108,24 @@ $(document).ready(function() {
                               
                              foreach($result as $row)
                              {
-                                if($row->pio_id==3)
+								 $rpValue = ($row->rp_formula!=null) ? ($row->rp_formula) : ('___');
+								  ?>
+                                         <td><a href="<?=site_url('admin/ruleValueManagement/edit/'.$row->rp_id)?>"><?=$rpValue;?></a></td>
+                                        
+                                           <?php
+                                /*if($row->pio_id==3)
                                 {
                                     if($row->rp_formula==null)
                                     {
                                          ?>
-                                         <td> <a href="<?=site_url('admin/ruleValueManagement/edit/'.$row->rp_id)?>"><?=$row->rp_post_value?></a></td>
+                                         <td>a <a href="<?=site_url('admin/ruleValueManagement/edit/'.$row->rp_id)?>"><?=$row->rp_post_value?></a></td>
                                         
                                            <?php
                                     }
                                     else
                                     {
                                         ?>
-                                         <td> <a href="<?=site_url('admin/ruleValueManagement/edit/'.$row->rp_id)?>"><?=$row->rp_formula?></a></td>
+                                         <td>b <a href="<?=site_url('admin/ruleValueManagement/edit/'.$row->rp_id)?>"><?=$row->rp_formula?></a></td>
                                         
                                            <?php 
                                     }
@@ -129,17 +134,17 @@ $(document).ready(function() {
                                 else
                                 {
                                  ?>
-                             <td> <a href="<?=site_url('admin/ruleValueManagement/edit/'.$row->rp_id)?>"><?=$row->rp_post_value?></a></td>
+                             <td>c <a href="<?=site_url('admin/ruleValueManagement/edit/'.$row->rp_id)?>"><?=$row->rp_formula?></a></td>
                             
                                <?php 
-                                }
+                                }*/
                               
                              }
                          }
                          else
                          {
                             ?>
-                                  <td> -</td>
+                                  <td>&nbsp;</td>
                            
                             <?php
                          }

@@ -63,6 +63,21 @@ class Admin extends MY_Controller
 
 	public function addProjectView($structure_number = "")
 	{
+		if ($this->input->post('txtStructureNumber')) {
+			$structure_number = $this->input->post('txtStructureNumber');
+		}
+		// check the existent of structure number
+		$this->load->model('m_imported_project');
+		$bol_struc = $this->m_imported_project->isExist($structure_number);
+		if ($bol_struc == false) {
+			$this->search_structure($structure_number);
+			$bol_struc = $this->m_imported_project->isExist($structure_number);
+			if ($bol_struc == false) {
+				$this->session->set_flashdata('no_layer_or_tool', 'Structure Number not found!');
+				redirect(site_url('admin/structureNumber'));
+			}
+		}
+		
 		$this->load->model('m_project');
 		$this->load->view('template/header_datatable');
 		$this->load->view('template/nav');
@@ -71,13 +86,14 @@ class Admin extends MY_Controller
 		$data['structure_number'] = $structure_number;
 
 		// delete existing structure number session
-
-		if ($this->session->userdata('structure_number')) $this->session->unset_userdata('structure_number');
+		if ($this->session->userdata('structure_number'))
+		{
+			$this->session->unset_userdata('structure_number');
+		}
+		
 		if (isset($_POST['search']))
 		{
-
 			// search if previous query was exist
-
 			$data['projects'] = $this->m_project->getProjects($structure_number);
 		}
 		elseif (isset($_POST['addproject']))
@@ -304,11 +320,13 @@ class Admin extends MY_Controller
 		$crud = new grocery_CRUD();
 		$crud->set_theme('datatables');
 		$crud->set_table('material');
+		$crud->set_relation('category_id', 'category', 'category_name');
 		$crud->display_as('type_of_production', 'Type of Material');
 		$crud->display_as('type_of_production_size', 'Size');
 		$crud->display_as('code_one', 'Raw Material');
 		$crud->display_as('code_two', 'STA Code');
 		$crud->display_as('ref_num', 'Roller Set');
+		$crud->display_as('category_id', 'Category Name');
 		try
 		{
 			$output = $crud->render();
@@ -624,6 +642,135 @@ class Admin extends MY_Controller
 	function _generate_table_layertool_management($output = null)
 	{
 		$this->load->view('layer_tool/viewLayerToolManagement.php', $output);
+	}
+	
+	public function gradeStaManagement()
+	{
+		$this->load->view('template/header');
+		$this->load->view('template/nav');
+		$data['sidebar'] = $this->load->view('template/sidebar');
+		$crud = new grocery_CRUD();
+		$crud->set_theme('datatables');
+		$crud->set_table('category_grade_sta');
+		$crud->set_relation('category_id','category','category_name');
+		$crud->display_as('category_id','Category ID');
+		$crud->display_as('cgs_grade','Grade');
+		$crud->display_as('cgs_sta','STA');
+		//$crud->unset_add();
+		//$crud->unset_delete();
+		try
+		{
+			$output = $crud->render();
+		}
+
+		catch(Exception $e)
+		{
+			show_error($e->getMessage());
+		}
+
+		$this->_generate_table_gradesta_management($output);
+	}
+
+	function _generate_table_gradesta_management($output = null)
+	{
+		$this->load->view('material/viewGradeSta.php', $output);
+	}
+	
+	public function carcassWidthThManagement()
+	{
+		$this->load->view('template/header');
+		$this->load->view('template/nav');
+		$data['sidebar'] = $this->load->view('template/sidebar');
+		$crud = new grocery_CRUD();
+		$crud->set_theme('datatables');
+		$crud->set_table('carcass_width_th');
+		$crud->display_as('cwt_width','Width');
+		$crud->display_as('cwt_th','Th');
+		//$crud->unset_add();
+		//$crud->unset_delete();
+		try
+		{
+			$output = $crud->render();
+		}
+
+		catch(Exception $e)
+		{
+			show_error($e->getMessage());
+		}
+
+		$this->_generate_table_carcasswidthth_management($output);
+	}
+
+	function _generate_table_carcasswidthth_management($output = null)
+	{
+		$this->load->view('material/viewCarcassWidthTh.php', $output);
+	}
+	
+	public function carcassInternalDiameterManagement()
+	{
+		$this->load->view('template/header');
+		$this->load->view('template/nav');
+		$data['sidebar'] = $this->load->view('template/sidebar');
+		$crud = new grocery_CRUD();
+		$crud->set_theme('datatables');
+		$crud->set_table('carcass_internal_diameter');
+		$crud->display_as('cid_name','Carcass Internal Diameter (inches)');
+		//$crud->unset_add();
+		//$crud->unset_delete();
+		try
+		{
+			$output = $crud->render();
+		}
+
+		catch(Exception $e)
+		{
+			show_error($e->getMessage());
+		}
+
+		$this->_generate_table_carcassinternaldiameter_management($output);
+	}
+
+	function _generate_table_carcassinternaldiameter_management($output = null)
+	{
+		$this->load->view('material/viewCarcassInternalDiameter.php', $output);
+	}
+	
+	public function admissiblePressureManagement()
+	{
+		$this->load->view('template/header');
+		$this->load->view('template/nav');
+		$data['sidebar'] = $this->load->view('template/sidebar');
+		$crud = new grocery_CRUD();
+		$crud->set_theme('datatables');
+		$crud->set_table('admissible_pressure');
+		$crud->set_relation('category_id','category','category_name');
+		$crud->set_relation('cid_id','carcass_internal_diameter','cid_name');
+		$crud->set_relation('cwt_id','carcass_width_th','cwt_width');
+		$crud->display_as('cid_name','Carcass Internal Diameter (inches)');
+		$crud->display_as('cwt_width','Carcass Width');
+		$crud->display_as('category_name','Category Name');
+		$crud->display_as('cid_id','Carcass Internal Diameter (inches)');
+		$crud->display_as('cwt_id','Carcass Width');
+		$crud->display_as('category_id','Category Name');
+		$crud->display_as('ap_value','Value');
+		//$crud->unset_add();
+		//$crud->unset_delete();
+		try
+		{
+			$output = $crud->render();
+		}
+
+		catch(Exception $e)
+		{
+			show_error($e->getMessage());
+		}
+
+		$this->_generate_table_admissiblepressure_management($output);
+	}
+
+	function _generate_table_admissiblepressure_management($output = null)
+	{
+		$this->load->view('material/viewCarcassInternalDiameter.php', $output);
 	}
 
 	/*
@@ -1012,6 +1159,55 @@ class Admin extends MY_Controller
 	{
 		$this->load->view('rule/ruleParameterview.php', $output);
 	}
+	
+	public function rulesDelete($rule_id = 0)
+	{
+		$this->load->model('m_rule');
+
+		// delete in rule table
+
+		$flag = 0;
+		if ($this->m_rule->deleteRulebyId($rule_id) != false)
+		{
+			$flag = 0;
+		}
+		else
+		{
+			$flag = 1;
+		}
+
+		// delete in rule_param
+
+		if ($this->m_rule->deleteRuleParamById($rule_id) != false)
+		{
+			$flag = 0;
+		}
+		else
+		{
+			$flag = 1;
+		}
+
+		// delete in tool_rule
+
+		if ($this->m_rule->deleteToolRule($rule_id) != false)
+		{
+			$flag = 0;
+		}
+		else
+		{
+			$flag = 1;
+		}
+
+		if ($flag != 1)
+		{
+
+			return true;
+		}
+		else
+		{
+			return false;
+		}
+	}
 
 	public function rulemanagementDelete($rule_id = 0)
 	{
@@ -1066,9 +1262,7 @@ class Admin extends MY_Controller
 		redirect('admin/ruleManagement');
 	}
 
-	public
-
-	function ruleValueManagement()
+	public function ruleValueManagement()
 	{
 		$this->load->view('template/header_datatable');
 		$this->load->view('template/nav');
@@ -1156,9 +1350,7 @@ class Admin extends MY_Controller
 		$this->load->view('rule/ruleValueManagementView.php', $output);
 	}
 
-	public
-
-	function viewAddRuleValueManagement()
+	public function viewAddRuleValueManagement()
 	{
 		$this->load->view('template/header');
 		$this->load->view('template/nav');
@@ -1172,10 +1364,74 @@ class Admin extends MY_Controller
 		$data['tools'] = $tools;
 		$this->load->view('rule/ruleAddView.php', $data);
 	}
+	
+	public function viewEditRuleValueManagement($rule_id=0) 
+	{
+		$this->load->view('template/header');
+		$this->load->view('template/nav');
+		$data['sidebar'] = $this->load->view('template/sidebar');
 
-	public
+		// get all tool
+		$tools = array();
+		$this->load->model('m_tool');
+		$tools = $this->m_tool->getAlltools();
+		$data['tools'] = $tools;
+		
+		// get all rules
+		$this->load->model('m_rule');
+		$rules = $this->m_rule->getRules($rule_id);
+		$data['rules'] = $rules;
+		$rule_number1 = $rules[0]->rule_number;
+		$rule_number2 = explode('_', $rule_number1);
+		$data['rule_number'] = $rule_number2[0];
+		$data['rule_number2'] = $rule_number2[1];
+		//print_r($data); die();
+		
+		$this->load->view('rule/ruleEditView.php', $data);
+	}
+	
+	public function editRuleProcess()
+	{
+		$this->load->model('m_rule');
+		$arrPost = $this->input->post();
+		$rule_number_old = $arrPost['rule_number'];
+		$rule_number_new = $arrPost['tool_code'].'_'.$arrPost['rule_number3'];
+		//print_r($arrPost); die();
+		if ($rule_number_old == $rule_number_new) {
+			$rule_id = $arrPost['rule_id'];
+			$data = array(
+				'var1' => $this->input->post('var1'),
+				'var2' => $this->input->post('var2')
+			);
+			$this->m_rule->editRule($rule_id, $data);
+			redirect('admin/ruleManagement');
+		} else {
+			$bol_rulesDelete = $this->rulesDelete($arrPost['rule_id']);
+			if ($bol_rulesDelete) {
+				$this->addRuleProcess();
+			} else {
+				$this->session->set_flashdata('rule_add_fail', 'Cannot edit rule!');
+				redirect('admin/ruleManagement');
+			}
+		}
+	}
+	
+	public function getRuleNumberLatest($tool_code)
+	{
+		$rules = $this->m_rule->getRules2($tool_code);
+		if ($rules) {
+			$num = array();
+			foreach ($rules as $ru) {
+				$pecah = explode('_', $ru->rule_number);
+				$num[] = $pecah[1];
+			}
+			return max($num)+1;
+		} else {
+			return 1;
+		}
+	}
 
-	function addRuleProcess($data = null)
+	public function addRuleProcess($data = null)
 	{
 		$this->load->model('m_rule');
 		$this->load->model('m_tool');
@@ -1185,12 +1441,13 @@ class Admin extends MY_Controller
 
 		// rule_number=tool_code._.rule_number
 
-		$rule_number = $this->input->post('rule_number');
+		//$rule_number = $this->input->post('rule_number');
+		$rule_number = $this->getRuleNumberLatest($tool_code);
 		$real_rule_number = $tool_code . '_' . $rule_number;
 		$data = array(
 			'rule_number' => $real_rule_number,
-			'var1' => $this->input->post('var1') ,
-			'cond' => trim($this->input->post('cond')) ,
+			'var1' => $this->input->post('var1'),
+			'cond' => '',
 			'var2' => $this->input->post('var2')
 		);
 		$rule_id = $this->m_rule->addRule($data);
@@ -1841,7 +2098,7 @@ class Admin extends MY_Controller
 		{
 			foreach($dis as $d)
 			{
-				$data['unique_layers'].= $this->my_func->getFirstWord($d->layer_name_unique) . ' ';
+				$data['unique_layers'].= $d->layer_code_unique . ' ';
 			}
 		}
 		
@@ -1977,23 +2234,42 @@ class Admin extends MY_Controller
 		$this->load->view('layer_tool/viewToolRuleManagement.php', $output);
 	}
 	
-	function test_oracle()
+	public function isValidColumn($database, $table, $column)
 	{
-		//echo phpinfo();
-		echo "oracle<br />";
-		$conn = oci_connect('mars', 'qwerty', '127.0.0.1:1521/XE');
-		$sql = "SELECT * FROM CUBA1";
+		$sql = sprintf("SELECT * 
+				FROM information_schema.COLUMNS 
+				WHERE 
+					TABLE_SCHEMA = '%s' 
+				AND TABLE_NAME = '%s' 
+				AND COLUMN_NAME = '%s'",
+				$database, $table, $column);
+		$query = $this->db->query($sql);
+		$result = $query->result();
+		return sizeof($result);
+	}
+	
+	public function search_structure($structure='')
+	{
+		set_time_limit(0);
+		$dbstr ="IDP.WORLD =(DESCRIPTION =(ADDRESS = (PROTOCOL = TCP)(HOST = IDP.cso.tpnet.intra)(PORT = 1521))
+		 (CONNECT_DATA = (SERVICE_NAME = IDP.WORLD)))";
+		$conn = oci_connect("FLEXASMU", "FLEXASMU", "IDP.cso.tpnet.intra:1521/IDP.WORLD");
+		$sql = sprintf("SELECT * FROM GTO_DATA_STRUCTURE_V01 WHERE STRUCTURE = '%s'", $structure);
 		$r = oci_parse($conn, $sql);
 		oci_execute($r);
 		$d = oci_fetch_array($r);
-		if ($d['C_ID'] != '' && $d['C_ID'] != NULL) {
-			do {
-				echo $d['C_ID'] . "|" . $d['C_NAME'] . "<br />";
-			} while ($d = oci_fetch_array($r));
-			echo "Yeay!";
-		} else {
-			echo "Looo...";
+		while($d = oci_fetch_array($r)) {
+			$sqlx = "INSERT INTO imported_project";
+			$cols = "imported_project_id";
+			$vals = "'haha'";
+			foreach($d as $column => $value) {
+				if(!is_int($column) && $this->isValidColumn('marsdb', 'imported_project', $column)) {
+					$cols .= ", ".$column;
+					$vals .= ", '".str_replace("'", "", $value)."'";
+				}
+			}
+			$sqlx .= " (".$cols.") VALUES (".$vals.")";
+			$queryx = $this->db->query($sqlx);
 		}
-		//echo phpinfo();
 	}
 }

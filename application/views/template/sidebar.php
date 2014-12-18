@@ -12,8 +12,13 @@
                          'Tool Management'=>site_url('admin/toolManagement'),
                          'Layer Management'=>site_url('admin/layerManagement'),
                          'Layer Tool Management'=>site_url('admin/layerToolManagement'),
+						 
+                         'Grade-STA Management'=>site_url('admin/gradeStaManagement'),
+                         'Carcass-Width-Th Management'=>site_url('admin/carcassWidthThManagement'),
+                         'Carcass-Internal-Diameter Management'=>site_url('admin/carcassInternalDiameterManagement'),
+                         'Admissible-Pressure Management'=>site_url('admin/admissiblePressureManagement'),
+						 
                          'Material Management'=>site_url('admin/materialManagement'),
-                         'Imported Data Management'=>site_url('admin/importedManagement'),
                          'Nominal Column Management'=>site_url('admin/nominalColumnManagement'),
                           'Parameter Management'=>site_url('admin/parameterManagement'),
                          'Rule Management'=>site_url('admin/ruleManagement'),
@@ -21,6 +26,7 @@
 
           		    $navArrStaff=array('Home'=>site_url('admin'),
                          'Tool Sheet'=>site_url('admin/structureNumber'),
+						 'Imported Data Management'=>site_url('admin/importedManagement'),
                          'Logout'=>site_url('login/logout'));
 
                   //administrator

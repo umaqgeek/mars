@@ -26,17 +26,13 @@
     }
     ?>
   </div>
-  <div class="form-group">
+  <!--<div class="form-group">
     <label for="exampleInputPassword1">Rule Number</label>
     <input type="text" class="form-control" name="rule_number" id="rule_number" placeholder="Rule Number">
-  </div>
+  </div>-->
   <div class="form-group">
     <label for="exampleInputPassword1">Var1</label>
     <input type="text" class="form-control" id="var1" name="var1" placeholder="Var1">
-  </div>
-   <div class="form-group">
-    <label for="exampleInputPassword1">Cond</label>
-    <input type="text" class="form-control" id="cond" name="cond" placeholder="cond">
   </div>
 
    <div class="form-group">
