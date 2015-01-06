@@ -45,6 +45,12 @@ function confirmation() {
 }
 </script>
  <div class="container-fluid">
+ 
+ 	<div class="row">
+    	<div class="col-md-2 col-md-offset-2 main">
+    		<button class="btn btn-lg btn-primary btn-block" name="search" type="button" onclick="history.back(-1);">Back</button>
+        </div>
+    </div>
 
    <div class="row">
          <div class="col-sm-5 col-sm-offset-3 col-md-10 col-md-offset-2 main">

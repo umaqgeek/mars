@@ -122,8 +122,26 @@ if (!empty($project_number)) {
 }
 
 ?>
+      <?php
+
+if (isset($sess['layer_name']) && !empty($sess['layer_name'])) {
+?>
+      <div class="col-md-3">
+         Layer Name : <?php echo $sess['layer_name']; ?>
+      </div>
+      <?php
+}
+
+?>
    </div>
 </div>
+
+ <div class="row">
+    	<div class="col-md-2 col-md-offset-2 main">
+    		<button class="btn btn-lg btn-primary btn-block" name="search" type="button" onclick="history.back(-1);">Back</button>
+        </div>
+    </div>
+
 <div class="row">
    <div class="col-sm-10 col-sm-offset-2">
       <!-- Nav tabs -->
@@ -160,6 +178,8 @@ if (!empty($project_number)) {
 foreach($tools as $r) { 
 	$range = $this->my_func->getRangeIDNom($structure_number, $sess['layer_name'], $r->nc_name);
 	$boolMPList = $this->my_func->getRangeMPListCode($structure_number, $sess['layer_name'], $r->tool_id);
+	$isFound = $this->my_func->getFoundNotFound($r->tool_code);
+	$strFound = ($isFound == true) ? ("Found") : ("Not Found");
 	// $boolMPList: list tools based on MP Code List
 	// $range: list tools based on ID Nom Range
 	if($boolMPList == true || ($range >= $r->min_range && $range <= $r->max_range)) {
@@ -167,7 +187,7 @@ foreach($tools as $r) {
 							<tr value="<?php echo $r->tool_id; ?>">
 								<td><?php echo $r->tool_code; ?></td>
                               	<td><?php echo $r->tool_description; ?></td>
-                                <td>Found</td>
+                                <td><?php echo $strFound; ?></td>
                            	</tr>
 <?php
 	}

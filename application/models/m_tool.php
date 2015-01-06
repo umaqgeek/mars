@@ -63,18 +63,46 @@ class M_tool extends CI_Model  {
 		$result=$query->result();
 		return $result;
 	}
+	
+	public function checkExist($tablename, $columnname, $dbname='marsdb')
+	{
+		/*
+		SELECT * 
+		FROM information_schema.COLUMNS 
+		WHERE 
+			TABLE_SCHEMA = 'db_name' 
+		AND TABLE_NAME = 'table_name' 
+		AND COLUMN_NAME = 'column_name'
+		*/
+		$sql = sprintf("SELECT * 
+		FROM information_schema.COLUMNS 
+		WHERE 
+			TABLE_SCHEMA = '%s' 
+		AND TABLE_NAME = '%s' 
+		AND COLUMN_NAME = '%s'", $dbname, $tablename, $columnname);
+		$query = $this->db->query($sql);
+		$result=$query->result();
+		if (isset($result) && NULL != $result && !empty($result)) {
+			return true;
+		} else {
+			return false;
+		}
+	}
 
 	public function getToolingMaster($nominal_types=array())
 	{
+		//print_r($nominal_types); die();
 		//get the columns
 		$columns=array();
 		foreach($nominal_types as $k=>$v)
 		{
-			$columns[]="`".$v->nt_name."`";
-			$v->tnt_value=str_replace("\"",' INCH',$v->tnt_value);
-
-			$key[]="`".$v->nt_name."`";
-			$value[]=$v->tnt_value;
+			if ($this->checkExist('tooling_master', $v->nt_name)) {
+				$columns[]="`".$v->nt_name."`";
+				$v->tnt_value=str_replace("\"",' INCH',$v->tnt_value);
+	
+				$key[]="`".$v->nt_name."`";
+				$value[]=$v->tnt_value;
+			}
 		}
 		$wheres=array_combine($key,$value);
 
@@ -86,7 +114,12 @@ class M_tool extends CI_Model  {
  		$column=implode(", ",$columns);
 
 		$queries='';
-		$queries='SELECT '.$column.' FROM '.'tooling_master WHERE ';
+		//$queries='SELECT '.$column.' FROM '.'tooling_master WHERE ';
+		$queries="SELECT *, 
+		`QUANTITY (NOT REVERSED)` AS qty_x, 
+		`DRAWING-NO` AS drwg_no_x, 
+		`TOOLING_NAME` AS tooling_name_x 
+		FROM tooling_master WHERE ";
 		
 		$xx=1;
 		foreach($wheres as $w=>$z)
@@ -97,6 +130,8 @@ class M_tool extends CI_Model  {
 				$queries.=$w.' = '."'".$z."'".'';
 			$xx++;
 		}
+		
+		//print_r($queries); die();
 
 		$query = $this->db->query($queries);
 		$result=$query->result();

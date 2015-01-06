@@ -45,14 +45,22 @@ function confirmation() {
 }
 </script>
  <div class="container-fluid">
+ 
+ <div class="row">
+    	<div class="col-md-2 col-md-offset-2 main">
+    		<button class="btn btn-lg btn-primary btn-block" name="search" type="button" onclick="history.back(-1);">Back</button>
+        </div>
+    </div>
+ 
   <div class="row">
          <div class="col-sm-5 col-sm-offset-3 col-md-10 col-md-offset-2 main">
           <?php
-           if(!empty($projects))
-           {
+		  	
             $structure_number="";
             $project_name="";
             $project_number="";
+           if(!empty($projects))
+           {
 
                foreach($projects as $r)
                   {
@@ -145,12 +153,12 @@ function confirmation() {
             //get the data
           $value="";
             foreach($layers as $l){
-                $value=$l->layer_name.'seperator'.$l->diaintercouche;
+                $value=$l->layer_name.'seperator'.$l->diainter;
                 ?>
                 <tr value="<?=$value?>">
                     <td><?=$l->layer_name?></td>
 
-                        <td><?=$l->diaintercouche?></td>
+                        <td><?=$l->diainter?></td>
                        <?php
                          }
                        

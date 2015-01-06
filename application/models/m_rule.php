@@ -10,6 +10,14 @@ class M_rule extends CI_Model  {
  		return $query->result();
 	}
 	
+	public function getRules3()
+	{
+		$this->db->select('*');
+		$this->db->from('rule ru');
+		$query = $this->db->get();
+ 		return $query->result();
+	}
+	
 	public function editRule($rule_id, $data)
 	{
 		$this->db->where('rule_id', $rule_id);
@@ -76,15 +84,13 @@ class M_rule extends CI_Model  {
 	public function updateRuleParam($data=null,$where=0)
 	{
 		$this->db->where('rp_id', $where);
-			return $this->db->update('rule_param', $data);
-		
+		return $this->db->update('rule_param', $data);
 	}
 
 	public function updateRuleParamBasedOnParam_id($data=null,$where=0)
 	{
 		$this->db->where('param_id', $where);
-			return $this->db->update('rule_param', $data);
-		
+		return $this->db->update('rule_param', $data);
 	}
 
 
@@ -175,7 +181,7 @@ class M_rule extends CI_Model  {
 		return $result;
 	}
 
-public function getPreValueForFormula($rp_id)
+	public function getPreValueForFormula($rp_id)
 	{
 		$this->db->select('rp_pre_value');
 		$this->db->from('rule_param');
@@ -241,7 +247,7 @@ public function getPreValueForFormula($rp_id)
 		return $this->db->delete('rule_param'); 
 	}
 
-		public function deleteRuleParamBasedOnParam_id($param_id=0){
+	public function deleteRuleParamBasedOnParam_id($param_id=0){
 		$this->db->where('param_id', $param_id);
 		$this->db->delete('rule_param'); 
 	}

@@ -6,7 +6,7 @@ class M_layer extends CI_Model  {
     {
           //$query_string="SELECT DISTINCT layer_name, CODEMP FROM imported_project WHERE structure='".$structure_number."'";
             //$query_string="SELECT DISTINCT layer_name, diaintercouche FROM imported_project WHERE structure='".$structure_number."'";
-            $query_string="SELECT layer_name, diaintercouche FROM imported_project WHERE structure='".$structure_number."'";
+            $query_string="SELECT DISTINCT(layer_name), layer_name, diainter FROM imported_project WHERE structure='".$structure_number."'";
             
             $query = $this->db->query($query_string);
  			
@@ -33,7 +33,7 @@ class M_layer extends CI_Model  {
 	{
 		$this->db->select('layer_id');
 		$this->db->from('layer');
-		$this->db->where('layer_description', ucwords(strtolower($layer_name)));
+		$this->db->where('UPPER(layer_description)', ucwords(strtolower($layer_name)));
 		$query = $this->db->get();
 		foreach ($query->result() as $row)
 		{

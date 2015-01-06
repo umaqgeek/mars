@@ -63,8 +63,26 @@ $sess = $this->session->all_userdata();
       <?php
          }
          ?>
+               <?php
+
+if (isset($sess['layer_name']) && !empty($sess['layer_name'])) {
+?>
+      <div class="col-md-3">
+         Layer Name : <?php echo $sess['layer_name']; ?>
+      </div>
+      <?php
+}
+
+?>
    </div>
 </div>
+
+ <div class="row">
+    	<div class="col-md-2 col-md-offset-2 main">
+    		<button class="btn btn-lg btn-primary btn-block" name="search" type="button" onclick="history.back(-1);">Back</button>
+        </div>
+    </div>
+
 <div class="row">
    <div class="col-sm-10 col-sm-offset-2">
       
@@ -143,7 +161,27 @@ $sess = $this->session->all_userdata();
                </div>
                <div class="row">
                   <div class="col-sm-12">
-                     <table id="example2">
+                  	<table id="example2">
+                    	<thead>
+                        	<tr>
+                            	<th>Drawing No</th>
+                                <th>Location</th>
+                                <th>Quantity</th>
+                                <th>Tooling Name</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                        <?php if(isset($nominal_type_results)) { foreach($nominal_type_results as $ntr) { ?>
+                        	<tr>
+                            	<td><?=$ntr->drwg_no_x; ?></td>
+                                <td><?=$ntr->LOCATION; ?></td>
+                                <td><?=$ntr->qty_x; ?></td>
+                                <td><?=$ntr->tooling_name_x; ?></td>
+                            </tr>
+                        <?php } } ?>
+                        </tbody>
+                    </table>
+                     <!--<table id="example2">
                         <thead>
                            <tr>
                               <?php
@@ -186,7 +224,7 @@ $sess = $this->session->all_userdata();
                                      ?>
                            </tr>
                         </tbody>
-                     </table>
+                     </table>-->
                   </div>
                </div>
             </div>

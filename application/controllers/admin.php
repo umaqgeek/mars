@@ -1,4 +1,4 @@
-<?php
+	<?php
 
 if (!defined('BASEPATH')) die();
 class Admin extends MY_Controller
@@ -143,8 +143,10 @@ class Admin extends MY_Controller
 		if ($flag != false)
 		{
 			$this->session->set_flashdata('project_add_sucess', 'Project is added successfully');
-			$this->session->set_flashdata('structure_number', $structure_number);
-			redirect('admin/displayLayer');
+			$this->session->set_userdata('structure_number', $structure_number);
+			$transaction_number = $transaction_id;
+			$this->session->set_userdata('transaction_number', $transaction_number);
+			redirect('admin/displayLayerDirect');
 		}
 		else
 		{
@@ -285,9 +287,21 @@ class Admin extends MY_Controller
 		$crud->columns('username', 'role_id');
 		$crud->fields('username', 'role_id', 'user_pass');
 		$crud->field_type('user_pass', 'password');
+		$crud->callback_edit_field('user_pass', array(
+			$this, 
+			'set_password_input_to_empty'
+		));
+    	$crud->callback_add_field('user_pass', array(
+			$this, 
+			'set_password_input_to_empty'
+		));
 		$crud->callback_insert(array(
 			$this,
 			'register_user'
+		));
+		$crud->callback_update(array(
+			$this,
+			'edit_user'
 		));
 		try
 		{
@@ -304,7 +318,17 @@ class Admin extends MY_Controller
 
 	function register_user($post_array)
 	{
-		return $this->simpleloginsecure->create($post_array['username'], $post_array['user_pass']);
+		return $this->simpleloginsecure->create($post_array['username'], $post_array['user_pass'], false, $post_array['role_id']);
+	}
+	
+	function edit_user($post_array, $primary_key)
+	{
+		$post_array['user_pass'] = md5($post_array['user_pass']);
+		return $this->simpleloginsecure->update_user($primary_key, $post_array);
+	}
+	
+	function set_password_input_to_empty() {
+    	return "<input type='password' name='user_pass' id='user_pass' value='' />";
 	}
 
 	function _generate_table_user_management($output = null)
@@ -735,6 +759,59 @@ class Admin extends MY_Controller
 		$this->load->view('material/viewCarcassInternalDiameter.php', $output);
 	}
 	
+	public function admisPresMngmntView($category_id=1, $cwt_id='', $cid_id='')
+	{
+		$this->load->model('m_material');
+		$this->load->view('template/header');
+		$this->load->view('template/nav');
+		$data['sidebar'] = $this->load->view('template/sidebar');
+		
+		$cwt_id = str_replace('%20', ' ', $cwt_id);
+		
+		$data['category'] = $this->m_material->getCategoryDetail($category_id);
+		$data['cwt_id'] = $cwt_id;
+		$data['cid_id'] = $cid_id;
+		
+		$data['ap'] = $this->m_material->getAdmisPressDetail($category_id, $cwt_id, $cid_id);
+		
+		$this->load->view('material/viewAPDetails', $data);
+	}
+	
+	public function editAdmisPres()
+	{
+		$this->load->model('m_material');
+		$arr = $this->input->post();
+		$ap_id = $arr['ap_id'];
+		unset($arr['ap_id']);
+		unset($arr['category_name']);
+		//print_r($arr); die();
+		
+		$bol_ap = false;
+		if ($ap_id == 0) {
+			$bol_ap = $this->m_material->addAdmisPress($arr);
+		} else {
+			$bol_ap = $this->m_material->editAdmisPress($ap_id, $arr);
+		}
+		if ($bol_ap) {
+		} else {
+			$this->session->set_flashdata('delete_rule_fail', 'There is problem when editing value!');
+		}
+		redirect(site_url('admin/admisPresMngmnt'));
+	}
+	
+	public function admisPresMngmnt()
+	{
+		$this->load->view('template/header');
+		$this->load->view('template/nav');
+		$data['sidebar'] = $this->load->view('template/sidebar');
+		
+		$this->load->model('m_material');
+		$data['category'] = $this->m_material->getCategory();
+		$data['size'] = $this->m_material->getDistinctSize();
+		
+		$this->load->view('material/viewAdmisPresMngmnt', $data);
+	}
+	
 	public function admissiblePressureManagement()
 	{
 		$this->load->view('template/header');
@@ -814,7 +891,8 @@ class Admin extends MY_Controller
 
 		$this->load->model('m_rule');
 		$rules = array();
-		$rules = $this->m_rule->getAllruleAndsTools();
+		//$rules = $this->m_rule->getAllruleAndsTools();
+		$rules = $this->m_rule->getRules3();
 		$data['rules'] = $rules;
 		/*
 		if($this->session->flashdata('delete_rule_sucess'))
@@ -1037,7 +1115,7 @@ class Admin extends MY_Controller
 		}
 		else
 		{
-			$this->form_validation->set_message('Please take note that the maximum number of param for each tool is 10 and the same param number under same rool is forbiden');
+			$this->form_validation->set_message('Please take note that the maximum number of param for each tool is 10 and the same param number under same tool is forbiden');
 			return false;
 
 			// $this->session->set_flashdata('param_add_fail', 'Please take note that the maximum number of param for each tool is 10 and the same param number under same rool is forbiden');
@@ -1137,7 +1215,7 @@ class Admin extends MY_Controller
 				$data_rule_param = array(
 					'rule_id' => $r
 				);
-				$this->m_rule->updateRuleParamBasedOnParam_id($data_rule_param, $param_id);
+				//$this->m_rule->updateRuleParamBasedOnParam_id($data_rule_param, $param_id);
 				/*
 				$data_rule_param=array(
 				'rule_id'=>$r,
@@ -1149,6 +1227,17 @@ class Admin extends MY_Controller
 				$rp_ids=array();
 				$rp_ids[]=$this->m_rule->addRuleParam($data_rule_param);
 				*/
+				
+				$par = $this->m_param->getParamsDetail($param_id);
+				if ($par) {
+					$param_code_new = $par[0]->param_code;
+					$param_code_old = $post_array['param_code'];
+					$str = 'TOOL_'.$tool_id.'_';
+					$datax = array(
+					   'rp_formula' => $param_code_new.'|'.$param_code_old
+					);
+					//$this->m_param->updateRuleParamDetail($str, $datax);
+				}
 			}
 
 			return $post_array;
@@ -1958,9 +2047,7 @@ class Admin extends MY_Controller
 		$this->session->set_userdata('selected_tool_id', $tool_id);
 	}
 
-	public
-
-	function displayToolSheet()
+	public function displayToolSheet()
 	{
 		$this->load->model("m_rule");
 		$this->load->model("m_tool");
@@ -2027,7 +2114,7 @@ class Admin extends MY_Controller
 			redirect('admin/showError');
 		}
 
-		/*$nominal_type_results = $this->m_tool->getToolingMaster($nominal_types);
+		$nominal_type_results = $this->m_tool->getToolingMaster($nominal_types);
 		if (!empty($nominal_type_results))
 		{
 			$data['nominal_type_results'] = $nominal_type_results;
@@ -2035,7 +2122,9 @@ class Admin extends MY_Controller
 		else
 		{
 			$data['nominal_type_results'] = null;
-		}*/
+		}
+		
+		//print_r($data['nominal_type_results']); die();
 
 		$structure_number = $this->session->userdata('structure_number');
 		$transaction_number = $this->session->userdata('transaction_number');
@@ -2051,9 +2140,7 @@ class Admin extends MY_Controller
 		$this->load->view('template/error');
 	}
 
-	public
-
-	function DisplayTool()
+	public function DisplayTool()
 	{
 		$this->load->model("m_layer");
 		$this->load->model("m_tool");
@@ -2082,6 +2169,7 @@ class Admin extends MY_Controller
 		$data['tdd'] = $this->m_imported_project->getAll($structure_number, $layer_name);
 		$tools = array();
 		$tools = $this->m_tool->getToolFromLayerId($layer_id);
+		//echo $layer_id; die();
 		$data['tools'] = $tools;
 
 		// save to session
@@ -2246,6 +2334,27 @@ class Admin extends MY_Controller
 		$query = $this->db->query($sql);
 		$result = $query->result();
 		return sizeof($result);
+	}
+	
+	public function test_search_structure($structure='')
+	{
+		set_time_limit(0);
+		$dbstr ="IDP.WORLD =(DESCRIPTION =(ADDRESS = (PROTOCOL = TCP)(HOST = IDP.cso.tpnet.intra)(PORT = 1521))
+		 (CONNECT_DATA = (SERVICE_NAME = IDP.WORLD)))";
+		$conn = oci_connect("FLEXASMU", "FLEXASMU", "IDP.cso.tpnet.intra:1521/IDP.WORLD");
+		$sql = sprintf("SELECT * FROM GTO_DATA_STRUCTURE_V01 WHERE STRUCTURE = '%s'", $structure);
+		$r = oci_parse($conn, $sql);
+		oci_execute($r);
+		$d = oci_fetch_array($r);
+		$count = 0;
+		while($d = oci_fetch_array($r)) {
+			$count += 1;
+		}
+		if ($count > 0) {
+			echo "Ada.. count: ".$count;
+		} else {
+			echo "Xdok!";
+		}
 	}
 	
 	public function search_structure($structure='')

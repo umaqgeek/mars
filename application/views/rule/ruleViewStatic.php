@@ -68,7 +68,7 @@ $(document).ready(function() {
          <table id="example" class="display" cellspacing="0" width="100%">
         <thead>
             <tr>
-                <th>Tool Code</th>
+                <!--<th>Tool Code</th>-->
                 <th>Rule Number</th>
                 <th>var1</th>
                 <th>Cond</th>
@@ -87,10 +87,11 @@ $(document).ready(function() {
             <?php
             //get the data
  
+ 			$ito = 1;
             foreach($rules as $r){
                 ?>
                 <tr>
-                    <td><?=$r->tool_code?></td>
+                    <!--<td><?=$ito++; ?></td>-->
 
                     <td> <a href="<?=site_url('admin/viewEditRuleValueManagement/'.$r->rule_id)?>"><?=$r->rule_number?></a></td>
                             
@@ -99,18 +100,20 @@ $(document).ready(function() {
                         <td><?=$r->var2?></td>
                         <?php
                          for($i=1;$i<=10;$i++){
-                            $result=array();
+							 echo "<td>";
+							 //echo '|'.$r->rule_id.'|'.$i.'|';
+                           $result=array();
                                  
-                             $result=$this->my_func->getParamValue($r->rule_id,$i);
+                           $result=$this->my_func->getParamValue($r->rule_id,$i);
                             
                             //print_r($result); die();
-                             if(!empty($result)){
+                           if(!empty($result)){
                               
                              foreach($result as $row)
                              {
 								 $rpValue = ($row->rp_formula!=null) ? ($row->rp_formula) : ('___');
 								  ?>
-                                         <td><a href="<?=site_url('admin/ruleValueManagement/edit/'.$row->rp_id)?>"><?=$rpValue;?></a></td>
+                                     <a href="<?=site_url('admin/ruleValueManagement/edit/'.$row->rp_id)?>"><?=$rpValue;?></a>
                                         
                                            <?php
                                 /*if($row->pio_id==3)
@@ -144,10 +147,11 @@ $(document).ready(function() {
                          else
                          {
                             ?>
-                                  <td>&nbsp;</td>
+                                  &nbsp;
                            
                             <?php
                          }
+						 echo "</td>";
                            // print_r($result);
                            // echo "<br/>";
                          }

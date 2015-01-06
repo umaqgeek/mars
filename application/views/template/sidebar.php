@@ -13,10 +13,7 @@
                          'Layer Management'=>site_url('admin/layerManagement'),
                          'Layer Tool Management'=>site_url('admin/layerToolManagement'),
 						 
-                         'Grade-STA Management'=>site_url('admin/gradeStaManagement'),
-                         'Carcass-Width-Th Management'=>site_url('admin/carcassWidthThManagement'),
-                         'Carcass-Internal-Diameter Management'=>site_url('admin/carcassInternalDiameterManagement'),
-                         'Admissible-Pressure Management'=>site_url('admin/admissiblePressureManagement'),
+                         'Admissible-Pressure Management'=>site_url('admin/admisPresMngmnt'),
 						 
                          'Material Management'=>site_url('admin/materialManagement'),
                          'Nominal Column Management'=>site_url('admin/nominalColumnManagement'),

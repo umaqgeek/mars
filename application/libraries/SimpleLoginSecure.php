@@ -46,7 +46,7 @@ class SimpleLoginSecure
 	 * @param	bool
 	 * @return	bool
 	 */
-	function create($user_email = '', $user_pass = '', $auto_login = false) 
+	function create($user_email = '', $user_pass = '', $auto_login = false, $role_id = 2) 
 	{
 		$this->CI =& get_instance();
 
@@ -73,6 +73,7 @@ class SimpleLoginSecure
 					'magicnum'=>md5($user_email),
 					'user_date' => date('c'),
 					'user_modified' => date('c'),
+					'role_id' => $role_id
 				);
 
 		$this->CI->db->set($data); 
@@ -84,6 +85,50 @@ class SimpleLoginSecure
 				
 		if($auto_login)
 			$this->login($user_email, $user_pass);
+		
+		return true;
+	}
+	
+	function update_user($user_id = '', $data_user) 
+	{
+		$this->CI =& get_instance();
+
+		//Make sure account info was sent
+		if($user_id == '') {
+			return false;
+		}
+		
+		//Check against user table
+		/*$this->CI->db->where('user_id', $user_id); 
+		$query = $this->CI->db->get_where($this->user_table);
+		
+		if ($query->num_rows() > 0) //user_email already exists
+			return false;*/
+
+		//Hash user_pass using phpass
+		//$hasher = new PasswordHash(PHPASS_HASH_STRENGTH, PHPASS_HASH_PORTABLE);
+		//$user_pass_hashed = $hasher->HashPassword($user_pass);
+
+		//Insert account into the database
+		/*$data = array(
+					'username' => $user_email,
+					'user_pass' => md5($user_pass),
+					'magicnum'=>md5($user_email),
+					'user_date' => date('c'),
+					'user_modified' => date('c'),
+					'role_id' => $role_id
+				);*/
+
+		//$this->CI->db->set($data_user); 
+
+		$this->CI->db->where('user_id', $user_id);
+		if(!$this->CI->db->update($this->user_table, $data_user)){ //There was a problem! 
+			return false;
+		}
+		
+				
+		/*if($auto_login)
+			$this->login($user_email, $user_pass);*/
 		
 		return true;
 	}

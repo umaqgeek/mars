@@ -53,6 +53,22 @@ class My_Func
 			return $r->rule_number;
 		}
 	}
+	
+	public function getFoundNotFound($tooling_name)
+	{
+		$CI = $this->obj;
+		$CI->db->select('*');
+		$CI->db->from('tooling_master');
+		$CI->db->where('tooling_name', $tooling_name);
+		$query = $CI->db->get();
+		$results = array();
+		$results = $query->result();
+		if (isset($results) && !empty($results)) {
+			return true;
+		} else {
+			return false;
+		}
+	}
 
 	public
 
@@ -125,9 +141,7 @@ class My_Func
 		return $hasil;
 	}
 
-	public
-
-	function validate_add_param($post_array = array())
+	public function validate_add_param($post_array = array())
 	{
 		$tool_id = $post_array['tool_id'];
 		$param_number = $post_array['param_number'];
@@ -143,9 +157,7 @@ class My_Func
 		else return false;
 	}
 
-	public
-
-	function validate_number_of_param($post_array = array())
+	public function validate_number_of_param($post_array = array())
 	{
 		$tool_id = $post_array['tool_id'];
 		$param_number = $post_array['param_number'];
@@ -590,7 +602,7 @@ class My_Func
 	
 	public function getFormulaValue($structure_number, $layer_name, $pio_id, $formula, $param_code, $rule_id, $sess_value)
 	{
-		if ($pio_id == 3) {
+		if ($pio_id == 3 || $pio_id == 2) {
 			$pecah = explode(' ', $formula);
 			$size_pecah = sizeof($pecah);
 			$a = '';
@@ -615,6 +627,9 @@ class My_Func
 					$str .= ltrim($fa, '0');
 				}
 			}
+			//$compute = create_function('', 'return (135.0);');
+			//return 0 + $compute();
+			//return 'return (' . $str . ');';
 			$compute = create_function('', 'return (' . $str . ');');
 			$post_data = array(
 				'rp_post_value' => (0 + $compute())
@@ -622,7 +637,7 @@ class My_Func
 			$CI = $this->obj;
 			$CI->db->select('*');
 			$CI->db->from('param');
-			$CI->db->where('param_code', utf8_decode($param_code));
+			$CI->db->where('param_code', $param_code);
 			$query = $CI->db->get();
 			if (sizeof($query->result()) > 0) {
 				$param_id = $query->result()[0]->param_id;
@@ -660,7 +675,12 @@ class My_Func
 			$CI->db->where('structure', $structure_number);
 			$CI->db->where('layer_name', $layer_name);
 			$query = $CI->db->get();
-			return $query->result()[0]->col1;
+			$r = $query->result();
+			if ($r) {
+				return $r[0]->col1;
+			} else {
+				return 0;
+			}
 		} else {
 			return 0;
 		}
@@ -683,7 +703,8 @@ class My_Func
 					$CI->db->from('material');
 					$CI->db->where('material_code', $codemp);
 					$query = $CI->db->get();
-					return $query->result()[0]->nom_pitch;
+					$col1 = $query->result();
+					return $col1[0]->nom_pitch;
 				} else {
 					return 0;
 				}
@@ -699,7 +720,8 @@ class My_Func
 					$CI->db->where('structure', $structure_number);
 					$CI->db->where('layer_name', $layer_name);
 					$query = $CI->db->get();
-					return $query->result()[0]->col1;
+					$col1 = $query->result();
+					return $col1[0]->col1;
 				} else {
 					$vcode = explode("_", utf8_decode($vcode));
 					$tool_id = $vcode[1];

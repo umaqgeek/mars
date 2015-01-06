@@ -1,5 +1,32 @@
 <?php
 class M_param extends CI_Model  {
+	
+	public function updateRuleParamDetail($rp_formula, $data)
+	{
+		$this->db->like('rp_formula', $rp_formula); 
+		return $this->db->update('rule_param', $data); 
+	}
+	
+	public function getParamsDetail($param_id)
+	{
+		$this->db->select('*');
+		$this->db->from('param');
+		$this->db->where('param_id', $param_id); 
+		
+		$query = $this->db->get();
+		$result=$query->result();
+		return $result;
+	}
+	
+	public function getRuleParamsAll()
+	{
+		$this->db->select('*');
+		$this->db->from('rule_param');
+		
+		$query = $this->db->get();
+		$result=$query->result();
+		return $result;
+	}
    
 	//get tool_id from tool_rule table
 	public function getToolId($param_id=0)
@@ -75,7 +102,7 @@ class M_param extends CI_Model  {
 		}
 	}
 
-public function updateParam($data=null,$where=0)
+	public function updateParam($data=null,$where=0)
 	{
 		$this->db->where('param_id', $where);
 			return $this->db->update('param', $data);
