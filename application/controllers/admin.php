@@ -1,8 +1,7 @@
-	<?php
-
+<?php
 if (!defined('BASEPATH')) die();
-class Admin extends MY_Controller
 
+class Admin extends MY_Controller
 {
 	function __construct()
 	{
@@ -638,6 +637,34 @@ class Admin extends MY_Controller
 	{
 		$this->load->view('imported/viewImportedManagement.php', $output);
 	}
+	
+	public function toolingMaster()
+	{
+		$this->load->view('template/header');
+		$this->load->view('template/nav');
+		$data['sidebar'] = $this->load->view('template/sidebar');
+		$crud = new grocery_CRUD();
+		$crud->set_theme('datatables');
+		$crud->unset_delete();
+		$crud->unset_edit();
+		$crud->set_table('tooling_master');
+		try
+		{
+			$output = $crud->render();
+		}
+
+		catch(Exception $e)
+		{
+			show_error($e->getMessage());
+		}
+
+		$this->_generate_table_tooling_master($output);
+	}
+
+	function _generate_table_tooling_master($output = null)
+	{
+		$this->load->view('imported/viewToolingMaster.php', $output);
+	}
 
 	public function layerToolManagement()
 	{
@@ -1033,9 +1060,13 @@ class Admin extends MY_Controller
 		$crud = new grocery_CRUD();
 		$crud->set_theme('datatables');
 		$crud->set_table('param');
-		$crud->fields('param_number', 'tool_id', 'param_code', 'param_tool_code', 'param_tol_min', 'param_tol_plus');
-		$crud->columns('param_number', 'param_code', 'param_tool_code', 'param_tol_min', 'param_tol_plus');
+		$crud->fields('param_number', 'tool_id', 'param_code', 'param_tool_code', 'param_tol_min', 'param_tol_plus', 'nt_id', 'param_code_mex');
+		$crud->columns('param_number', 'param_code', 'param_tool_code', 'param_tol_min', 'param_tol_plus', 'nt_id', 'param_code_mex');
 		$crud->set_relation('tool_id', 'tool', 'tool_code');
+		$crud->set_relation('nt_id', 'nominal_type', 'nt_name');
+		
+		$crud->display_as('nt_id','MEX Code (Optional)');
+		$crud->display_as('param_code_mex','Other Code Name');
 
 		// $crud->set_relation('param_tool_code','tool','tool_code');
 
@@ -2114,7 +2145,7 @@ class Admin extends MY_Controller
 			redirect('admin/showError');
 		}
 
-		$nominal_type_results = $this->m_tool->getToolingMaster($nominal_types);
+		/*$nominal_type_results = $this->m_tool->getToolingMaster($nominal_types);
 		if (!empty($nominal_type_results))
 		{
 			$data['nominal_type_results'] = $nominal_type_results;
@@ -2122,7 +2153,7 @@ class Admin extends MY_Controller
 		else
 		{
 			$data['nominal_type_results'] = null;
-		}
+		}*/
 		
 		//print_r($data['nominal_type_results']); die();
 

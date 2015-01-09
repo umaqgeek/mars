@@ -64,7 +64,9 @@ $max_pitch = "";
 $structure_number = "";
 $project_name = "";
 $project_number = "";
+$material_ratio = "";
 $sess = $this->session->all_userdata();
+//print_r($material);
 
 if (!empty($projects)) {
 	foreach($projects as $r) {
@@ -77,14 +79,38 @@ if (!empty($projects)) {
 	if ($tdd_size > 0) {
 		$mini_int_diameter = $tdd[0]->DIAINTERCOUCHE + $tdd[0]->DIAINTERCOUCHETOLINF;
 		$mini_ext_diameter = $tdd[0]->DIAEXTERCOUCHE + $tdd[0]->DIAEXTERCOUCHETOLINF;
-		
+		$mini_pitch = $tdd[0]->DIAINTER * 20;
 		$nom_int_diameter = $tdd[0]->DIAINTERCOUCHE;
 		$nom_ext_diameter = $tdd[0]->DIAEXTERCOUCHE;
-		
+		$nom_pitch = $tdd[0]->DIAINTER * 20;
 		$max_int_diameter = $tdd[0]->DIAINTERCOUCHE + $tdd[0]->DIAINTERCOUCHETOLSUP;
 		$max_ext_diameter = $tdd[0]->DIAEXTERCOUCHE + $tdd[0]->DIAEXTERCOUCHETOLSUP;
-		
+		$max_pitch = $tdd[0]->DIAINTER * 20;
 		$flex_diameter_setpoint = ($tdd[0]->DIAEXTERCOUCHE - $tdd[0]->EPCOUCHE) * $this->config->item('PI');
+		
+		if (isset($material[0])) {
+			$idnom = $tdd[0]->DIAINTER;
+			$mat = $material[0];
+			$pecahm = explode('x', str_replace(' ', '', $mat->type_of_production_size));
+			$totalm = $pecahm[0] * $pecahm[1];
+			if ($totalm <= 160) {
+				if ($idnom >= 57 && $idnom < 90) {
+					$material_ratio = "1-4";
+				} else if ($idnom >= 90 && $idnom < 135) {
+					$material_ratio = "2-4";
+				} else if ($idnom >= 135 && $idnom < 245) {
+					$material_ratio = "1-5";
+				} else if ($idnom >= 245 && $idnom < 450) {
+					$material_ratio = "2-5";
+				}
+			} else {
+				if ($idnom >= 177 && $idnom < 245) {
+					$material_ratio = "1-5";
+				} else if ($idnom >= 245 && $idnom < 450) {
+					$material_ratio = "2-5";
+				}
+			}
+		}
 	}
 }
 
@@ -226,7 +252,7 @@ foreach($tools as $r) {
                   </thead>
                   <tbody>
                      <tr>
-                        <td>cell is row 0, column 2</td>
+                        <td>&nbsp;</td>
                         <td><?php echo $project_name; ?></td>
                         <td colspan="2"><b>Methods and Tooling</b></td>
                      </tr>
@@ -374,7 +400,7 @@ echo (date("d-m-Y", $t));
                      <tr>
                        <td colspan="2">Gear ratio</td>
                        <td>&nbsp;</td>
-                       <td><?=$material[0]->ratio; ?></td>
+                       <td><?=$material_ratio; ?></td>
                      </tr>
                      <tr>
                        <td colspan="2">Flexible diameter set point</td>
@@ -459,10 +485,10 @@ echo (date("d-m-Y", $t));
                 </thead>
                 <tbody>
                   <tr>
-                    <td>cell is row 0, column 2</td>
-                    <td>4&quot; Kuito</td>
-                    <td colspan="3"><b>Methods and Tooling</b></td>
-                  </tr>
+                        <td>&nbsp;</td>
+                        <td><?php echo $project_name; ?></td>
+                        <td colspan="3"><b>Methods and Tooling</b></td>
+                     </tr>
                   <tr>
                     <td colspan="5">&nbsp;</td>
                   </tr>

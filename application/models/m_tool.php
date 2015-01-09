@@ -1,5 +1,15 @@
 <?php
 class M_tool extends CI_Model  {
+	
+	public function getToolDetail($tool_id)
+	{
+		$this->db->select('*');
+		$this->db->from('tool');
+		$this->db->where('tool_id', $tool_id);
+		$query = $this->db->get();
+		$result = $query->result();
+		return $result;
+	}
  
 
     public function getAlltools()
@@ -88,6 +98,49 @@ class M_tool extends CI_Model  {
 			return false;
 		}
 	}
+	
+	public function getToolingMaster2($tooling_name, $machine_type, $tool_id=-1, $nts)
+	{
+		$sql = sprintf("SELECT * FROM tool_nominal_type WHERE tool_id = '%s' ", $tool_id);
+		$q = $this->db->query($sql);
+		$rr = $q->result();
+		if (!empty($rr)) {
+			
+			$arrNew = array();
+			
+			foreach ($rr as $r) {
+				$nt_id = $r->nt_id;
+				foreach ($nts as $n) {
+					if ($n['nt_id'] == $nt_id) {
+						
+						$arrNew[] = $n;
+					}
+				}
+			}
+		
+			$sql = "SELECT *, 
+			`QUANTITY_NOT_REVERSED` AS qty_x, 
+			`DRAWING_NO` AS drwg_no_x, 
+			`TOOLING_NAME` AS tooling_name_x 
+			FROM tooling_master WHERE 1=1 ";
+			
+			$sql .= sprintf("AND `TOOLING_NAME` = '%s' ", $tooling_name);
+			
+			foreach ($arrNew as $an) {
+				$nt_name = $an['nt_name'];
+				$nt_value = $an['nt_value'];
+				$col_sql = (is_numeric($nt_value)) ? ("CAST(%s AS DECIMAL(20, 1))") : ("%s");
+				$val_sql = (is_numeric($nt_value)) ? ("CAST('%s' AS DECIMAL(20, 1)) ") : ("'%s' ");
+				$sql .= sprintf("AND ".$col_sql." = ".$val_sql, $nt_name, $nt_value);
+			}
+			
+			$query = $this->db->query($sql);
+			$result = $query->result();
+			return $result;
+		} else {
+			return NULL;
+		}
+	}
 
 	public function getToolingMaster($nominal_types=array())
 	{
@@ -116,8 +169,8 @@ class M_tool extends CI_Model  {
 		$queries='';
 		//$queries='SELECT '.$column.' FROM '.'tooling_master WHERE ';
 		$queries="SELECT *, 
-		`QUANTITY (NOT REVERSED)` AS qty_x, 
-		`DRAWING-NO` AS drwg_no_x, 
+		`QUANTITY_NOT_REVERSED` AS qty_x, 
+		`DRAWING_NO` AS drwg_no_x, 
 		`TOOLING_NAME` AS tooling_name_x 
 		FROM tooling_master WHERE ";
 		

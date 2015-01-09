@@ -22,6 +22,16 @@ class My_Func
 
 		return $s;
 	}
+	
+	public function getNominalTypeDetails($nt_id)
+	{
+		$CI = $this->obj;
+		$CI->db->select('*');
+		$CI->db->from('nominal_type nt');
+		$CI->db->where('nt.nt_id', $nt_id);
+		$query = $CI->db->get();
+		return $query->result();
+	}
 
 	public function getParamValue($rule_id = 0, $param_number = 0)
 	{

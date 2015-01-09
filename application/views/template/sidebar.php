@@ -24,6 +24,9 @@
           		    $navArrStaff=array('Home'=>site_url('admin'),
                          'Tool Sheet'=>site_url('admin/structureNumber'),
 						 'Imported Data Management'=>site_url('admin/importedManagement'),
+						 
+						 'Tooling Master'=>site_url('admin/toolingMaster'),
+						 
                          'Logout'=>site_url('login/logout'));
 
                   //administrator

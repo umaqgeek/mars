@@ -72,7 +72,13 @@ if (isset($sess['layer_name']) && !empty($sess['layer_name'])) {
       </div>
       <?php
 }
-
+//print_r($sess['selected_tool_id']);
+$tool_pilih = $this->m_tool->getToolDetail($sess['selected_tool_id']);
+$tool_name_pilih = "";
+if (isset($tool_pilih) && !empty($tool_pilih)) {
+	//print_r($tool_pilih);
+	$tool_name_pilih = $tool_pilih[0]->tool_code;
+}
 ?>
    </div>
 </div>
@@ -89,6 +95,7 @@ if (isset($sess['layer_name']) && !empty($sess['layer_name'])) {
       <div class="row">
                <div class="col-sm-12">
                   <h1 class="page-header">Tool Sheet</h1>
+                  <h2><?=$tool_name_pilih; ?></h2>
                   <?php
                      if(!empty($file_url))
                      {
@@ -131,18 +138,31 @@ if (isset($sess['layer_name']) && !empty($sess['layer_name'])) {
                   </thead>
                   <tbody>
                      <?php
+					 	$nts = array();
+						
                         if(!empty($rules))
                         {
 							//print_r($rules);
                         foreach($rules as $r)
                         {
+							$val_formula = $this->my_func->getFormulaValue($structure_number, $layer_name, $r->pio_id, $r->rp_formula, $r->param_code, $r->rule_id, $sess['diaintercouche']);
+							if ($r->nt_id != '0' && $r->nt_id != 0) {
+								$noms = $this->my_func->getNominalTypeDetails($r->nt_id);
+								if (!empty($noms)) {
+									$nts[] = array(
+										'nt_name' => $noms[0]->nt_name,
+										'nt_value' => number_format($val_formula, 2),
+										'nt_id' => $r->nt_id
+									);
+								}
+							}
                           ?>
                      <tr>
-                        <td><?=$r->param_number?></td>
+                        <td><?php //print_r($r); ?>
+						<?=$r->param_number?></td>
                         <td><?=$r->param_code?></td>
                         <!--<td><?=$r->rp_post_value?></td>-->
-                        <td><?=$this->my_func->getFormulaValue($structure_number, $layer_name, $r->pio_id, $r->rp_formula, $r->param_code, $r->rule_id, 
-									 $sess['diaintercouche'])?></td>
+                        <td><?=$val_formula; ?></td>
                         <td><?=$r->param_tol_min?></td>
                         <td><?=$r->param_tol_plus?></td>
                         <td></td>
@@ -157,6 +177,10 @@ if (isset($sess['layer_name']) && !empty($sess['layer_name'])) {
                <div class="row" style="margin-top:5%">
                   <div class="col-sm-12">
                      <h1>Tooling Master</h1>
+                     <?php
+					 //print_r($sess);
+					 //print_r($nts);
+					 ?>
                   </div>
                </div>
                <div class="row">
@@ -171,7 +195,11 @@ if (isset($sess['layer_name']) && !empty($sess['layer_name'])) {
                             </tr>
                         </thead>
                         <tbody>
-                        <?php if(isset($nominal_type_results)) { foreach($nominal_type_results as $ntr) { ?>
+                        <?php
+						$tooling_name = $tool_name_pilih;
+						$machine_type = '';
+						$nominal_type_results = $this->m_tool->getToolingMaster2($tooling_name, $machine_type, $sess['selected_tool_id'], $nts);
+						if(isset($nominal_type_results)) { foreach($nominal_type_results as $ntr) { ?>
                         	<tr>
                             	<td><?=$ntr->drwg_no_x; ?></td>
                                 <td><?=$ntr->LOCATION; ?></td>

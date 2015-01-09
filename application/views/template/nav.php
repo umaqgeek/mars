@@ -24,7 +24,7 @@
             if(!empty($rule))
             {
               ?>
-              <li><a href="#">Hello, <?=$rule?></a></li>
+              <li><a href="#">Hello, <?php $sess = $this->session->all_userdata(); ?> <?=$sess['fullname']; ?> (<?=$sess['username']; ?>)</a></li>
               <?php
             }
           
