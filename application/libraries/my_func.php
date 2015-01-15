@@ -649,17 +649,21 @@ class My_Func
 			$CI->db->from('param');
 			$CI->db->where('param_code', $param_code);
 			$query = $CI->db->get();
+			$valx = 0;
 			if (sizeof($query->result()) > 0) {
 				$param_id = $query->result()[0]->param_id;
 				$CI->db->where('rule_id', $rule_id);
 				$CI->db->where('param_id', $param_id);
 				$CI->db->update('rule_param', $post_data); 
-				return 0 + $compute();// . '|' . $formula;
-			} else {
-				return 0;
+				$valx = 0 + $compute();// . '|' . $formula;
 			}
+			return number_format($valx, 1);
 		} else {
-			return $formula;
+			if ($pio_id == 1) {
+				return number_format($formula, 1);
+			} else {
+				return $formula;
+			}
 		}
 	}
 	

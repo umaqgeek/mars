@@ -23,7 +23,7 @@ class M_project extends CI_Model
 
 		// $query_string="SELECT DISTINCT project_name,project_number,transaction_id,selected_layer_id, selected_tool_id, idnom, structure_number FROM project";
 
-		$query_string = "SELECT * FROM project WHERE structure_number='" . $structure_number . "'";
+		$query_string = "SELECT * FROM project p, users u WHERE p.user_id = u.user_id AND p.structure_number='" . $structure_number . "'";
 		$query = $this->db->query($query_string);
 		$results = array();
 		return $query->result();

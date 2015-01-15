@@ -16,15 +16,21 @@ $(document).ready(function() {
            //continue process
            //return the value
            var val = $(this).attr('value');
-           var base_url="<?=site_url()?>";
-
-               $.ajax({
-          'url':base_url+'/admin/ajaxDisplayTool/'+val,
-          'success':function(response){
-            
-                window.location.href = base_url+'/admin/DisplayTool/';
-                 }
-            });
+		   var val2 = val.split('seperator');
+		   //alert(val2[0]);
+		   if (val2[0] == 'INTERLOCKED CARCASS') {
+			   var base_url="<?=site_url()?>";
+	
+				   $.ajax({
+					  'url':base_url+'/admin/ajaxDisplayTool/'+val,
+					  'success':function(response){
+				
+						window.location.href = base_url+'/admin/DisplayTool/';
+					 }
+				});
+		   } else {
+			   $(this).removeClass('selected');
+		   }
 
 
         }

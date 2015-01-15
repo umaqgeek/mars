@@ -122,6 +122,8 @@ class Admin extends MY_Controller
 
 	public function addProject()
 	{
+		//print_r($this->session->all_userdata()); die();
+		$sess = $this->session->all_userdata();
 		$this->load->view('template/header');
 		$this->load->view('template/nav');
 		$data['sidebar'] = $this->load->view('template/sidebar');
@@ -133,7 +135,8 @@ class Admin extends MY_Controller
 			'section_number' => $this->input->post('section_number') ,
 			'plf_length' => $this->input->post('plf_length') ,
 			'transaction_id' => time() ,
-			'overlength' => $this->input->post('overlength')
+			'overlength' => $this->input->post('overlength'),
+			'user_id' => $sess['user_id']
 		);
 		$this->load->model('m_project');
 		$flag = $this->m_project->Add('project', $data);
@@ -2012,8 +2015,9 @@ class Admin extends MY_Controller
 	{
 		$value = array();
 		$value = explode('seperator', $val);
+		$layer_name = str_replace('%20', ' ', $value[0]);
 		$selectedArray = array(
-			'layer_name' => str_replace('%20', ' ', $value[0]) ,
+			'layer_name' => $layer_name,
 			'diaintercouche' => $value[1]
 		);
 		$this->session->set_userdata($selectedArray);
