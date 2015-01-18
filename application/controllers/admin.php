@@ -650,7 +650,7 @@ class Admin extends MY_Controller
 		$crud->set_theme('datatables');
 		$crud->unset_delete();
 		$crud->unset_edit();
-		$crud->set_table('tooling_master');
+		$crud->set_table('tooling_master2');
 		try
 		{
 			$output = $crud->render();
@@ -2167,10 +2167,69 @@ class Admin extends MY_Controller
 		$this->load->view('tool/viewToolSheet', $data);
 		$this->load->view('template/footer_datatable');
 	}
+	
+	function __readExcelToolingMasterDB($create=1, $insert=1)
+	{
+		$file = "D:\\OTHERS\\GoogleDrive\\Tuffah Informatics\\AsiaFlex - Method's Application Software (MARS)\\new\\Tooling Master DB\\edited_db.csv";
+		$table_name = "tooling_master2";
+	
+		if ($create == 1) {	
+			$myfile = fopen($file, "r") or die("Unable to open file!");
+			//separate columns
+			$line = fgets($myfile);
+			$pecah = explode(',', $line);
+			$cols = array();
+			foreach ($pecah as $p) {
+				$p1 = str_replace(' ', '_', $p);
+				$p1 = str_replace('-', '_', $p1);
+				$p1 = str_replace('/', '_', $p1);
+				$p1 = str_replace('
+	', '', $p1);
+				$cols[] = $p1;
+			}
+			$sql = "CREATE TABLE IF NOT EXISTS `".$table_name."` (`tm_id` int(11) NOT NULL AUTO_INCREMENT";
+			foreach ($cols as $c) {
+				$sql .= ", 
+				`".$c."` varchar(200) NULL";
+			}
+			$sql .= ", 
+			PRIMARY KEY (`tm_id`)) ENGINE=InnoDB DEFAULT CHARSET=latin1 AUTO_INCREMENT=1;";
+			mysql_query($sql) or die(mysql_error());
+			fclose($myfile);
+			echo "Table created ...";
+		}
+		
+		if ($insert == 1) {
+			$myfile = fopen($file, "r") or die("Unable to open file!");
+			// Output one line until end-of-file
+			$i = 0;
+			while(!feof($myfile)) {
+				$line = fgets($myfile);
+				if ($i > 0) {
+					
+					//insert data into new table
+					//separate columns
+					$line = fgets($myfile);
+					$pecah = explode(',', $line);
+					$sql = "INSERT INTO ".$table_name." VALUES(".$i;
+					foreach ($pecah as $p) {
+						$p1 = str_replace(',', '', $p);
+						$p1 = str_replace('\'', '', $p1);
+						$p1 = str_replace('"', '', $p1);
+						$sql .= ", '".$p1."'";
+					}
+					$sql .= ")";
+					echo $sql . "<br />";
+					//mysql_query($sql) or die(mysql_error());
+				}
+				$i++;
+			}
+			fclose($myfile);
+			echo "Data inserted ...";
+		}
+	}
 
-	public
-
-	function showError()
+	public function showError()
 	{
 		$this->load->view('template/error');
 	}
@@ -2290,9 +2349,11 @@ class Admin extends MY_Controller
 		$stat = $this->input->post('stat');
 		
 		if ($stat == 1) {
-			$filename ="MachineSetupSheet_".$tarikh.".xls";
+			$filename = "MachineSetupSheet_".$tarikh.".xls";
 		} else if ($stat == 2) {
-			$filename ="RiggingSetupSheet_".$tarikh.".xls";
+			$filename = "RiggingSetupSheet_".$tarikh.".xls";
+		} else if ($stat == 3) {
+			$filename = "ToolingSetupSheet_".$tarikh.".xls";
 		}
 		
 		header('Content-type: application/ms-excel');
@@ -2315,6 +2376,15 @@ class Admin extends MY_Controller
 			$data['cable_ref'] = $this->input->post('cable_ref');
 			$data['shackle_ref'] = $this->input->post('shackle_ref');
 			echo $this->load->view('tool/viewExportRiggingSheet', $data, true);
+			
+		} else if ($stat == 3) {
+			
+			$data['rev'] = $this->input->post('rev');
+			$data['checked_by'] = $this->input->post('checked_by');
+			$data['job_nrs'] = $this->input->post('job_nrs');
+			$data['cable_ref'] = $this->input->post('cable_ref');
+			$data['shackle_ref'] = $this->input->post('shackle_ref');
+			echo $this->load->view('tool/viewExportToolingSheet', $data, true);
 			
 		}
 	}

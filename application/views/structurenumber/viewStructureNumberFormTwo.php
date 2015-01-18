@@ -90,11 +90,11 @@ function confirmation() {
         <thead>
             <tr>
                 <th>Structure Number</th>
-                <th>Creator</th>
                 <th>Project Name</th>
                 <th>Project Number</th>
                 <th>Transaction Number</th>
                <th>Transaction Date</th>
+                <th>Creator</th>
               
             </tr>
         </thead>
@@ -110,11 +110,11 @@ function confirmation() {
                     ?>
                      <tr value="<?=$r->transaction_id?>">
                         <td><?=$r->structure_number?></td>
-                        <td><?=$r->fullname?> (<?=$r->username?>)</td>
                       <td><?=$r->project_name?></td>
                        <td><?=$r->project_number?></td>
                        <td><?=$r->transaction_id?></td>
                        <td><?=date('d F Y',$r->transaction_id)?></td>
+                        <td><?=$r->fullname?> (<?=$r->username?>)</td>
                       
                           </tr>
                     <?php

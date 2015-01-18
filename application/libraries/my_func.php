@@ -68,7 +68,7 @@ class My_Func
 	{
 		$CI = $this->obj;
 		$CI->db->select('*');
-		$CI->db->from('tooling_master');
+		$CI->db->from('tooling_master2');
 		$CI->db->where('tooling_name', $tooling_name);
 		$query = $CI->db->get();
 		$results = array();

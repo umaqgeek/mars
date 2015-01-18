@@ -127,6 +127,7 @@ if (isset($tool_pilih) && !empty($tool_pilih)) {
                      <tr>
                         <th rowspan="2">Parameter Number</th>
                         <th rowspan="2">Parameter</th>
+                        <th rowspan="2">Mex Tooling Name</th>
                         <th rowspan="2">Nominal</th>
                         <th colspan="2">Tol</th>
                         <th rowspan="2"></th>
@@ -145,12 +146,14 @@ if (isset($tool_pilih) && !empty($tool_pilih)) {
 							//print_r($rules);
                         foreach($rules as $r)
                         {
+							$nt_name = "";
 							$val_formula = $this->my_func->getFormulaValue($structure_number, $layer_name, $r->pio_id, $r->rp_formula, $r->param_code, $r->rule_id, $sess['diaintercouche']);
 							if ($r->nt_id != '0' && $r->nt_id != 0) {
 								$noms = $this->my_func->getNominalTypeDetails($r->nt_id);
 								if (!empty($noms)) {
+									$nt_name = $noms[0]->nt_name;
 									$nts[] = array(
-										'nt_name' => $noms[0]->nt_name,
+										'nt_name' => $nt_name,
 										'nt_value' => number_format($val_formula, 2),
 										'nt_id' => $r->nt_id
 									);
@@ -161,6 +164,7 @@ if (isset($tool_pilih) && !empty($tool_pilih)) {
                         <td><?php //print_r($r); ?>
 						<?=$r->param_number?></td>
                         <td><?=$r->param_code?></td>
+                        <td><?=$nt_name?></td>
                         <!--<td><?=$r->rp_post_value?></td>-->
                         <td><?=$val_formula; ?></td>
                         <td><?=$r->param_tol_min?></td>

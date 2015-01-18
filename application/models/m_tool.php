@@ -119,10 +119,10 @@ class M_tool extends CI_Model  {
 			}
 		
 			$sql = "SELECT *, 
-			`QUANTITY_NOT_REVERSED` AS qty_x, 
+			`QUANTITY` AS qty_x, 
 			`DRAWING_NO` AS drwg_no_x, 
 			`TOOLING_NAME` AS tooling_name_x 
-			FROM tooling_master WHERE 1=1 ";
+			FROM tooling_master2 WHERE 1=1 ";
 			
 			$sql .= sprintf("AND `TOOLING_NAME` = '%s' ", $tooling_name);
 			
@@ -133,6 +133,8 @@ class M_tool extends CI_Model  {
 				$val_sql = (is_numeric($nt_value)) ? ("CAST('%s' AS DECIMAL(20, 1)) ") : ("'%s' ");
 				$sql .= sprintf("AND ".$col_sql." = ".$val_sql, $nt_name, $nt_value);
 			}
+			
+			
 			
 			$query = $this->db->query($sql);
 			$result = $query->result();
@@ -149,7 +151,7 @@ class M_tool extends CI_Model  {
 		$columns=array();
 		foreach($nominal_types as $k=>$v)
 		{
-			if ($this->checkExist('tooling_master', $v->nt_name)) {
+			if ($this->checkExist('tooling_master2', $v->nt_name)) {
 				$columns[]="`".$v->nt_name."`";
 				$v->tnt_value=str_replace("\"",' INCH',$v->tnt_value);
 	
@@ -167,12 +169,12 @@ class M_tool extends CI_Model  {
  		$column=implode(", ",$columns);
 
 		$queries='';
-		//$queries='SELECT '.$column.' FROM '.'tooling_master WHERE ';
+		//$queries='SELECT '.$column.' FROM '.'tooling_master2 WHERE ';
 		$queries="SELECT *, 
-		`QUANTITY_NOT_REVERSED` AS qty_x, 
+		`QUANTITY` AS qty_x, 
 		`DRAWING_NO` AS drwg_no_x, 
 		`TOOLING_NAME` AS tooling_name_x 
-		FROM tooling_master WHERE ";
+		FROM tooling_master2 WHERE ";
 		
 		$xx=1;
 		foreach($wheres as $w=>$z)
