@@ -2168,9 +2168,20 @@ class Admin extends MY_Controller
 		$this->load->view('template/footer_datatable');
 	}
 	
+	public function DisplayPressureSheath()
+	{
+		$this->load->view('template/header_datatable');
+		$this->load->view('template/nav');
+		$data['sidebar'] = $this->load->view('template/sidebar');
+		
+		$this->load->view('tool/viewPS', $data);
+		
+		$this->load->view('template/footer_datatable');
+	}
+	
 	function __readExcelToolingMasterDB($create=1, $insert=1)
 	{
-		$file = "D:\\OTHERS\\GoogleDrive\\Tuffah Informatics\\AsiaFlex - Method's Application Software (MARS)\\new\\Tooling Master DB\\edited_db.csv";
+		$file = "D:\\OTHERS\\GoogleDrive\\Tuffah Informatics\\AsiaFlex - Method's Application Software (MARS)\\new\\Tooling Master DB\\tooling_db_10012015.csv";
 		$table_name = "tooling_master2";
 	
 		if ($create == 1) {	
@@ -2184,7 +2195,8 @@ class Admin extends MY_Controller
 				$p1 = str_replace('-', '_', $p1);
 				$p1 = str_replace('/', '_', $p1);
 				$p1 = str_replace('
-	', '', $p1);
+', '', $p1);
+				//echo "|".$p1."|<br />";
 				$cols[] = $p1;
 			}
 			$sql = "CREATE TABLE IF NOT EXISTS `".$table_name."` (`tm_id` int(11) NOT NULL AUTO_INCREMENT";
@@ -2194,6 +2206,9 @@ class Admin extends MY_Controller
 			}
 			$sql .= ", 
 			PRIMARY KEY (`tm_id`)) ENGINE=InnoDB DEFAULT CHARSET=latin1 AUTO_INCREMENT=1;";
+			
+			//die();
+			
 			mysql_query($sql) or die(mysql_error());
 			fclose($myfile);
 			echo "Table created ...";
@@ -2209,7 +2224,7 @@ class Admin extends MY_Controller
 					
 					//insert data into new table
 					//separate columns
-					$line = fgets($myfile);
+					//$line = fgets($myfile);
 					$pecah = explode(',', $line);
 					$sql = "INSERT INTO ".$table_name." VALUES(".$i;
 					foreach ($pecah as $p) {
@@ -2219,8 +2234,8 @@ class Admin extends MY_Controller
 						$sql .= ", '".$p1."'";
 					}
 					$sql .= ")";
-					echo $sql . "<br />";
-					//mysql_query($sql) or die(mysql_error());
+					//echo $i . "|" . $line . "<br />";
+					mysql_query($sql) or die(mysql_error());
 				}
 				$i++;
 			}
