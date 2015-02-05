@@ -99,7 +99,7 @@ class M_tool extends CI_Model  {
 		}
 	}
 	
-	public function getToolingMaster2($tooling_name, $machine_type, $tool_id=-1, $nts)
+	public function getToolingMaster2($tooling_name, $tool_id=-1, $nts)
 	{
 		$sql = sprintf("SELECT * FROM tool_nominal_type WHERE tool_id = '%s' ", $tool_id);
 		$q = $this->db->query($sql);
@@ -125,6 +125,7 @@ class M_tool extends CI_Model  {
 			FROM tooling_master2 WHERE 1=1 ";
 			
 			$sql .= sprintf("AND `TOOLING_NAME` = '%s' ", $tooling_name);
+			$siAN = sizeof($arrNew);
 			
 			foreach ($arrNew as $an) {
 				$nt_name = $an['nt_name'];
@@ -133,8 +134,10 @@ class M_tool extends CI_Model  {
 				$val_sql = (is_numeric($nt_value)) ? ("CAST('%s' AS DECIMAL(20, 1)) ") : ("'%s' ");
 				$sql .= sprintf("AND ".$col_sql." = ".$val_sql, $nt_name, $nt_value);
 			}
-			
-			
+			//echo $sql;
+			if ($siAN <= 0) {
+				return NULL;
+			}
 			
 			$query = $this->db->query($sql);
 			$result = $query->result();

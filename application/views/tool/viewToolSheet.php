@@ -202,7 +202,12 @@ if (isset($tool_pilih) && !empty($tool_pilih)) {
                         <?php
 						$tooling_name = $tool_name_pilih;
 						$machine_type = '';
-						$nominal_type_results = $this->m_tool->getToolingMaster2($tooling_name, $machine_type, $sess['selected_tool_id'], $nts);
+						$nominal_type_results = $this->m_tool->getToolingMaster2($tooling_name, $sess['selected_tool_id'], $nts);
+						
+						//print_r($tooling_name); echo "<br />";
+						//print_r($sess['selected_tool_id']); echo "<br />";
+						//print_r($nts); echo "<br />";
+						
 						if(isset($nominal_type_results)) { foreach($nominal_type_results as $ntr) { ?>
                         	<tr>
                             	<td><?=$ntr->drwg_no_x; ?></td>

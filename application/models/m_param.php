@@ -27,6 +27,16 @@ class M_param extends CI_Model  {
 		$result=$query->result();
 		return $result;
 	}
+	
+	public function getRuleParams($rp_id)
+	{
+		$this->db->select('*');
+		$this->db->from('rule_param');
+		$this->db->where('rp_id', $rp_id); 
+		$query = $this->db->get();
+		$result=$query->result();
+		return $result;
+	}
    
 	//get tool_id from tool_rule table
 	public function getToolId($param_id=0)

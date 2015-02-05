@@ -7,7 +7,8 @@
 
                     $navArr=array();
 
-          		$navArrAdmin=array('Home'=>site_url('admin'),
+          		$navArrAdmin=array(
+						 'Home'=>site_url('admin'),
                          'User Management'=>site_url('admin/usermanagement'),
                          'Tool Management'=>site_url('admin/toolManagement'),
                          'Layer Management'=>site_url('admin/layerManagement'),
@@ -19,15 +20,23 @@
                          'Nominal Column Management'=>site_url('admin/nominalColumnManagement'),
                           'Parameter Management'=>site_url('admin/parameterManagement'),
                          'Rule Management'=>site_url('admin/ruleManagement'),
-                         'Logout'=>site_url('login/logout'));
+						 
+						 'Tool Sheet'=>site_url('admin/structureNumber'),
+						 'Imported Data Management'=>site_url('admin/importedManagement'),
+						 'Tooling Master'=>site_url('admin/toolingMaster'),
+						 
+                         'Logout'=>site_url('login/logout')
+				);
 
-          		    $navArrStaff=array('Home'=>site_url('admin'),
+          		    $navArrStaff=array(
+						 'Home'=>site_url('admin'),
                          'Tool Sheet'=>site_url('admin/structureNumber'),
 						 'Imported Data Management'=>site_url('admin/importedManagement'),
 						 
 						 'Tooling Master'=>site_url('admin/toolingMaster'),
 						 
-                         'Logout'=>site_url('login/logout'));
+                         'Logout'=>site_url('login/logout')
+					);
 
                   //administrator
                  if($this->session->userdata('role_id')==1){

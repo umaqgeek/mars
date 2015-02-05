@@ -1890,6 +1890,7 @@ class Admin extends MY_Controller
 	{
 		$this->load->model('m_tool');
 		$this->load->model('m_rule');
+		$this->load->model('m_param');
 		if ($pio_id == 1) //constant
 		{
 
@@ -1918,9 +1919,18 @@ class Admin extends MY_Controller
 			// print_r($result);
 
 			$hasil = "<select id='field-rp_pre_value' name='rp_pre_value'>";
+			
+			$rules_paramx = $this->m_param->getRuleParams($rp_id);
+			$rp_formulax = (!empty($rules_paramx)) ? ($rules_paramx[0]->rp_formula) : ("-");
+			
 			foreach($result as $r => $v)
 			{
-				$hasil.= "<option value='nc_" . $v->nc_id . "'>" . $v->nc_name . "</option>";
+				$hasil.= "<option value='nc_" . $v->nc_id . "'";
+				if ($rp_formulax == $v->nc_name) 
+				{
+					$hasil.=" selected";
+				}
+				$hasil.=">" . $v->nc_name . "</option>";
 			}
 
 			$hasil.= "</select>";
