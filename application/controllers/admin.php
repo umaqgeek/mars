@@ -283,6 +283,9 @@ class Admin extends MY_Controller
 		$this->load->view('template/nav');
 		$data['sidebar'] = $this->load->view('template/sidebar');
 		$crud = new grocery_CRUD();
+		
+		$crud->set_subject('User Management');
+		
 		$crud->set_theme('datatables');
 		$crud->set_table('users');
 		$crud->set_relation('role_id', 'role', 'role_name');
@@ -344,6 +347,9 @@ class Admin extends MY_Controller
 		$this->load->view('template/nav');
 		$data['sidebar'] = $this->load->view('template/sidebar');
 		$crud = new grocery_CRUD();
+		
+		$crud->set_subject('Material Management');
+		
 		$crud->set_theme('datatables');
 		$crud->set_table('material');
 		$crud->set_relation('category_id', 'category', 'category_name');
@@ -482,6 +488,10 @@ class Admin extends MY_Controller
 		));
 		$crud->set_field_upload('file_url', 'assets/uploads/files');
 		$crud->unset_texteditor('tool_description', 'full_text');
+		
+		//$crud->set_table_title('Tools Management');
+		$crud->set_subject('Tools Management');
+		
 		try
 		{
 			$output = $crud->render();
@@ -555,6 +565,10 @@ class Admin extends MY_Controller
 		$crud->display_as('nc_name', 'Nominal Column Name');
 		$crud->display_as('nc_description', 'Nominal Column Description');
 		$crud->unset_texteditor('nc_description', 'full_text');
+		
+		$crud->unset_delete();
+		$crud->unset_edit();
+		$crud->unset_add();
 
 		// $crud->callback_column('nc_id',array($this,'_callback_display_nc_code'));
 
@@ -587,6 +601,9 @@ class Admin extends MY_Controller
 		$this->load->view('template/nav');
 		$data['sidebar'] = $this->load->view('template/sidebar');
 		$crud = new grocery_CRUD();
+		
+		$crud->set_subject('Layer Management');
+		
 		$crud->set_theme('datatables');
 
 		// old, one to one relation
@@ -619,6 +636,9 @@ class Admin extends MY_Controller
 		$this->load->view('template/nav');
 		$data['sidebar'] = $this->load->view('template/sidebar');
 		$crud = new grocery_CRUD();
+		
+		$crud->set_subject('Imported Structure Data View');
+		
 		$crud->set_theme('datatables');
 		$crud->unset_delete();
 		$crud->unset_edit();
@@ -647,6 +667,9 @@ class Admin extends MY_Controller
 		$this->load->view('template/nav');
 		$data['sidebar'] = $this->load->view('template/sidebar');
 		$crud = new grocery_CRUD();
+		
+		$crud->set_subject('Tooling Master');
+		
 		$crud->set_theme('datatables');
 		$crud->unset_delete();
 		$crud->unset_edit();
@@ -675,6 +698,9 @@ class Admin extends MY_Controller
 		$this->load->view('template/nav');
 		$data['sidebar'] = $this->load->view('template/sidebar');
 		$crud = new grocery_CRUD();
+		
+		$crud->set_subject('Layer-Tool Management');
+		
 		$crud->set_theme('datatables');
 		$crud->set_table('layer');
 		$crud->set_relation_n_n('tool_code', 'layer_tool', 'tool', 'layer_id', 'tool_id', 'tool_code', 'priority');
@@ -1061,6 +1087,9 @@ class Admin extends MY_Controller
 		$this->load->view('template/nav');
 		$data['sidebar'] = $this->load->view('template/sidebar');
 		$crud = new grocery_CRUD();
+		
+		$crud->set_subject('Parameter Management');
+		
 		$crud->set_theme('datatables');
 		$crud->set_table('param');
 		$crud->fields('param_number', 'tool_id', 'param_code', 'param_tool_code', 'param_tol_min', 'param_tol_plus', 'nt_id', 'param_code_mex');
@@ -1391,6 +1420,9 @@ class Admin extends MY_Controller
 		$this->load->view('template/nav');
 		$data['sidebar'] = $this->load->view('template/sidebar');
 		$crud = new grocery_CRUD();
+		
+		$crud->set_subject('Rule Management');
+		
 		$crud->set_theme('datatables');
 		$crud->set_table('rule_param');
 		$crud->set_relation('param_id', 'param', '{param_code} (Tool:{param_tool_code} | Number:{param_number})');
@@ -2007,9 +2039,7 @@ class Admin extends MY_Controller
 
 	// show tools which will be shown their rules
 
-	public
-
-	function showRulesFromTool()
+	public function showRulesFromTool()
 	{
 		$this->load->view('template/header');
 		$this->load->view('template/nav');
@@ -2019,9 +2049,7 @@ class Admin extends MY_Controller
 		$this->load->view('rule/toolForRuleView', $data);
 	}
 
-	public
-
-	function ajaxDisplayTool($val = '')
+	public function ajaxDisplayTool($val = '')
 	{
 		$value = array();
 		$value = explode('seperator', $val);
@@ -2036,16 +2064,12 @@ class Admin extends MY_Controller
 
 	}
 
-	public
-
-	function ajaxDisplayToolSheet($tool_id = '')
+	public function ajaxDisplayToolSheet($tool_id = '')
 	{
 		$this->session->set_userdata('selected_tool_id', $tool_id);
 	}
 
-	public
-
-	function ajaxDisplayToolSheetDirect($transaction_id = '')
+	public function ajaxDisplayToolSheetDirect($transaction_id = '')
 	{
 		$this->load->model('m_project');
 		$projectdetails = array();
@@ -2278,6 +2302,7 @@ class Admin extends MY_Controller
 		// get layer_id from layer_name
 
 		$layer_id = $this->m_layer->getLayerIdFromLayerName($layer_name);
+		$data['layer_detail'] = $this->m_layer->getLayersDetail($layer_id);
 
 		// save to session
 
@@ -2409,6 +2434,18 @@ class Admin extends MY_Controller
 			$data['job_nrs'] = $this->input->post('job_nrs');
 			$data['cable_ref'] = $this->input->post('cable_ref');
 			$data['shackle_ref'] = $this->input->post('shackle_ref');
+			
+			$drawingList = $this->input->post('drawingList');
+			$icount = 0;
+			foreach ($drawingList as $dl) {
+				$pecah = explode('|', $dl);
+				$data['drawingList'][$icount]['toolingName'] = $pecah[0];
+				$data['drawingList'][$icount]['drawingNo'] = $pecah[1];
+				$data['drawingList'][$icount]['location'] = $pecah[2];
+				$data['drawingList'][$icount]['qty'] = $pecah[3];
+				$icount += 1;
+			}
+			
 			echo $this->load->view('tool/viewExportToolingSheet', $data, true);
 			
 		}

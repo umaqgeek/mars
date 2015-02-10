@@ -41,6 +41,15 @@ class M_layer extends CI_Model  {
 		    
 		}
 	}
+	
+	public function getLayersDetail($layer_id=-1)
+	{
+		$this->db->select('*');
+		$this->db->from('layer');
+		$this->db->where('layer_id', $layer_id);
+		$query = $this->db->get();
+		return $query->result();
+	}
 
 	public function getNominalFromLayerName($nc_name=0,$layer_name="")
 	{

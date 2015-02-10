@@ -32,7 +32,8 @@ class M_imported_project extends CI_Model
 	
 	public function getLayers($structure='-1')
 	{
-		$this->db->select('DISTINCT(ip.layer_name) AS layer_name_unique, la.layer_code AS layer_code_unique');
+		$this->db->select('DISTINCT(ip.layer_name) AS layer_name_unique, 
+									la.layer_code AS layer_code_unique');
 		$this->db->from('imported_project ip, layer la');
 		$this->db->where('ip.layer_name = la.layer_description');
 		if ($structure != '-1')

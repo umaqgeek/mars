@@ -17,12 +17,12 @@
                          'Admissible-Pressure Management'=>site_url('admin/admisPresMngmnt'),
 						 
                          'Material Management'=>site_url('admin/materialManagement'),
-                         'Nominal Column Management'=>site_url('admin/nominalColumnManagement'),
-                          'Parameter Management'=>site_url('admin/parameterManagement'),
+                         //'Nominal Column Management'=>site_url('admin/nominalColumnManagement'),
+                         'Parameter Management'=>site_url('admin/parameterManagement'),
                          'Rule Management'=>site_url('admin/ruleManagement'),
 						 
 						 'Tool Sheet'=>site_url('admin/structureNumber'),
-						 'Imported Data Management'=>site_url('admin/importedManagement'),
+						 'Imported Structure Data View'=>site_url('admin/importedManagement'),
 						 'Tooling Master'=>site_url('admin/toolingMaster'),
 						 
                          'Logout'=>site_url('login/logout')
@@ -31,7 +31,7 @@
           		    $navArrStaff=array(
 						 'Home'=>site_url('admin'),
                          'Tool Sheet'=>site_url('admin/structureNumber'),
-						 'Imported Data Management'=>site_url('admin/importedManagement'),
+						 'Imported Structure Data View'=>site_url('admin/importedManagement'),
 						 
 						 'Tooling Master'=>site_url('admin/toolingMaster'),
 						 

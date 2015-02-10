@@ -204,6 +204,8 @@ if (isset($tool_pilih) && !empty($tool_pilih)) {
 						$machine_type = '';
 						$nominal_type_results = $this->m_tool->getToolingMaster2($tooling_name, $sess['selected_tool_id'], $nts);
 						
+						//echo '|'.$tooling_name.'|';
+						
 						//print_r($tooling_name); echo "<br />";
 						//print_r($sess['selected_tool_id']); echo "<br />";
 						//print_r($nts); echo "<br />";

@@ -201,15 +201,24 @@ if (isset($sess['layer_name']) && !empty($sess['layer_name'])) {
                         </thead>
                         <tbody>
 <?php
+$ii=0;
+$arrDrawing = array();
 foreach($tools as $r) { 
 	$range = $this->my_func->getRangeIDNom($structure_number, $sess['layer_name'], $r->nc_name);
 	$boolMPList = $this->my_func->getRangeMPListCode($structure_number, $sess['layer_name'], $r->tool_id);
-	$isFound = $this->my_func->getFoundNotFound($r->tool_code);
+	$isFound = $this->my_func->getFoundNotFound($r->tool_id);
 	$strFound = ($isFound == true) ? ("Found") : ("Not Found");
+	
+	if ($isFound) {
+		$drawingList = $this->my_func->getDrawingList($r->tool_id);
+		$arrDrawing = array_merge($arrDrawing, $drawingList);
+	}
+	
 	// $boolMPList: list tools based on MP Code List
 	// $range: list tools based on ID Nom Range
 	if($boolMPList == true || ($range >= $r->min_range && $range <= $r->max_range)) {
-?>                           
+?>
+
 							<tr value="<?php echo $r->tool_id; ?>">
 								<td><?php echo $r->tool_code; ?></td>
                               	<td><?php echo $r->tool_description; ?></td>
@@ -217,6 +226,7 @@ foreach($tools as $r) {
                            	</tr>
 <?php
 	}
+	$ii += 1;
 }
 ?>
                         </tbody>
@@ -296,7 +306,7 @@ echo (date("d-m-Y", $t));
                         <td>Composition</td>
                         <td><?=$unique_layers; ?>&nbsp;</td>
                         <td>cum. Mass</td>
-                        <td><?=$cumMass; ?>&nbsp;</td>
+                        <td><?=number_format($cumMass, 2); ?>&nbsp;</td>
                      </tr>
                      <tr>
                         <td colspan="4">&nbsp;</td>
@@ -355,7 +365,7 @@ echo (date("d-m-Y", $t));
                      </tr>
                      <tr>
                         <td>Machine</td>
-                        <td colspan="3"><?=$material[0]->material_code; ?></td>
+                        <td colspan="3"><?=$layer_detail[0]->machine_code; ?></td>
                      </tr>
                      <tr>
                         <td colspan="4">&nbsp;</td>
@@ -528,7 +538,7 @@ echo (date("d-m-Y", $t));
                     <td><?=$unique_layers; ?>
                       &nbsp;</td>
                     <td>cum. Mass</td>
-                    <td colspan="2"><?=$cumMass; ?>
+                    <td colspan="2"><?=number_format($cumMass, 2); ?>
                       &nbsp;</td>
                   </tr>
                   <tr>
@@ -536,7 +546,7 @@ echo (date("d-m-Y", $t));
                   </tr>
                   <tr>
                     <td>Machine</td>
-                    <td colspan="4"><?=$material[0]->material_code; ?></td>
+                    <td colspan="4"><?=$layer_detail[0]->machine_code; ?></td>
                   </tr>
                   <tr>
                     <td colspan="5">&nbsp;</td>
@@ -675,27 +685,27 @@ echo (date("d-m-Y", $t));
                    <tr>
                      <th rowspan="2">LOGO</th>
                      <th colspan="2">TOOLING SETUP SHEET</th>
-                     <th>Dept</th>
+                     <th colspan="2">Dept</th>
                    </tr>
                  </thead>
                  <tbody>
                    <tr>
                      <td>&nbsp;</td>
                      <td><?php echo $project_name; ?></td>
-                     <td colspan="2"><b>Methods and Tooling</b></td>
+                     <td colspan="3"><b>Methods and Tooling</b></td>
                    </tr>
                    <tr>
-                     <td colspan="4">&nbsp;</td>
+                     <td colspan="5">&nbsp;</td>
                    </tr>
                    <tr>
                      <td>Doc Code</td>
-                     <td colspan="3"><?=$sess['transaction_number']; ?></td>
+                     <td colspan="4"><?=$sess['transaction_number']; ?></td>
                    </tr>
                    <tr>
                      <td>Prepared By</td>
                      <td><?=strtoupper($sess['fullname']); ?></td>
                      <td>Rev</td>
-                     <td><label>
+                     <td colspan="2"><label>
                        <input class="form-control" placeholder="Rev" type="text" name="rev" />
                      </label></td>
                    </tr>
@@ -705,7 +715,7 @@ echo (date("d-m-Y", $t));
                        <input class="form-control" placeholder="Checked By" type="text" name="checked_by" />
                      </label></td>
                      <td>Date</td>
-                     <td><?php
+                     <td colspan="2"><?php
 $t = time();
 echo (date("d-m-Y", $t));
 ?></td>
@@ -714,7 +724,7 @@ echo (date("d-m-Y", $t));
                      <td>Structure</td>
                      <td><?=$structure_number; ?></td>
                      <td>Job nrs</td>
-                     <td><label>
+                     <td colspan="2"><label>
                        <input class="form-control" placeholder="Job nrs" type="text" name="job_nrs" />
                      </label></td>
                    </tr>
@@ -723,58 +733,87 @@ echo (date("d-m-Y", $t));
                      <td><?=$unique_layers; ?>
                        &nbsp;</td>
                      <td>cum. Mass</td>
-                     <td><?=$cumMass; ?>
+                     <td colspan="2"><?=number_format($cumMass, 2); ?>
                        &nbsp;</td>
                    </tr>
                    <tr>
-                     <td colspan="4">&nbsp;</td>
+                     <td colspan="5">&nbsp;</td>
                    </tr>
                    <tr>
                      <td></td>
                      <td>mini(mm)</td>
                      <td>nominal(mm)</td>
-                     <td>maxi(mm)</td>
+                     <td colspan="2">maxi(mm)</td>
                    </tr>
                    <tr>
                      <td>Int Diameter</td>
                      <td><?=$mini_int_diameter; ?></td>
                      <td><?=$nom_int_diameter; ?></td>
-                     <td><?=$max_int_diameter; ?></td>
+                     <td colspan="2"><?=$max_int_diameter; ?></td>
                    </tr>
                    <tr>
                      <td>Ext Diameter</td>
                      <td><?=$mini_ext_diameter; ?></td>
                      <td><?=$nom_ext_diameter; ?></td>
-                     <td><?=$max_ext_diameter; ?></td>
+                     <td colspan="2"><?=$max_ext_diameter; ?></td>
                    </tr>
                    <tr>
-                     <td colspan="4">&nbsp;</td>
+                     <td colspan="5">&nbsp;</td>
                    </tr>
                    <tr>
                      <td>Material</td>
                      <td><?=$material[0]->type_of_production; ?></td>
                      <td>DIMENSION</td>
-                     <td><?=$material[0]->type_of_production_size; ?></td>
+                     <td colspan="2"><?=$material[0]->type_of_production_size; ?></td>
                    </tr>
                    <tr>
                      <td>IC Thickness (mm)</td>
                      <td>&nbsp;</td>
                      <td></td>
-                     <td></td>
+                     <td colspan="2"></td>
                    </tr>
                    <tr>
-                     <td colspan="4">&nbsp;</td>
+                     <td colspan="5">&nbsp;</td>
                    </tr>
                    <tr>
                      <td>Machine</td>
-                     <td colspan="3"><?=$material[0]->material_code; ?></td>
+                     <td colspan="4"><?=$layer_detail[0]->machine_code; ?></td>
                    </tr>
                    <tr>
-                     <td colspan="4">&nbsp;</td>
+                     <td colspan="5">&nbsp;</td>
+                   </tr>
+                   <tr>
+                     <td>&nbsp;</td>
+                     <td>&nbsp;</td>
+                     <td>&nbsp;</td>
+                     <td align="center">LOCATION</td>
+                     <td align="center">QTY</td>
+                   </tr>
+                   <tr>
+                     <td colspan="5">&nbsp;</td>
+                   </tr>
+<?php if(isset($arrDrawing)) { foreach($arrDrawing as $ntr) { ?>
+
+<input type="hidden" name="drawingList[]" 
+value="<?=$ntr->tooling_name_x; ?>|<?=$ntr->drwg_no_x; ?>|<?=$ntr->LOCATION; ?>|<?=$ntr->qty_x; ?>" />
+
+                   <tr>
+                     <td><?=$ntr->tooling_name_x; ?></td>
+                     <td align="right">Dwg nr:</td>
+                     <td align="right"><?=$ntr->drwg_no_x; ?></td>
+                     <td align="center"><?=$ntr->LOCATION; ?></td>
+                     <td align="center"><?=$ntr->qty_x; ?></td>
+                   </tr>
+                   <tr>
+                     <td colspan="5">&nbsp;</td>
+                   </tr>
+<?php } } ?>
+                   <tr>
+                     <td colspan="5">&nbsp;</td>
                    </tr>
                  </tbody>
               </table>
-            </div>
+ </div>
             <div class="row">
             	<div class="col-md-12" style="margin-bottom:5%;">
                 	<button class="btn btn-primary" type="submit">Export</button>

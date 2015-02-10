@@ -64,7 +64,7 @@ class My_Func
 		}
 	}
 	
-	public function getFoundNotFound($tooling_name)
+	/*public function getFoundNotFound($tooling_name)
 	{
 		$CI = $this->obj;
 		$CI->db->select('*');
@@ -78,11 +78,66 @@ class My_Func
 		} else {
 			return false;
 		}
+	}*/
+	
+	public function getDrawingList($tool_id)
+	{
+		$CI = $this->obj;
+		$sess = $CI->session->all_userdata();
+		$CI->load->model('m_tool');
+		$CI->load->model('m_rule');
+		
+		$structure_number = $sess['structure_number'];
+		$layer_name = $sess['layer_name'];
+		$data['file_url'] = $CI->m_tool->getToolImage($tool_id);
+		$data['selected_tool_id'] = $tool_id;
+		$data['idnom'] = $sess['diaintercouche'];
+		$rule_id = $CI->my_func->checkRule($data);
+		$rules = array();
+		if ($rule_id != false) {
+			$rules = $CI->m_rule->getRulesAndParams2($rule_id);
+		}
+		
+		$nts = array();
+		if(!empty($rules)) {
+			foreach($rules as $r) {
+				$nt_name = "";
+				$val_formula = $CI->my_func->getFormulaValue($structure_number, $layer_name, $r->pio_id, $r->rp_formula, $r->param_code, $r->rule_id, $sess['diaintercouche']);
+				if ($r->nt_id != '0' && $r->nt_id != 0) {
+					$noms = $CI->my_func->getNominalTypeDetails($r->nt_id);
+					if (!empty($noms)) {
+						$nt_name = $noms[0]->nt_name;
+						$nts[] = array(
+							'nt_name' => $nt_name,
+							'nt_value' => number_format($val_formula, 2),
+							'nt_id' => $r->nt_id
+						);
+					}
+				}
+			}
+		}
+		
+		$tool_pilih = $CI->m_tool->getToolDetail($tool_id);
+		$tool_name_pilih = "";
+		if (isset($tool_pilih) && !empty($tool_pilih)) {
+			$tool_name_pilih = $tool_pilih[0]->tool_code;
+		}
+		$tooling_name = $tool_name_pilih;
+		$nominal_type_results = $CI->m_tool->getToolingMaster2($tooling_name, $tool_id, $nts);
+		return $nominal_type_results;
+	}
+	
+	public function getFoundNotFound($tool_id)
+	{
+		$nominal_type_results = $this->getDrawingList($tool_id);
+		if(isset($nominal_type_results) && sizeof($nominal_type_results) > 0) {
+			return true;
+		} else {
+			return false;
+		}
 	}
 
-	public
-
-	function getlayerName($layer_id = 0)
+	public function getlayerName($layer_id = 0)
 	{
 		$CI = $this->obj;
 		$CI->db->select('layer_description');

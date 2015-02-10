@@ -133,7 +133,32 @@ echo (date("d-m-Y", $t));
       <td colspan="3"><?=$material[0]->material_code; ?></td>
     </tr>
     <tr>
-      <td colspan="4">&nbsp;</td>
-    </tr>
+                     <td colspan="5">&nbsp;</td>
+                   </tr>
+                   <tr>
+                     <td>&nbsp;</td>
+                     <td>&nbsp;</td>
+                     <td>&nbsp;</td>
+                     <td align="center">LOCATION</td>
+                     <td align="center">QTY</td>
+                   </tr>
+                   <tr>
+                     <td colspan="5">&nbsp;</td>
+                   </tr>
+<?php if(isset($drawingList)) { foreach($drawingList as $ntr) { ?>
+                   <tr>
+                     <td><?=$ntr['toolingName']; ?></td>
+                     <td align="right">Dwg nr:</td>
+                     <td align="right"><?=$ntr['drawingNo']; ?></td>
+                     <td align="center"><?=$ntr['location']; ?></td>
+                     <td align="center"><?=$ntr['qty']; ?></td>
+                   </tr>
+                   <tr>
+                     <td colspan="5">&nbsp;</td>
+                   </tr>
+<?php } } ?>
+                   <tr>
+                     <td colspan="5">&nbsp;</td>
+                   </tr>
   </tbody>
 </table>
