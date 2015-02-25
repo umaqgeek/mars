@@ -17,7 +17,7 @@
                          'Admissible-Pressure Management'=>site_url('admin/admisPresMngmnt'),
 						 
                          'Material Management'=>site_url('admin/materialManagement'),
-                         //'Nominal Column Management'=>site_url('admin/nominalColumnManagement'),
+                         'Nominal Column Management'=>site_url('admin/nominalColumnManagement'),
                          'Parameter Management'=>site_url('admin/parameterManagement'),
                          'Rule Management'=>site_url('admin/ruleManagement'),
 						 

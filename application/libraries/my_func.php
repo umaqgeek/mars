@@ -105,7 +105,7 @@ class My_Func
 				$val_formula = $CI->my_func->getFormulaValue($structure_number, $layer_name, $r->pio_id, $r->rp_formula, $r->param_code, $r->rule_id, $sess['diaintercouche']);
 				if ($r->nt_id != '0' && $r->nt_id != 0) {
 					$noms = $CI->my_func->getNominalTypeDetails($r->nt_id);
-					if (!empty($noms)) {
+					if (!empty($noms) && is_float($val_formula)) {
 						$nt_name = $noms[0]->nt_name;
 						$nts[] = array(
 							'nt_name' => $nt_name,

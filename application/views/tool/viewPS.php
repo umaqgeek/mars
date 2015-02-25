@@ -44,21 +44,112 @@
                               <!--<div class="alert alert-info alert-dismissible" role="alert">Rule number mandrel_5 is selected </div>-->
                               
                 <em style="color:#06F; font-size:large;">Please select an item from the list below:-</em>
-                      <select class="form-control">
-                      	<option>2011-205 (T1-S1)</option>
-                      	<option>2011-204 (T1-P1)</option>
-                      </select>
-                      
-                      
-            <div class="row">
-               <div class="col-sm-12">
+              <table id="example" class="display" cellspacing="0" width="100%">
+              <thead>
+                  <tr>
+                    <td>No.</td>
+                    <td>ID</td>
+                    <td>OD</td>
+                    <td>HEAD</td>
+                    <td>Drwg Name</td>
+                    <td>WITH RING</td>
+                    <td>WITH PIN/DIE SUPPORT</td>
+                    <td>SUPPORT SIZE</td>
+                  </tr>
+               </thead>
+               <tbody>
+                  <tr>
+                    <td width="64">1.</td>
+                    <td width="64">104</td>
+                    <td width="64">114.0</td>
+                    <td width="64">J</td>
+                    <td width="204">PIN &Oslash;114 HEAD J</td>
+                    <td width="92">NO</td>
+                    <td width="160">YES</td>
+                    <td width="64">&nbsp;</td>
+                  </tr>
+                  <tr>
+                    <td>2.</td>
+                    <td>110</td>
+                    <td>120.0</td>
+                    <td>J</td>
+                    <td>PIN &Oslash;120 HEAD J</td>
+                    <td>NO</td>
+                    <td>NO</td>
+                    <td>&nbsp;</td>
+                  </tr>
+                  <tr>
+                    <td>3.</td>
+                    <td>130</td>
+                    <td>140.0</td>
+                    <td>J</td>
+                    <td>POINCONS</td>
+                    <td>NO</td>
+                    <td>NO</td>
+                    <td>&nbsp;</td>
+                  </tr>
+                  <tr>
+                    <td>4.</td>
+                    <td>130</td>
+                    <td>140.0</td>
+                    <td>J</td>
+                    <td>POINCONS</td>
+                    <td>NO</td>
+                    <td>NO</td>
+                    <td>&nbsp;</td>
+                  </tr>
+                  <tr>
+                    <td>5.</td>
+                    <td>130</td>
+                    <td>140.0</td>
+                    <td>J</td>
+                    <td>POINCONS</td>
+                    <td>NO</td>
+                    <td>NO</td>
+                    <td>&nbsp;</td>
+                  </tr>
+                  <tr>
+                    <td>6.</td>
+                    <td>135</td>
+                    <td>125.0</td>
+                    <td>J</td>
+                    <td>PIN &Oslash;115 - &Oslash;125 Head J</td>
+                    <td>NO</td>
+                    <td>YES</td>
+                    <td>&nbsp;</td>
+                  </tr>
+                  <tr>
+                    <td>7.</td>
+                    <td>140</td>
+                    <td>130.0</td>
+                    <td>J</td>
+                    <td>PIN &Oslash;120 HEAD J</td>
+                    <td>NO</td>
+                    <td>NO</td>
+                    <td>&nbsp;</td>
+                  </tr>
+                  <tr>
+                    <td>8.</td>
+                    <td>155</td>
+                    <td>135.0</td>
+                    <td>J</td>
+                    <td>PIN &Oslash;125 HEAD J</td>
+                    <td>YES</td>
+                    <td>NO</td>
+                    <td>&nbsp;</td>
+                  </tr>
+               </tbody>
+              </table>
+              
+<hr />
+<div class="row">
+<div class="col-sm-12">
                   <h2>DRAWING GAP</h2>
-                  <em style="color:#F00; font-size:x-large;">*This is a dummy drawing for GAP*</em><br />
-                                    <img style="margin-top:2%" src="http://localhost/mars/assets/uploads/files/0c8f5-mandrel_1.png" />
                                  </div>
             </div>    
             <input type="text" value="" class="form-control" placeholder="Result GAP" /> 
             
+<hr />
             <div class="row">
                <div class="col-sm-12">
                   <h2>DRAWING DIE</h2>
