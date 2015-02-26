@@ -146,6 +146,56 @@ class M_tool extends CI_Model  {
 			return NULL;
 		}
 	}
+	
+	public function getToolingMaster3($tooling_name, $tool_code='-', $minimum=0, $maximum=999999)
+	{
+		$sql = sprintf("SELECT * 
+					   FROM tool_nominal_type tnt, tool t, nominal_type nt 
+					   WHERE tnt.tool_id = t.tool_id 
+					   AND tnt.nt_id = nt.nt_id 
+					   AND t.tool_code LIKE '%%%s%%' 
+					   GROUP BY tnt.tnt_id ", $tool_code);
+		$q = $this->db->query($sql);
+		$rr = $q->result();
+		if (!empty($rr)) {
+			
+			$arrNew = array();
+			
+			foreach ($rr as $r) {
+				$arrNew[] = array(
+					'nt_name' => $r->nt_name
+				);
+			}
+		
+			$sql = "SELECT *, 
+			`QUANTITY` AS qty_x, 
+			`DRAWING_NO` AS drwg_no_x, 
+			`TOOLING_NAME` AS tooling_name_x 
+			FROM tooling_master2 WHERE 1=1 ";
+			
+			$sql .= sprintf("AND `TOOLING_NAME` = '%s' ", $tooling_name);
+			
+			$siAN = sizeof($arrNew);
+			if ($siAN <= 0) {
+				return NULL;
+			}
+			
+			foreach ($arrNew as $an) {
+				$nt_name = $an['nt_name'];
+				$col_sql_min = (is_numeric($minimum)) ? ("CAST(%s AS DECIMAL(20, 1))") : ("%s");
+				$col_sql_max = (is_numeric($maximum)) ? ("CAST(%s AS DECIMAL(20, 1))") : ("%s");
+				$val_sql_min = (is_numeric($minimum)) ? ("CAST('%s' AS DECIMAL(20, 1))-1") : ("'%s' ");
+				$val_sql_max = (is_numeric($maximum)) ? ("CAST('%s' AS DECIMAL(20, 1))+1") : ("'%s' ");
+				$sql .= sprintf("AND (".$col_sql_min." > ".$val_sql_min." AND ".$col_sql_max." < ".$val_sql_max.")", $nt_name, $minimum, $nt_name, $maximum);
+			}
+			
+			$query = $this->db->query($sql);
+			$result = $query->result();
+			return $result;
+		} else {
+			return NULL;
+		}
+	}
 
 	public function getToolingMaster($nominal_types=array())
 	{
@@ -269,6 +319,21 @@ class M_tool extends CI_Model  {
 		$result=$query->result();
 		return $result;
 	}
+	
+	public function getToolFromLayerName($layer_name)
+	{
+		$this->db->select('*');
+		$this->db->from('tool too');
+		$this->db->join('layer_tool lt', 'lt.tool_id = too.tool_id');
+		$this->db->join('layer l', 'l.layer_id = lt.layer_id');
+		$this->db->join('tool_tool_nominal ttn', 'ttn.tool_id = too.tool_id', 'left');
+		$this->db->join('nominal_column nc', 'nc.nc_id = ttn.nc_id', 'left');
+		$this->db->where('l.layer_description', $layer_name);
+		$this->db->group_by('too.tool_id');
+		$query = $this->db->get();
+		$result=$query->result();
+		return $result;
+	}
 
 	public function getToolImage($tool_id)
 	{
@@ -282,8 +347,32 @@ class M_tool extends CI_Model  {
 		    
 		}
 	}
+	
+	public function getToolImage1($tool_id)
+	{
+		$this->db->select('*');
+		$this->db->from('tool');
+		$this->db->where('tool_id', $tool_id);
+		$query = $this->db->get();
+		foreach ($query->result() as $row)
+		{
+			   return $row;
+		    
+		}
+	}
 
-
+	public function getToolImage2($tool_code)
+	{
+		$this->db->select('file_url');
+		$this->db->from('tool');
+		$this->db->like('tool_code', $tool_code);
+		$query = $this->db->get();
+		foreach ($query->result() as $row)
+		{
+			   return $row->file_url;
+		    
+		}
+	}
 
 }
 ?>

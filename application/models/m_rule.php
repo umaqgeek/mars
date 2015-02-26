@@ -206,7 +206,7 @@ class M_rule extends CI_Model  {
 			return $query->result();
 	}  
 	
-	 public function getRulesAndParams2($rule_id)
+	public function getRulesAndParams2($rule_id)
     {
         	$this->db->select('*');
 			$this->db->from('rule_param');
@@ -219,6 +219,20 @@ class M_rule extends CI_Model  {
  			
 			return $query->result();
 	} 
+	
+	public function getRulesAndParams3($param_tool_code)
+    {
+        	$this->db->select('*');
+			$this->db->from('rule_param');
+			$this->db->join('rule', 'rule.rule_id = rule_param.rule_id');
+			$this->db->join('param', 'param.param_id = rule_param.param_id');
+			$this->db->like('param.param_tool_code',$param_tool_code);
+			$this->db->group_by('param.param_id');
+			$this->db->order_by('param.param_number','asc'); 
+ 			$query = $this->db->get();
+ 			
+			return $query->result();
+	}
 
 	public function deleteRule($data=array()){
 		$rule_id=$data['rule_id'];

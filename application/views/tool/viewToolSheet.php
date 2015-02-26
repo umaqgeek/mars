@@ -144,35 +144,36 @@ if (isset($tool_pilih) && !empty($tool_pilih)) {
                         if(!empty($rules))
                         {
 							//print_r($rules);
-                        foreach($rules as $r)
-                        {
-							$nt_name = "";
-							$val_formula = $this->my_func->getFormulaValue($structure_number, $layer_name, $r->pio_id, $r->rp_formula, $r->param_code, $r->rule_id, $sess['diaintercouche']);
-							if ($r->nt_id != '0' && $r->nt_id != 0) {
-								$noms = $this->my_func->getNominalTypeDetails($r->nt_id);
-								if (!empty($noms)) {
-									$nt_name = $noms[0]->nt_name;
-									$nts[] = array(
-										'nt_name' => $nt_name,
-										'nt_value' => number_format($val_formula, 2),
-										'nt_id' => $r->nt_id
-									);
+							foreach($rules as $r)
+							{
+								$nt_name = "";
+								$val_formula = $this->my_func->getFormulaValue($structure_number, $layer_name, $r->pio_id, $r->rp_formula, $r->param_code, $r->rule_id, $sess['diaintercouche']);
+								if ($r->nt_id != '0' && $r->nt_id != 0) {
+									$noms = $this->my_func->getNominalTypeDetails($r->nt_id);
+									$val_formula = (is_float($val_formula)) ? ($val_formula) : (0.00);
+									if (!empty($noms)) {
+										$nt_name = $noms[0]->nt_name;
+										$nts[] = array(
+											'nt_name' => $nt_name,
+											'nt_value' => number_format($val_formula, 2),
+											'nt_id' => $r->nt_id
+										);
+									}
 								}
+							  ?>
+						 <tr>
+							<td><?php //print_r($r); ?>
+							<?=$r->param_number?></td>
+							<td><?=$r->param_code?></td>
+							<td><?=$nt_name?></td>
+							<!--<td><?=$r->rp_post_value?></td>-->
+							<td><?=$val_formula; ?></td>
+							<td><?=$r->param_tol_min?></td>
+							<td><?=$r->param_tol_plus?></td>
+							<td></td>
+						 </tr>
+						 <?php
 							}
-                          ?>
-                     <tr>
-                        <td><?php //print_r($r); ?>
-						<?=$r->param_number?></td>
-                        <td><?=$r->param_code?></td>
-                        <td><?=$nt_name?></td>
-                        <!--<td><?=$r->rp_post_value?></td>-->
-                        <td><?=$val_formula; ?></td>
-                        <td><?=$r->param_tol_min?></td>
-                        <td><?=$r->param_tol_plus?></td>
-                        <td></td>
-                     </tr>
-                     <?php
-                        }
                         }
                         
                         ?>

@@ -21,6 +21,8 @@
                          'Parameter Management'=>site_url('admin/parameterManagement'),
                          'Rule Management'=>site_url('admin/ruleManagement'),
 						 
+						 //'Backup and Restore' => site_url('admin/backupAndRestore'),
+						 
 						 'Tool Sheet'=>site_url('admin/structureNumber'),
 						 'Imported Structure Data View'=>site_url('admin/importedManagement'),
 						 'Tooling Master'=>site_url('admin/toolingMaster'),

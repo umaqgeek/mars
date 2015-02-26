@@ -551,6 +551,53 @@ class Admin extends MY_Controller
 	{
 		$this->load->view('tool/viewToolManagement.php', $output);
 	}
+	
+	public function backupAndRestore()
+	{
+		$this->load->view('template/header');
+		$this->load->view('template/nav');
+		$data['sidebar'] = $this->load->view('template/sidebar');
+		$this->load->view('backupAndRestore/index.php', $data);
+	}
+	
+	public function backupSQL()
+	{
+		$backupDate = date('Ymd.His');
+		
+		$path = 'C:/wamp/www/marsdb/BACKUP_DATABASE/';
+		$backup_file = 'marsdb_backup_'.$backupDate.'.sql';
+		$exportPath = $path.$backup_file;
+		$db = 'marsdb';
+		$table_name = 'rule';
+		
+		$dbhost = 'localhost';
+		$dbuser = 'root';
+		$dbpass = '';
+		
+		$command = "mysqldump --opt -h $dbhost -u $dbuser -p $dbpass ".
+           "$db | sql > $backup_file";
+
+		system($command);
+		die();
+		
+		$conn = mysql_connect($dbhost, $dbuser, $dbpass);
+		mysql_select_db($db);
+		if(! $conn )
+		{
+		  die('Could not connect: ' . mysql_error());
+		}
+		
+		$sql = "SELECT * INTO OUTFILE '$backup_file' FROM $table_name";
+		echo $sql; die();
+		
+		$retval = mysql_query( $sql, $conn ) or die(mysql_error());
+		if(! $retval )
+		{
+		  die('Could not take data backup: ' . mysql_error());
+		}
+		echo "Backup data successfully\n";
+		mysql_close($conn);
+	}
 
 	public function nominalColumnManagement()
 	{
@@ -558,6 +605,9 @@ class Admin extends MY_Controller
 		$this->load->view('template/nav');
 		$data['sidebar'] = $this->load->view('template/sidebar');
 		$crud = new grocery_CRUD();
+		
+		$crud->set_subject('Nominal Management');
+		
 		$crud->set_theme('datatables');
 		$crud->set_table('nominal_column');
 		$crud->columns('nc_id', 'nc_name', 'nc_description');
@@ -566,8 +616,10 @@ class Admin extends MY_Controller
 		$crud->display_as('nc_description', 'Nominal Column Description');
 		$crud->unset_texteditor('nc_description', 'full_text');
 		
+		$crud->field_type('nc_name', 'readonly');
+		
 		$crud->unset_delete();
-		$crud->unset_edit();
+		//$crud->unset_edit();
 		$crud->unset_add();
 
 		// $crud->callback_column('nc_id',array($this,'_callback_display_nc_code'));
@@ -2204,12 +2256,45 @@ class Admin extends MY_Controller
 	
 	public function DisplayPressureSheath()
 	{
+		$this->load->model("m_rule");
+		$this->load->model("m_tool");
+		$this->load->model("m_project");
+		
 		$this->load->view('template/header_datatable');
 		$this->load->view('template/nav');
 		$data['sidebar'] = $this->load->view('template/sidebar');
 		
-		$this->load->view('tool/viewPS', $data);
+		$sess = $this->session->all_userdata();
+		$structure_number = $sess['structure_number'];
+		$layer_name = $sess['layer_name'];
 		
+		$data['file_url'] = $this->m_tool->getToolImage2('PIN');
+		$transaction_number = $this->session->userdata('transaction_number');
+		$data['projects'] = $this->m_project->getProjectByTransId($transaction_number);
+		
+		$tool_code = 'PIN';
+		$rules = $this->m_rule->getRulesAndParams3($tool_code);
+		if(!empty($rules))
+		{
+			// minimum
+			$r1 = $rules[0];
+			$minimum = $this->my_func->getFormulaValue($structure_number, $layer_name, $r1->pio_id, $r1->rp_formula, $r1->param_code, $r1->rule_id, $sess['diaintercouche']);
+			// maximum
+			$r2 = $rules[1];
+			$maximum = $this->my_func->getFormulaValue($structure_number, $layer_name, $r2->pio_id, $r2->rp_formula, $r2->param_code, $r2->rule_id, $sess['diaintercouche']);
+		}
+		$data['nominal_type_results'] = $this->m_tool->getToolingMaster3('PIN', 'PIN', $minimum, $maximum);
+		
+		$tools = $this->m_tool->getToolFromLayerName($sess['layer_name']);
+		if (!empty($tools)) {
+			foreach ($tools as $to) {
+				if ($to->tool_code != $tool_code) {
+					$data['file_url_others'][] = $this->m_tool->getToolImage1($to->tool_id);
+				}
+			}
+		}
+		
+		$this->load->view('tool/viewPS', $data);
 		$this->load->view('template/footer_datatable');
 	}
 	

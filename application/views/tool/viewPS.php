@@ -3,7 +3,21 @@
        var table = $('#example').DataTable();
        var table2 = $('#example2').DataTable();
    
-   
+   		$('#example tbody').on( 'click', 'tr', function () {
+           if ( $(this).hasClass('selected') ) {
+               $(this).removeClass('selected');
+           }
+           else {
+               table.$('tr.selected').removeClass('selected');
+               $(this).addClass('selected');
+           }
+		   var value = $(this).attr('value').split('|');
+		   var strTemp = '';
+		   for (i=0; i<value.length; i++) {
+			   strTemp += value[i] + ', ';
+		   }
+		   $(".toolCodeBox").val(strTemp);
+		});
    
    } );
    
@@ -11,15 +25,69 @@
 <div class="container-fluid">
 <div class="row">
    <div class="col-sm-5 col-sm-offset-3 col-md-10 col-md-offset-2 main">
-                  <div class="col-md-3">
-         Structure Number : DUMMY001      </div>
-                  <div class="col-md-3">
-         Project Name : dummy1      </div>
-                  <div class="col-md-3">
-         Project Number : 001-dummy      </div>
-                           <div class="col-md-3">
-         Layer Name : PRESSURE SHEATH      </div>
-         </div>
+      <?php
+	  	  $structure_number="";
+          $project_name="";
+          $project_number="";
+		  $layer_name="";
+
+$sess = $this->session->all_userdata();
+		  
+         if(!empty($projects))
+         {
+			 //print_r($this->session->all_userdata());
+          	$structure_number = $this->session->all_userdata()['structure_number'];
+          	$layer_name = $this->session->all_userdata()['layer_name'];
+         
+             foreach($projects as $r)
+                {
+                    $structure_number=$r->structure_number;
+                   $project_name=$r->project_name;
+                     $project_number=$r->project_number;
+                }
+         }
+          ?>
+      <?php
+         if(!empty($structure_number))
+         {
+           ?>
+      <div class="col-md-3">
+         Structure Number : <?=$structure_number?>
+      </div>
+      <?php
+         }
+         ?>
+      <?php
+         if(!empty($project_name))
+         {
+           ?>
+      <div class="col-md-3">
+         Project Name : <?=$project_name?>
+      </div>
+      <?php
+         }
+         ?>
+      <?php
+         if(!empty($project_number))
+         {
+           ?>
+      <div class="col-md-3">
+         Project Number : <?=$project_number?>
+      </div>
+      <?php
+         }
+         ?>
+               <?php
+
+if (isset($sess['layer_name']) && !empty($sess['layer_name'])) {
+?>
+      <div class="col-md-3">
+         Layer Name : <?php echo $sess['layer_name']; ?>
+      </div>
+      <?php
+}
+?>
+   </div>
 </div>
 
  <div class="row">
@@ -34,17 +102,28 @@
       <div class="row">
                <div class="col-sm-12">
                   <h1 class="page-header">Tool Sheet</h1>
-                  <h2>DRAWING PIN</h2>
-                  <em style="color:#F00; font-size:x-large;">*This is a dummy drawing for PIN*</em><br />
-                                    <img style="margin-top:2%" src="http://localhost/mars/assets/uploads/files/0c8f5-mandrel_1.png" />
-                                 </div>
+                  <h2>Tool DRAWING PIN</h2>
+                  <?php
+                     if(!empty($file_url))
+                     {
+                       ?>
+                  <img style="margin-top:2%" src="<?=base_url('assets/uploads/files/'.$file_url)?>" />
+                  <?php
+                     }
+                     else
+                     {
+                       ?>
+                  <div class="alert alert-warning alert-dismissible" role="alert">Image Not Found, or maybe not uploaded yet!</div>
+                  <?php
+                     }
+                     ?>
+               </div>
             </div>
             <!--end-->
             <div class="col-sm-10">
-                              <!--<div class="alert alert-info alert-dismissible" role="alert">Rule number mandrel_5 is selected </div>-->
                               
                 <em style="color:#06F; font-size:large;">Please select an item from the list below:-</em>
-              <table id="example" class="display" cellspacing="0" width="100%">
+              <table id="example" class="display" cellspacing="0" width="100%" style="cursor:pointer;">
               <thead>
                   <tr>
                     <td>No.</td>
@@ -58,107 +137,52 @@
                   </tr>
                </thead>
                <tbody>
-                  <tr>
-                    <td width="64">1.</td>
-                    <td width="64">104</td>
-                    <td width="64">114.0</td>
-                    <td width="64">J</td>
-                    <td width="204">PIN &Oslash;114 HEAD J</td>
-                    <td width="92">NO</td>
-                    <td width="160">YES</td>
-                    <td width="64">&nbsp;</td>
+               	  <?php if(isset($nominal_type_results)) { $int = 1; foreach($nominal_type_results as $ntr) { ?>
+                  <tr value="<?=$ntr->ID; ?>|<?=$ntr->OD; ?>|<?=$ntr->HEAD; ?>|<?=$ntr->DRAWING_NAME; ?>|<?=$ntr->WITH_RING; ?>|<?=$ntr->WITH_PIN_DIE_SUPPORT; ?>|<?=$ntr->SUPPORT_SIZE; ?>">
+                    <td width="64"><?=$int++; ?></td>
+                    <td width="64"><?=$ntr->ID; ?></td>
+                    <td width="64"><?=$ntr->OD; ?></td>
+                    <td width="64"><?=$ntr->HEAD; ?></td>
+                    <td width="204"><?=$ntr->DRAWING_NAME; ?></td>
+                    <td width="92"><?=$ntr->WITH_RING; ?></td>
+                    <td width="160"><?=$ntr->WITH_PIN_DIE_SUPPORT; ?></td>
+                    <td width="64"><?=$ntr->SUPPORT_SIZE; ?></td>
                   </tr>
-                  <tr>
-                    <td>2.</td>
-                    <td>110</td>
-                    <td>120.0</td>
-                    <td>J</td>
-                    <td>PIN &Oslash;120 HEAD J</td>
-                    <td>NO</td>
-                    <td>NO</td>
-                    <td>&nbsp;</td>
-                  </tr>
-                  <tr>
-                    <td>3.</td>
-                    <td>130</td>
-                    <td>140.0</td>
-                    <td>J</td>
-                    <td>POINCONS</td>
-                    <td>NO</td>
-                    <td>NO</td>
-                    <td>&nbsp;</td>
-                  </tr>
-                  <tr>
-                    <td>4.</td>
-                    <td>130</td>
-                    <td>140.0</td>
-                    <td>J</td>
-                    <td>POINCONS</td>
-                    <td>NO</td>
-                    <td>NO</td>
-                    <td>&nbsp;</td>
-                  </tr>
-                  <tr>
-                    <td>5.</td>
-                    <td>130</td>
-                    <td>140.0</td>
-                    <td>J</td>
-                    <td>POINCONS</td>
-                    <td>NO</td>
-                    <td>NO</td>
-                    <td>&nbsp;</td>
-                  </tr>
-                  <tr>
-                    <td>6.</td>
-                    <td>135</td>
-                    <td>125.0</td>
-                    <td>J</td>
-                    <td>PIN &Oslash;115 - &Oslash;125 Head J</td>
-                    <td>NO</td>
-                    <td>YES</td>
-                    <td>&nbsp;</td>
-                  </tr>
-                  <tr>
-                    <td>7.</td>
-                    <td>140</td>
-                    <td>130.0</td>
-                    <td>J</td>
-                    <td>PIN &Oslash;120 HEAD J</td>
-                    <td>NO</td>
-                    <td>NO</td>
-                    <td>&nbsp;</td>
-                  </tr>
-                  <tr>
-                    <td>8.</td>
-                    <td>155</td>
-                    <td>135.0</td>
-                    <td>J</td>
-                    <td>PIN &Oslash;125 HEAD J</td>
-                    <td>YES</td>
-                    <td>NO</td>
-                    <td>&nbsp;</td>
-                  </tr>
+                  <?php } } ?>
                </tbody>
               </table>
               
+
 <hr />
+
+<?php 
+if (!empty($file_url_others)) { 
+	foreach ($file_url_others as $fuo) {
+		//print_r($fuo);
+?>
 <div class="row">
-<div class="col-sm-12">
-                  <h2>DRAWING GAP</h2>
-                                 </div>
-            </div>    
-            <input type="text" value="" class="form-control" placeholder="Result GAP" /> 
-            
-<hr />
-            <div class="row">
                <div class="col-sm-12">
-                  <h2>DRAWING DIE</h2>
-                  <em style="color:#F00; font-size:x-large;">*This is a dummy drawing for DIE*</em><br />
-                                    <img style="margin-top:2%" src="http://localhost/mars/assets/uploads/files/0c8f5-mandrel_1.png" />
-                                 </div>
+                  <h2>Tool <?=$fuo->tool_code; ?></h2>
+                  <?php
+                     if(!empty($fuo->file_url))
+                     {
+                       ?>
+                  <img style="margin-top:2%" src="<?=base_url('assets/uploads/files/'.$fuo->file_url)?>" />
+                  <?php
+                     }
+                     else
+                     {
+                       ?>
+                  <div class="alert alert-warning alert-dismissible" role="alert">Image Not Found, or maybe not uploaded yet!</div>
+                  <?php
+                     }
+                     ?>
+               </div>
             </div>    
-            <input type="text" value="" class="form-control" placeholder="Result DIE" />              
-               
+            <input type="text" value="" class="form-control toolCodeBox" placeholder="Result <?=$fuo->tool_code; ?>" /> 
+<hr />
+<?php } } ?>
+
       
    </div>
    <div class="row" style="margin-bottom:10%;">

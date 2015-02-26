@@ -207,7 +207,7 @@ foreach($tools as $r) {
 	$range = $this->my_func->getRangeIDNom($structure_number, $sess['layer_name'], $r->nc_name);
 	$boolMPList = $this->my_func->getRangeMPListCode($structure_number, $sess['layer_name'], $r->tool_id);
 	$isFound = $this->my_func->getFoundNotFound($r->tool_id);
-	$strFound = ($isFound == true) ? ("Found") : ("Not Found");
+	$strFound = ($isFound === true) ? ("Found") : ("Not Found");
 	
 	if ($isFound) {
 		$drawingList = $this->my_func->getDrawingList($r->tool_id);
