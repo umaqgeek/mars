@@ -2276,6 +2276,7 @@ class Admin extends MY_Controller
 		$rules = $this->m_rule->getRulesAndParams3($tool_code);
 		if(!empty($rules))
 		{
+			//print_r($rules); die();
 			// minimum
 			$r1 = $rules[0];
 			$minimum = $this->my_func->getFormulaValue($structure_number, $layer_name, $r1->pio_id, $r1->rp_formula, $r1->param_code, $r1->rule_id, $sess['diaintercouche']);

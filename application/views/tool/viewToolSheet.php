@@ -167,7 +167,11 @@ if (isset($tool_pilih) && !empty($tool_pilih)) {
 							<td><?=$r->param_code?></td>
 							<td><?=$nt_name?></td>
 							<!--<td><?=$r->rp_post_value?></td>-->
-							<td><?=$val_formula; ?></td>
+							<td><?php
+                            $pio_id = $r->pio_id;
+							$val_formula = ($pio_id == 4) ? ($val_formula) : (number_format($val_formula, 1));
+							echo $val_formula;
+							?></td>
 							<td><?=$r->param_tol_min?></td>
 							<td><?=$r->param_tol_plus?></td>
 							<td></td>

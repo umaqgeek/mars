@@ -679,6 +679,7 @@ class My_Func
 					$formula_array[] = $pecah[$i];
 				} else {
 					if ($pecah[$i] != '') {
+						//echo $structure_number.'|'.$layer_name.'|'.$rule_id.'|'.$pecah[$i].'|'.$sess_value.'<br />';
 						$formula_array[] = $this->getVariableValue($structure_number, $layer_name, $rule_id, $pecah[$i], $sess_value);
 					} else {
 						$formula_array[] = 0;
@@ -687,6 +688,10 @@ class My_Func
 			}
 			$str = "";
 			foreach ($formula_array as $fa) {
+				//echo $fa."<br />";
+				if ($fa == '' || $fa == "" || $fa == NULL) {
+					$str .= '0';
+				}
 				if ($fa == '0' || $fa == 0) {
 					$str .= $fa;
 				} else {
@@ -695,7 +700,9 @@ class My_Func
 			}
 			//$compute = create_function('', 'return (135.0);');
 			//return 0 + $compute();
-			//return 'return (' . $str . ');';
+			//echo 'return (' . $str . ');' . '<br />';
+			//echo '|'.$param_code.'|';
+			//die();
 			$compute = create_function('', 'return (' . $str . ');');
 			$post_data = array(
 				'rp_post_value' => (0 + $compute())
@@ -703,20 +710,20 @@ class My_Func
 			$CI = $this->obj;
 			$CI->db->select('*');
 			$CI->db->from('param');
-			$CI->db->where('param_code', $param_code);
+			$CI->db->where('param_code', utf8_decode($param_code));
 			$query = $CI->db->get();
-			$valx = 0;
+			$valx = (0 + $compute());
+			//echo '.. '.$valx.' ..'; die();
 			if (sizeof($query->result()) > 0) {
 				$param_id = $query->result()[0]->param_id;
 				$CI->db->where('rule_id', $rule_id);
 				$CI->db->where('param_id', $param_id);
 				$CI->db->update('rule_param', $post_data); 
-				$valx = 0 + $compute();// . '|' . $formula;
 			}
-			return number_format($valx, 1);
+			return $valx;
 		} else {
 			if ($pio_id == 1) {
-				return number_format($formula, 1);
+				return $formula;
 			} else {
 				return $formula;
 			}
