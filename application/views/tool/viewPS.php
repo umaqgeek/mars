@@ -11,6 +11,15 @@
                table.$('tr.selected').removeClass('selected');
                $(this).addClass('selected');
            }
+		   var tools = new Array();
+		   var count_tools = 0;
+		   <?php
+		   if (!empty($file_url_others)) { 
+		   		foreach ($file_url_others as $fuo) {
+					echo "\n"; ?> tools[count_tools++] = <?php echo "'".$fuo->tool_code."';";
+				}
+		   } echo "\n\n";
+		   ?>
 		   var value = $(this).attr('value').split('|');
 		   var strTemp = '';
 		   for (i=0; i<value.length; i++) {
@@ -119,6 +128,16 @@ if (isset($sess['layer_name']) && !empty($sess['layer_name'])) {
                      ?>
                </div>
             </div>
+            
+            <div class="row">
+               <div class="col-sm-12">
+               		<h3>
+                        Minimum: <?=$minimum; ?><br />
+                        Maximum: <?=$maximum; ?>
+                    </h3>
+               </div>
+            </div>
+            
             <!--end-->
             <div class="col-sm-10">
                               
@@ -158,6 +177,7 @@ if (isset($sess['layer_name']) && !empty($sess['layer_name'])) {
 <?php 
 if (!empty($file_url_others)) { 
 	foreach ($file_url_others as $fuo) {
+		if ($fuo->tool_code == 'PIN' || $fuo->tool_code == 'DIE' || $fuo->tool_code == 'GAP') {
 		//print_r($fuo);
 ?>
 <div class="row">
@@ -179,9 +199,10 @@ if (!empty($file_url_others)) {
                      ?>
                </div>
             </div>    
-            <input type="text" value="" class="form-control toolCodeBox" placeholder="Result <?=$fuo->tool_code; ?>" /> 
+            <input type="text" value="" class="form-control toolCodeBox" id="" placeholder="Result <?=$fuo->tool_code; ?>" />
+            <input type="hidden" value="<?=$fuo->tool_code; ?>" class="toolHide" />
 <hr />
-<?php } } ?>
+<?php } } } ?>
 
       
    </div>

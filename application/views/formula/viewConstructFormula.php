@@ -5,6 +5,7 @@
 
         var table3 = $('#example3').DataTable();
 
+		 var table4 = $('#example4').DataTable();
 
         // var awal = $('#field-rp_pre_value').data('val',  $('#field-rp_pre_value').val() );
         // alert(awal.val());
@@ -32,20 +33,20 @@
             $('#formula').val('');
         });
 		
-		$("#addnompitch").click(function() {
+		$(".addon").click(function() {
 										 
-			var nom_pitch = 'nom_pitch';
+			var addVal = $(this).attr('nilai');
 
             if ($('#formula').val() != '') {
-				$('#field-rp_pre_value').val($('#field-rp_pre_value').val() + ' ' + nom_pitch);
-                $('#field-rp_post_value').val($('#field-rp_post_value').val() + ' ' + nom_pitch);
-                $('#field-rp_formula').val($('#field-rp_formula').val() + ' ' + nom_pitch);
-                $('#formula').val($('#formula').val() + ' ' + nom_pitch);
+				$('#field-rp_pre_value').val($('#field-rp_pre_value').val() + ' ' + addVal);
+                $('#field-rp_post_value').val($('#field-rp_post_value').val() + ' ' + addVal);
+                $('#field-rp_formula').val($('#field-rp_formula').val() + ' ' + addVal);
+                $('#formula').val($('#formula').val() + ' ' + addVal);
 			} else {
-				$('#field-rp_pre_value').val(nom_pitch);
-                $('#field-rp_post_value').val(nom_pitch);
-                $('#field-rp_formula').val(nom_pitch);
-                $('#formula').val(nom_pitch);
+				$('#field-rp_pre_value').val(addVal);
+                $('#field-rp_post_value').val(addVal);
+                $('#field-rp_formula').val(addVal);
+                $('#formula').val(addVal);
 			}
         });
 		
@@ -137,26 +138,27 @@
             //return the value
             var val = $(this).attr('value');
 			
+			if (val == 'pow(') {
+				alert('Function pow() need two parameters!\nExample:-\n\npow(2,3) = 2 power of 3\npow(4,2) = 4 power of 2');
+			} else if (val == 'sqrt(') {
+				alert('Function sqrt() need one parameter!\nExample:-\n\nsqrt(9) = square root 9 = 3\nsqrt(25) = square root 25 = 5');
+			}
+			
 			//alert('|'+$('#field-rp_pre_value').val()+'|'+val+'|');
 
             var base_url = "<?=site_url()?>";
 
 			if ($('#formula').val() != '') {
-				//write to the value #rp_pre_value
 				$('#field-rp_pre_value').val($('#field-rp_pre_value').val() + ' ' + val);
 				$('#field-rp_post_value').val($('#field-rp_post_value').val() + ' ' + val);
 				$('#field-rp_formula').val($('#field-rp_formula').val() + ' ' + val);
 				$('#formula').val($('#formula').val() + ' ' + val);
 			} else {
-				//write to the value #rp_pre_value
 				$('#field-rp_pre_value').val(val);
 				$('#field-rp_post_value').val(val);
 				$('#field-rp_formula').val(val);
 				$('#formula').val(val);
 			}
-
-
-
         });
 
 
@@ -177,27 +179,82 @@
             var param_code = result[1];
             var param_value = result[2];
 			var tool_id = result[3];
+			var tool_code = result[4];
             var base_url = "<?=site_url()?>";
 
+			tool_code = tool_code.replace(' ', '^');
 
             //write to the value #rp_pre_value
             if ($('#formula').val() != '') {
                 //$('#field-rp_pre_value').val($('#field-rp_pre_value').val() + param_code);
-                $('#field-rp_pre_value').val($('#field-rp_pre_value').val() + ' ' + 'TOOL_'+tool_id+'_'+param_code);
-                $('#field-rp_post_value').val($('#field-rp_post_value').val() + ' ' + 'TOOL_'+tool_id+'_'+param_code);
-                $('#field-rp_formula').val($('#field-rp_formula').val() + ' ' + 'TOOL_'+tool_id+'_'+param_code);
-                $('#formula').val($('#formula').val() + ' ' + 'TOOL_'+tool_id+'_'+param_code);
+                $('#field-rp_pre_value').val($('#field-rp_pre_value').val() + ' ' + 'TOOL_'+tool_code+'_'+param_code);
+                $('#field-rp_post_value').val($('#field-rp_post_value').val() + ' ' + 'TOOL_'+tool_code+'_'+param_code);
+                $('#field-rp_formula').val($('#field-rp_formula').val() + ' ' + 'TOOL_'+tool_code+'_'+param_code);
+                $('#formula').val($('#formula').val() + ' ' + 'TOOL_'+tool_code+'_'+param_code);
             } else {
                 //$('#field-rp_pre_value').val(param_code);
-                $('#field-rp_pre_value').val('TOOL_'+tool_id+'_'+param_code);
-                $('#field-rp_post_value').val('TOOL_'+tool_id+'_'+param_code);
-                $('#field-rp_formula').val('TOOL_'+tool_id+'_'+param_code);
-                $('#formula').val('TOOL_'+tool_id+'_'+param_code);
+                $('#field-rp_pre_value').val('TOOL_'+tool_code+'_'+param_code);
+                $('#field-rp_post_value').val('TOOL_'+tool_code+'_'+param_code);
+                $('#field-rp_formula').val('TOOL_'+tool_code+'_'+param_code);
+                $('#formula').val('TOOL_'+tool_code+'_'+param_code);
             }
 
 
 
         });
+		
+		$('#example4 tbody').on('click', 'tr', function() {
+            if ($(this).hasClass('selected')) {
+                $(this).removeClass('selected');
+            } else {
+                table4.$('tr.selected').removeClass('selected');
+                $(this).addClass('selected');
+            }
+
+
+            //continue process
+            //return the value
+            var val = $(this).attr('value');
+            var result = val.split('%');
+            var lpmc_id = result[0];
+            var lpmc_name = result[1];
+            var base_url = "<?=site_url()?>";
+
+            //write to the value #rp_pre_value
+            if ($('#formula').val() != '') {
+                //$('#field-rp_pre_value').val($('#field-rp_pre_value').val() + param_code);
+                $('#field-rp_pre_value').val($('#field-rp_pre_value').val() + ' ' + lpmc_name);
+                $('#field-rp_post_value').val($('#field-rp_post_value').val() + ' ' + lpmc_name);
+                $('#field-rp_formula').val($('#field-rp_formula').val() + ' ' + lpmc_name);
+                $('#formula').val($('#formula').val() + ' ' + lpmc_name);
+            } else {
+                //$('#field-rp_pre_value').val(param_code);
+                $('#field-rp_pre_value').val( lpmc_name );
+                $('#field-rp_post_value').val( lpmc_name );
+                $('#field-rp_formula').val( lpmc_name );
+                $('#formula').val( lpmc_name );
+            }
+        });
+		
+		$('#delete_formula').click(function() {
+			var var1 = $('#formula').val();
+			var var1Pecah = var1.split(' ');
+			var var1New = '';
+			for (v=0; v<var1Pecah.length-1; v++) {
+				var1New += var1Pecah[v] + ' ';
+			}
+			alert( var1New );
+			
+			$('#field-rp_pre_value').val( var1New );
+			$('#field-rp_post_value').val( var1New );
+			$('#field-rp_formula').val( var1New );
+			$('#formula').val( var1New );
+			
+			$('#field-rp_pre_value').attr('value', var1New );
+			$('#field-rp_post_value').attr('value', var1New );
+			$('#field-rp_formula').attr('value', var1New );
+			$('#formula').attr('value', var1New );
+		});
 
     });
 
@@ -208,6 +265,7 @@
 <div class="row">
     <div class="col-sm-12">
         <input type="text" id="formula" name="formula" value="<?=$formula?>" disabled="disabled" placeholder="formula is here" />
+        <button type="button" id="delete_formula">Delete</button>
         <!-- <input type="text" id="field-rp_formula" name="rp_formula" disabled="disabled" placeholder="formula is here"/>-->
     </div>
 </div>
@@ -218,8 +276,10 @@
         <input type='text' placeholder='formula value' readonly='readonly' id='field-rp_pre_value' name='rp_pre_value' value='".$hh->rp_pre_value."' />"; } foreach($result as $r=>$v) { echo "
         <input type='hidden' id='field-rule_id' value='".$v->rule_id."' name='rule_id' />"; }*/ ?>
 
-        <a id="clearformula" href="#!">Clear Formula</a>&nbsp;
-        <a id="addnompitch" href="#!">Add Nom Pitch</a>
+        <a id="clearformula" href="#!">Clear Formula</a><br />
+        <a class="addon" nilai="nom_pitch" href="#!">Add Nom Pitch</a>&nbsp;
+        <a class="addon" nilai="emin" href="#!">Add EMin</a>&nbsp;
+        <a class="addon" nilai="emax" href="#!">Add EMax</a>&nbsp;
     </div>
 </div>
 <div class="row" style="margin-top:5%">
@@ -302,6 +362,30 @@
                 </td>
 
             </tr>
+            <tr>
+                
+                <td>
+                    <!-- Standard button -->
+                    <button style="width:100%" value="pow(" type="button" class="btn btn-default">power function [pow(x,y)]</button>
+                </td>
+
+            </tr>
+            <tr>
+                
+                <td>
+                    <!-- Standard button -->
+                    <button style="width:100%" value="," type="button" class="btn btn-default">comma (,)</button>
+                </td>
+
+            </tr>
+            <tr>
+                
+                <td>
+                    <!-- Standard button -->
+                    <button style="width:100%" value="sqrt(" type="button" class="btn btn-default">square root function [sqrt(x)]</button>
+                </td>
+
+            </tr>
         </table>
     </div>
 
@@ -370,14 +454,13 @@
         </tbody>
     </table>-->
 
-    <div class="col-sm-4">
+    <div class="col-sm-3">
 
         <table id="example3" class="display" cellspacing="0" width="100%">
             <thead>
                 <tr>
 
-                    <th>Parameter No</th>
-                    <th>Parameter Code</th>
+                    <th>Parameter No / Code</th>
                     <th>Tools</th>
                     <!--<th>Parameter Value</th>-->
 
@@ -389,9 +472,9 @@
 
 
                 <?php foreach($params as $r) { ?>
-                <tr value="<?=$r->rp_id?>%<?=$r->param_code?>%<?=$r->rp_post_value?>%<?=$r->tool_id?>">
-                    <td><?=$r->param_number?></td>
-                    <td><?=$r->param_code?></td>
+                <tr value="<?=$r->rp_id?>%<?=$r->param_code?>%<?=$r->rp_post_value?>%<?=$r->tool_id?>%<?=$r->tool_code?>">
+                    <td><?php //print_r($r); ?>
+					<?=$r->param_number?> / <?=$r->param_code?></td>
                     <td><?=$r->tool_code?></td>
                     <!--<td><?=$r->rp_post_value?></td>-->
                 </tr>
@@ -400,6 +483,33 @@
             </tbody>
         </table>
     </div>
+    
+    <div class="col-sm-3">
+
+        <table id="example4" class="display" cellspacing="0" width="100%">
+            <thead>
+                <tr>
+
+                    <th>Sheath Mex Columns</th>
+                    <!--<th>Parameter Value</th>-->
+
+
+                </tr>
+            </thead>
+
+            <tbody>
+
+
+                <?php foreach($psColumn as $pc) { ?>
+                <tr value="<?=$pc->lpmc_id?>%<?=$pc->lpmc_name?>">
+                    <td><?=$pc->lpmc_name?></td>
+                </tr>
+                <?php } ?>
+
+            </tbody>
+        </table>
+    </div>
+    
 </div>
 </div>
 

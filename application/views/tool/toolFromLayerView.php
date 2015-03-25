@@ -17,16 +17,32 @@
               // continue process
               // return the value
 
-              var val = $(this).attr('value');
+              var vals = $(this).attr('value').split('|');
+			  var val = vals[0];
+			  
+			  var tool_code = vals[1];
          
               var base_url="<?php echo site_url() ?>";
    
-                  $.ajax({
-             'url':base_url+'/admin/ajaxDisplayToolSheet/'+val,
-             'success':function(response){
-                window.location.href = base_url+'/admin/displayToolSheet/';
-                    }
-               });
+				if (tool_code == 'DIE' || tool_code == 'PIN' || tool_code == 'GAP') {
+					
+					$.ajax({
+						  'url':base_url+'/admin/ajaxDisplayToolSheet/'+val,
+						  'success':function(response){
+					
+							window.location.href = base_url+'/admin/DisplayPressureSheath/';
+						 }
+					});
+					
+				} else {
+					
+					  $.ajax({
+				 'url':base_url+'/admin/ajaxDisplayToolSheet/'+val,
+				 'success':function(response){
+					window.location.href = base_url+'/admin/displayToolSheet/';
+						}
+				   });
+				}
    
    
            }
@@ -92,7 +108,7 @@ if (!empty($projects)) {
 			$idnom = $tdd[0]->DIAINTER;
 			$mat = $material[0];
 			$pecahm = explode('x', str_replace(' ', '', $mat->type_of_production_size));
-			$totalm = $pecahm[0] * $pecahm[1];
+			$totalm = (isset($pecahm[1])) ? ($pecahm[0] * $pecahm[1]) : (0);
 			if ($totalm <= 160) {
 				if ($idnom >= 57 && $idnom < 90) {
 					$material_ratio = "1-4";
@@ -206,7 +222,12 @@ $arrDrawing = array();
 foreach($tools as $r) { 
 	$range = $this->my_func->getRangeIDNom($structure_number, $sess['layer_name'], $r->nc_name);
 	$boolMPList = $this->my_func->getRangeMPListCode($structure_number, $sess['layer_name'], $r->tool_id);
-	$isFound = $this->my_func->getFoundNotFound($r->tool_id);
+	$isFound = false;
+	if (strtoupper($r->tool_code) != strtoupper('DIE')
+	&& strtoupper($r->tool_code) != strtoupper('GAP')
+	&& strtoupper($r->tool_code) != strtoupper('PIN')) {
+		$isFound = $this->my_func->getFoundNotFound($r->tool_id);
+	}
 	$strFound = ($isFound === true) ? ("Found") : ("Not Found");
 	
 	if ($isFound) {
@@ -219,7 +240,7 @@ foreach($tools as $r) {
 	if($boolMPList == true || ($range >= $r->min_range && $range <= $r->max_range)) {
 ?>
 
-							<tr value="<?php echo $r->tool_id; ?>">
+							<tr value="<?php echo $r->tool_id; ?>|<?php echo $r->tool_code; ?>">
 								<td><?php echo $r->tool_code; ?></td>
                               	<td><?php echo $r->tool_description; ?></td>
                                 <td><?php echo $strFound; ?></td>

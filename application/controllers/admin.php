@@ -1707,9 +1707,7 @@ class Admin extends MY_Controller
 		redirect('admin/ruleManagement');
 	}
 
-	public
-
-	function calculate_string($string)
+	public function calculate_string($string)
 	{
 		/*$string = trim($string);
 		$string = preg_replace('/[^0-9\+\-\*\/\(\)[46] ]/i', '', $string);
@@ -1767,6 +1765,7 @@ class Admin extends MY_Controller
 			unset($post_array['example_length']);
 			unset($post_array['example2_length']);
 			unset($post_array['example3_length']);
+			unset($post_array['example4_length']);
 			$hasil_value = $this->calculate_string($formulastring);
 			$post_array['rp_post_value'] = $hasil_value;
 			/*$data=array(
@@ -1921,6 +1920,7 @@ class Admin extends MY_Controller
 			unset($post_array['example_length']);
 			unset($post_array['example2_length']);
 			unset($post_array['example3_length']);
+			unset($post_array['example4_length']);
 			$hasil_value = $this->calculate_string($formulastring);
 			if ($hasil_value == false AND $hasil_value != 0)
 			{
@@ -1968,13 +1968,14 @@ class Admin extends MY_Controller
 		return $output;
 	}
 
-	public
-
-	function ajaxGetRuleValue($pio_id = 0, $rp_id = 0)
+	public function ajaxGetRuleValue($pio_id = 0, $rp_id = 0)
 	{
 		$this->load->model('m_tool');
 		$this->load->model('m_rule');
 		$this->load->model('m_param');
+		
+		$this->load->model('m_layer_ps_mex_column');
+		
 		if ($pio_id == 1) //constant
 		{
 
@@ -2046,6 +2047,8 @@ class Admin extends MY_Controller
 			$data['params'] = $params;
 			$data['layer_name'] = $layer_name;
 			$data['formula'] = $formula;
+			
+			$data['psColumn'] = $this->m_layer_ps_mex_column->getAll();
 
 			// here list all the required formula paramters
 
@@ -2285,6 +2288,8 @@ class Admin extends MY_Controller
 			$maximum = $this->my_func->getFormulaValue($structure_number, $layer_name, $r2->pio_id, $r2->rp_formula, $r2->param_code, $r2->rule_id, $sess['diaintercouche']);
 		}
 		$data['nominal_type_results'] = $this->m_tool->getToolingMaster3('PIN', 'PIN', $minimum, $maximum);
+		$data['minimum'] = $minimum;
+		$data['maximum'] = $maximum;
 		
 		$tools = $this->m_tool->getToolFromLayerName($sess['layer_name']);
 		if (!empty($tools)) {
@@ -2428,6 +2433,13 @@ class Admin extends MY_Controller
 		$this->session->unset_userdata('layer_name');
 		$this->session->unset_userdata('diaintercouche');
 		*/
+	}
+	
+	public function test_math()
+	{
+		$str = 'return (1*( pow(10,10) ));';
+		$compute = create_function('', $str);
+		echo $str . '=' . (0 + $compute()) .'|';
 	}
 	
 	public function exportSheet()

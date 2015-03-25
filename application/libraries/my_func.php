@@ -41,9 +41,9 @@ class My_Func
 
 		$CI->db->select('*');
 		$CI->db->from('rule_param');
-		$CI->db->join('rule', 'rule.rule_id = rule_param.rule_id');
-		$CI->db->join('param', 'rule_param.param_id = param.param_id');
-		$CI->db->where('rule.rule_id', $rule_id);
+		$CI->db->join('rule', 'rule.rule_id = rule_param.rule_id', 'left');
+		$CI->db->join('param', 'param.param_id = rule_param.param_id', 'left');
+		$CI->db->where('rule_param.rule_id', $rule_id);
 		$CI->db->where('param.param_number', $param_number);
 		$query = $CI->db->get();
 		return $query->result();
@@ -688,15 +688,19 @@ class My_Func
 			}
 			$str = "";
 			foreach ($formula_array as $fa) {
-				//echo $fa."<br />";
-				if ($fa == '' || $fa == "" || $fa == NULL) {
+				//echo "|".$fa."|=<br />";
+				if ($fa === '' || $fa === "" || $fa === NULL) {
 					$str .= '0';
+					//echo "masuk1<br />";
 				}
 				if ($fa == '0' || $fa == 0) {
 					$str .= $fa;
+					//echo "masuk21<br />";
 				} else {
 					$str .= ltrim($fa, '0');
+					//echo "masuk22<br />";
 				}
+				//echo "|".$str."|<br />";
 			}
 			//$compute = create_function('', 'return (135.0);');
 			//return 0 + $compute();
@@ -704,6 +708,7 @@ class My_Func
 			//echo '|'.$param_code.'|';
 			//die();
 			$compute = create_function('', 'return (' . $str . ');');
+			//echo '|' . $str . '|'; die();
 			$post_data = array(
 				'rp_post_value' => (0 + $compute())
 			);
@@ -786,10 +791,16 @@ class My_Func
 					return 0;
 				}
 			} else {
+				// query 1
 				$CI->db->select('*');
 				$CI->db->from('nominal_column');
 				$CI->db->where('nc_name', utf8_decode($vcode));
 				$query = $CI->db->get();
+				// query 2
+				$CI->db->select('*');
+				$CI->db->from('layer_ps_mex_column');
+				$CI->db->where('lpmc_name', utf8_decode($vcode));
+				$query1 = $CI->db->get();
 				// check nominal column
 				if (sizeof($query->result()) > 0) {
 					$CI->db->select(utf8_decode($vcode).' AS col1');
@@ -799,15 +810,23 @@ class My_Func
 					$query = $CI->db->get();
 					$col1 = $query->result();
 					return $col1[0]->col1;
+				} else if (sizeof($query1->result()) > 0) {
+					return 0;
 				} else {
 					$vcode = explode("_", utf8_decode($vcode));
-					$tool_id = $vcode[1];
+					//$tool_id = $vcode[1];
+					$tool_code = $vcode[1];
+					$tool_code = str_replace('^', ' ', $tool_code);
 					$param_code = $vcode[2];
 					$CI->db->select('*');
-					$CI->db->from('param');
-					$CI->db->where('param_code', $param_code);
-					$CI->db->where('tool_id', $tool_id);
+					$CI->db->from('param p, tool t');
+					$CI->db->where('p.tool_id = t.tool_id');
+					$CI->db->where('p.param_code', $param_code);
+					//$CI->db->where('tool_id', $tool_id);
+					$CI->db->where('t.tool_code', $tool_code);
+					//$CI->db->where('p.param_id', '1');
 					$query = $CI->db->get();
+					//echo '|'.$param_code.'|'; die();
 					// check param
 					if (sizeof($query->result()) > 0) {
 						$param_id = $query->result()[0]->param_id;

@@ -8,7 +8,7 @@
    } );
    
 </script>
-<div class="container-fluid">
+<div class="container-fluid">/
 <div class="row">
    <div class="col-sm-5 col-sm-offset-3 col-md-10 col-md-offset-2 main">
       <?php
@@ -163,6 +163,7 @@ if (isset($tool_pilih) && !empty($tool_pilih)) {
 							  ?>
 						 <tr>
 							<td><?php //print_r($r); ?>
+                            
 							<?=$r->param_number?></td>
 							<td><?=$r->param_code?></td>
 							<td><?=$nt_name?></td>

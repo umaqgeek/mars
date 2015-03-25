@@ -18,7 +18,7 @@ $(document).ready(function() {
            var val = $(this).attr('value');
 		   var val2 = val.split('seperator');
 		   //alert(val2[0]);
-		   if (val2[0] == 'INTERLOCKED CARCASS') {
+		   if (val2[0] == 'INTERLOCKED CARCASS' || val2[0] == 'PRESSURE SHEATH') {
 			   var base_url="<?=site_url()?>";
 	
 				   $.ajax({
@@ -28,7 +28,7 @@ $(document).ready(function() {
 						window.location.href = base_url+'/admin/DisplayTool/';
 					 }
 				});
-		   } else if (val2[0] == 'PRESSURE SHEATH') {
+		   /*} else if (val2[0] == 'PRESSURE SHEATH') {
 			   
 			   var base_url="<?=site_url()?>";
 	
@@ -39,7 +39,7 @@ $(document).ready(function() {
 						window.location.href = base_url+'/admin/DisplayPressureSheath/';
 					 }
 				});
-			   
+			   */
 		   } else {
 			   alert('That layer is not ready yet!');
 			   $(this).removeClass('selected');
