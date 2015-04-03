@@ -1,36 +1,4 @@
-<script>
-   $(document).ready(function() {
-       var table = $('#example').DataTable();
-       var table2 = $('#example2').DataTable();
-   
-   		$('#example tbody').on( 'click', 'tr', function () {
-           if ( $(this).hasClass('selected') ) {
-               $(this).removeClass('selected');
-           }
-           else {
-               table.$('tr.selected').removeClass('selected');
-               $(this).addClass('selected');
-           }
-		   var tools = new Array();
-		   var count_tools = 0;
-		   <?php
-		   if (!empty($file_url_others)) { 
-		   		foreach ($file_url_others as $fuo) {
-					echo "\n"; ?> tools[count_tools++] = <?php echo "'".$fuo->tool_code."';";
-				}
-		   } echo "\n\n";
-		   ?>
-		   var value = $(this).attr('value').split('|');
-		   var strTemp = '';
-		   for (i=0; i<value.length; i++) {
-			   strTemp += value[i] + ', ';
-		   }
-		   $(".toolCodeBox").val(strTemp);
-		});
-   
-   } );
-   
-</script>
+
 <div class="container-fluid">
 <div class="row">
    <div class="col-sm-5 col-sm-offset-3 col-md-10 col-md-offset-2 main">
@@ -89,6 +57,7 @@ $sess = $this->session->all_userdata();
                <?php
 
 if (isset($sess['layer_name']) && !empty($sess['layer_name'])) {
+	$layer_name = $sess['layer_name'];
 ?>
       <div class="col-md-3">
          Layer Name : <?php echo $sess['layer_name']; ?>
@@ -98,6 +67,45 @@ if (isset($sess['layer_name']) && !empty($sess['layer_name'])) {
 ?>
    </div>
 </div>
+
+<script>
+   $(document).ready(function() {
+       var table = $('#example').DataTable();
+       var table2 = $('#example2').DataTable();
+   
+   		$('#example tbody').on( 'click', 'tr', function () {
+           if ( $(this).hasClass('selected') ) {
+               $(this).removeClass('selected');
+           }
+           else {
+               table.$('tr.selected').removeClass('selected');
+               $(this).addClass('selected');
+           }
+		   
+		   var value = $(this).attr('value').split('|');
+		   var strTemp = [];
+		   strTemp["ID"] = value[0];
+		   strTemp["OD"] = value[1];
+		   strTemp["HEAD"] = value[2];
+		   strTemp["DRWG_NO"] = value[3];
+		   strTemp["WITH_RING"] = value[4];
+		   strTemp["WITH_PIN_DIE_SUPPORT"] = value[5];
+		   strTemp["SUPPORT_SIZE"] = value[6];
+		   
+		   strTemp = '<?=$this->my_func->getFormulaValue_PS($structure_number, $layer_name, 'GAP', 1); ?>';
+		   $("#GAP_1").val( strTemp );
+		   strTemp = '<?=$this->my_func->getFormulaValue_PS($structure_number, $layer_name, 'GAP', 2); ?>';
+		   $("#GAP_2").val( strTemp );
+		   strTemp = '<?=$this->my_func->getFormulaValue_PS($structure_number, $layer_name, 'DIE', 1); ?>';
+		   $("#DIE_1").val( strTemp );
+		   strTemp = '<?=$this->my_func->getFormulaValue_PS($structure_number, $layer_name, 'DIE', 2); ?>';
+		   $("#DIE_2").val( strTemp );
+		   
+		});
+   
+   } );
+   
+</script>
 
  <div class="row">
     	<div class="col-md-2 col-md-offset-2 main">
@@ -132,8 +140,8 @@ if (isset($sess['layer_name']) && !empty($sess['layer_name'])) {
             <div class="row">
                <div class="col-sm-12">
                		<h3>
-                        Minimum: <?=$minimum; ?><br />
-                        Maximum: <?=$maximum; ?>
+                        Minimum OD PIN: <?=$minimum; ?><br />
+                        Maximum OD PIN: <?=$maximum; ?>
                     </h3>
                </div>
             </div>
@@ -198,9 +206,19 @@ if (!empty($file_url_others)) {
                      }
                      ?>
                </div>
-            </div>    
-            <input type="text" value="" class="form-control toolCodeBox" id="" placeholder="Result <?=$fuo->tool_code; ?>" />
+            </div>   
+            
+            <div class="row">
+               <div class="col-sm-12">
+               		<h3>
+                        Minimum <?=$fuo->tool_code; ?>: <input type="text" value="" class="form-control toolCodeBox" id="<?=$fuo->tool_code; ?>_1" placeholder="Result <?=$fuo->tool_code; ?>" />
+            <input type="hidden" value="<?=$fuo->tool_code; ?>" class="toolHide" /><br />
+                        Maximum <?=$fuo->tool_code; ?>: <input type="text" value="" class="form-control toolCodeBox" id="<?=$fuo->tool_code; ?>_2" placeholder="Result <?=$fuo->tool_code; ?>" />
             <input type="hidden" value="<?=$fuo->tool_code; ?>" class="toolHide" />
+                    </h3>
+               </div>
+            </div>
+
 <hr />
 <?php } } } ?>
 

@@ -24,7 +24,7 @@
          
               var base_url="<?php echo site_url() ?>";
    
-				if (tool_code == 'DIE' || tool_code == 'PIN' || tool_code == 'GAP') {
+				if (tool_code == 'DIE' || tool_code.search('PIN') != -1 || tool_code == 'GAP') {
 					
 					$.ajax({
 						  'url':base_url+'/admin/ajaxDisplayToolSheet/'+val,

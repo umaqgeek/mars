@@ -240,10 +240,9 @@
 			var var1 = $('#formula').val();
 			var var1Pecah = var1.split(' ');
 			var var1New = '';
-			for (v=0; v<var1Pecah.length-1; v++) {
+			for (v=0; v<var1Pecah.length-2; v++) {
 				var1New += var1Pecah[v] + ' ';
 			}
-			alert( var1New );
 			
 			$('#field-rp_pre_value').val( var1New );
 			$('#field-rp_post_value').val( var1New );
@@ -265,7 +264,7 @@
 <div class="row">
     <div class="col-sm-12">
         <input type="text" id="formula" name="formula" value="<?=$formula?>" disabled="disabled" placeholder="formula is here" />
-        <button type="button" id="delete_formula">Delete</button>
+        <button type="button" id="delete_formula">&lt;&lt;Delete</button>
         <!-- <input type="text" id="field-rp_formula" name="rp_formula" disabled="disabled" placeholder="formula is here"/>-->
     </div>
 </div>
@@ -278,8 +277,6 @@
 
         <a id="clearformula" href="#!">Clear Formula</a><br />
         <a class="addon" nilai="nom_pitch" href="#!">Add Nom Pitch</a>&nbsp;
-        <a class="addon" nilai="emin" href="#!">Add EMin</a>&nbsp;
-        <a class="addon" nilai="emax" href="#!">Add EMax</a>&nbsp;
     </div>
 </div>
 <div class="row" style="margin-top:5%">

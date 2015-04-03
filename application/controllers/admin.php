@@ -2287,7 +2287,7 @@ class Admin extends MY_Controller
 			$r2 = $rules[1];
 			$maximum = $this->my_func->getFormulaValue($structure_number, $layer_name, $r2->pio_id, $r2->rp_formula, $r2->param_code, $r2->rule_id, $sess['diaintercouche']);
 		}
-		$data['nominal_type_results'] = $this->m_tool->getToolingMaster3('PIN', 'PIN', $minimum, $maximum);
+		$data['nominal_type_results'] = $this->m_tool->getToolingMaster4('PIN', 'PIN', $minimum, $maximum);
 		$data['minimum'] = $minimum;
 		$data['maximum'] = $maximum;
 		

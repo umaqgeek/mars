@@ -666,6 +666,16 @@ class My_Func
 		}
 	}
 	
+	public function getFormulaValue_PS($structure_number, $layer_name, $tool_code, $param_number) {
+		$CI = $this->obj;
+		$tool = $CI->m_tool->getToolFormulaDetails($tool_code, $param_number);
+		$tool_id = (!empty($tool)) ? ($tool[0]->tool_id) : (0);
+		$rp_formula = (!empty($tool)) ? ($tool[0]->rp_formula) : ('0');
+		$pio_id = (!empty($tool)) ? ($tool[0]->pio_id) : (1);
+		
+		return $rp_formula;
+	}
+	
 	public function getFormulaValue($structure_number, $layer_name, $pio_id, $formula, $param_code, $rule_id, $sess_value)
 	{
 		if ($pio_id == 3 || $pio_id == 2) {
@@ -718,7 +728,7 @@ class My_Func
 			$CI->db->where('param_code', utf8_decode($param_code));
 			$query = $CI->db->get();
 			$valx = (0 + $compute());
-			//echo '.. '.$valx.' ..'; die();
+			//echo '|'.$valx.'|'; die();
 			if (sizeof($query->result()) > 0) {
 				$param_id = $query->result()[0]->param_id;
 				$CI->db->where('rule_id', $rule_id);
@@ -813,58 +823,66 @@ class My_Func
 				} else if (sizeof($query1->result()) > 0) {
 					return 0;
 				} else {
-					$vcode = explode("_", utf8_decode($vcode));
-					//$tool_id = $vcode[1];
-					$tool_code = $vcode[1];
-					$tool_code = str_replace('^', ' ', $tool_code);
-					$param_code = $vcode[2];
-					$CI->db->select('*');
-					$CI->db->from('param p, tool t');
-					$CI->db->where('p.tool_id = t.tool_id');
-					$CI->db->where('p.param_code', $param_code);
-					//$CI->db->where('tool_id', $tool_id);
-					$CI->db->where('t.tool_code', $tool_code);
-					//$CI->db->where('p.param_id', '1');
-					$query = $CI->db->get();
-					//echo '|'.$param_code.'|'; die();
-					// check param
-					if (sizeof($query->result()) > 0) {
-						$param_id = $query->result()[0]->param_id;
+					$symbolsOperator = array("pow(", ",", "sqrt(");
+					$symbolsEminmax = array("emin", "emax");
+					if (in_array($vcode, $symbolsOperator)) {
+						return $vcode;
+					} else if (in_array($vcode, $symbolsEminmax)) {
+						return 0;
+					} else {
+						$vcode = explode("_", utf8_decode($vcode));
+						//$tool_id = $vcode[1];
+						$tool_code = $vcode[1];
+						$tool_code = str_replace('^', ' ', $tool_code);
+						$param_code = $vcode[2];
 						$CI->db->select('*');
-						$CI->db->from('rule_param');
-						$CI->db->where('param_id', $param_id);
+						$CI->db->from('param p, tool t');
+						$CI->db->where('p.tool_id = t.tool_id');
+						$CI->db->where('p.param_code', $param_code);
+						//$CI->db->where('tool_id', $tool_id);
+						$CI->db->where('t.tool_code', $tool_code);
+						//$CI->db->where('p.param_id', '1');
 						$query = $CI->db->get();
+						//echo '|'.$param_code.'|'; die();
+						// check param
 						if (sizeof($query->result()) > 0) {
-							$rule_id = 0;
-							foreach($query->result() as $qr) {
-								$rule_id = $qr->rule_id;
-								$CI->db->select('*');
-								$CI->db->from('rule');
-								$CI->db->where('rule_id', $rule_id);
-								$query = $CI->db->get();
-								if (sizeof($query->result()) > 0) {
-									$min_range = $query->result()[0]->var1;
-									$max_range = $query->result()[0]->var2;
-									if ($sess_value >= $min_range && $sess_value <= $max_range) {
-										break;
-									}
-								}
-							}
+							$param_id = $query->result()[0]->param_id;
 							$CI->db->select('*');
 							$CI->db->from('rule_param');
 							$CI->db->where('param_id', $param_id);
-							$CI->db->where('rule_id', $rule_id);
 							$query = $CI->db->get();
 							if (sizeof($query->result()) > 0) {
-								return $query->result()[0]->rp_post_value;
+								$rule_id = 0;
+								foreach($query->result() as $qr) {
+									$rule_id = $qr->rule_id;
+									$CI->db->select('*');
+									$CI->db->from('rule');
+									$CI->db->where('rule_id', $rule_id);
+									$query = $CI->db->get();
+									if (sizeof($query->result()) > 0) {
+										$min_range = $query->result()[0]->var1;
+										$max_range = $query->result()[0]->var2;
+										if ($sess_value >= $min_range && $sess_value <= $max_range) {
+											break;
+										}
+									}
+								}
+								$CI->db->select('*');
+								$CI->db->from('rule_param');
+								$CI->db->where('param_id', $param_id);
+								$CI->db->where('rule_id', $rule_id);
+								$query = $CI->db->get();
+								if (sizeof($query->result()) > 0) {
+									return $query->result()[0]->rp_post_value;
+								} else {
+									return 0;
+								}
 							} else {
 								return 0;
 							}
 						} else {
 							return 0;
 						}
-					} else {
-						return 0;
 					}
 				}
 			}
