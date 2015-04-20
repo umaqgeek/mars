@@ -2262,6 +2262,7 @@ class Admin extends MY_Controller
 		$this->load->model("m_rule");
 		$this->load->model("m_tool");
 		$this->load->model("m_project");
+		$this->load->model("m_layer_ps_mex_column");
 		
 		$this->load->view('template/header_datatable');
 		$this->load->view('template/nav');
@@ -2275,21 +2276,71 @@ class Admin extends MY_Controller
 		$transaction_number = $this->session->userdata('transaction_number');
 		$data['projects'] = $this->m_project->getProjectByTransId($transaction_number);
 		
-		$tool_code = 'PIN';
-		$rules = $this->m_rule->getRulesAndParams3($tool_code);
-		if(!empty($rules))
+		// DIE
+		$tool_code = 'DIE';
+		$rules2 = $this->m_rule->getRulesAndParams3($tool_code);
+		$minimum_DIE = 0;
+		$maximum_DIE = 0;
+		$paramDIE = array();
+		if(!empty($rules2))
 		{
-			//print_r($rules); die();
+			//print_r($rules2); die();
 			// minimum
-			$r1 = $rules[0];
-			$minimum = $this->my_func->getFormulaValue($structure_number, $layer_name, $r1->pio_id, $r1->rp_formula, $r1->param_code, $r1->rule_id, $sess['diaintercouche']);
+			$r1 = $rules2[0];
+			$minimum_DIE = $this->my_func->getFormulaValue($structure_number, $layer_name, $r1->pio_id, $r1->rp_formula, $r1->param_code, $r1->rule_id, $sess['diaintercouche']);
 			// maximum
-			$r2 = $rules[1];
-			$maximum = $this->my_func->getFormulaValue($structure_number, $layer_name, $r2->pio_id, $r2->rp_formula, $r2->param_code, $r2->rule_id, $sess['diaintercouche']);
+			$r2 = $rules2[1];
+			$maximum_DIE = $this->my_func->getFormulaValue($structure_number, $layer_name, $r2->pio_id, $r2->rp_formula, $r2->param_code, $r2->rule_id, $sess['diaintercouche']);
+			
+			for ($p=3; $p<=10; $p++) {
+				if (isset($rules2[$p-1]) && !empty($rules2[$p-1])) {
+					$rX = $rules2[$p-1];
+					$paramDIE[] = $this->my_func->getFormulaValue($structure_number, $layer_name, $rX->pio_id, $rX->rp_formula, $rX->param_code, $rX->rule_id, $sess['diaintercouche']);
+				}
+			}
 		}
-		$data['nominal_type_results'] = $this->m_tool->getToolingMaster4('PIN', 'PIN', $minimum, $maximum);
-		$data['minimum'] = $minimum;
-		$data['maximum'] = $maximum;
+		
+		// PIN
+		$tool_code = 'PIN';
+		$selected_tool_id = $sess['selected_tool_id'];
+		$selected_tool = $this->m_tool->getToolDetail($selected_tool_id);
+		$tool_code = (!empty($selected_tool)) ? ($selected_tool[0]->tool_code) : ($tool_code);
+		$rules1 = $this->m_rule->getRulesAndParams3($tool_code);
+		$minimum_PIN = 0;
+		$maximum_PIN = 0;
+		$paramPIN = array();
+		if(!empty($rules1))
+		{
+			//print_r($rules1); die();
+			// minimum
+			$r1 = $rules1[0];
+			$minimum_PIN = $this->my_func->getFormulaValue($structure_number, $layer_name, $r1->pio_id, $r1->rp_formula, $r1->param_code, $r1->rule_id, $sess['diaintercouche']);
+			// maximum
+			$r2 = $rules1[1];
+			$maximum_PIN = $this->my_func->getFormulaValue($structure_number, $layer_name, $r2->pio_id, $r2->rp_formula, $r2->param_code, $r2->rule_id, $sess['diaintercouche']);
+			
+			for ($p=3; $p<=10; $p++) {
+				if (isset($rules1[$p-1]) && !empty($rules1[$p-1])) {
+					$rX = $rules1[$p-1];
+					$paramPIN[] = $this->my_func->getFormulaValue($structure_number, $layer_name, $rX->pio_id, $rX->rp_formula, $rX->param_code, $rX->rule_id, $sess['diaintercouche']);
+				}
+			}
+		}
+		
+		$data['nominal_type_results_DIE'] = $this->m_tool->getToolingMaster4('DIE', 'DIE', $minimum_DIE, $maximum_DIE, 'ID');
+		$data['nominal_type_results_PIN'] = $this->m_tool->getToolingMaster4('PIN', 'PIN', $minimum_PIN, $maximum_PIN, 'OD');
+		$data['minimum_PIN'] = $minimum_PIN;
+		$data['maximum_PIN'] = $maximum_PIN;
+		$data['paramPIN'] = $paramPIN;
+		$data['minimum_DIE'] = $minimum_DIE;
+		$data['maximum_DIE'] = $maximum_DIE;
+		$data['paramDIE'] = $paramDIE;
+		
+		$data['layer_ps_mex_column'] = $this->m_layer_ps_mex_column->getAll();
+		
+		// debug
+		$data['f1'] = $rules1[0]->rp_formula;
+		$data['f2'] = $rules1[1]->rp_formula;
 		
 		$tools = $this->m_tool->getToolFromLayerName($sess['layer_name']);
 		if (!empty($tools)) {
@@ -2302,6 +2353,114 @@ class Admin extends MY_Controller
 		
 		$this->load->view('tool/viewPS', $data);
 		$this->load->view('template/footer_datatable');
+	}
+	
+	public function printPage($page='set', $val='') {
+		if ($page == 'set') {
+			$this->session->set_userdata('valueBesar', $this->input->post('valueBesar'));
+			$this->session->set_userdata('minPIN', $this->input->post('minPIN'));
+			$this->session->set_userdata('maxPIN', $this->input->post('maxPIN'));
+			$this->session->set_userdata('minDIE', $this->input->post('minDIE'));
+			$this->session->set_userdata('maxDIE', $this->input->post('maxDIE'));
+			$this->session->set_userdata('divPIN', $this->input->post('divPIN'));
+			$this->session->set_userdata('printPINx', $this->input->post('printPINx'));
+		} else {
+			$sess = $this->session->all_userdata();
+			$data['vB'] = $sess['valueBesar'];
+			$data['minimum_PIN'] = $sess['minPIN'];
+			$data['maximum_PIN'] = $sess['maxPIN'];
+			$data['minimum_DIE'] = $sess['minDIE'];
+			$data['maximum_DIE'] = $sess['maxDIE'];
+			$data['divPIN'] = $sess['divPIN'];
+			$data['printPINx'] = $sess['printPINx'];
+			$this->load->view('tool/'.$page, $data);
+		}
+	}
+	
+	function getPageDie()
+	{
+		$valsMex = $this->input->post('valsMex');
+		$colsMex = $this->input->post('colsMex');
+		
+		$this->load->model("m_rule");
+		$this->load->model("m_tool");
+		$this->load->model("m_project");
+		$this->load->model("m_layer_ps_mex_column");
+		
+		$this->load->view('template/header_datatable');
+		$this->load->view('template/nav');
+		$data['sidebar'] = $this->load->view('template/sidebar');
+		
+		$sess = $this->session->all_userdata();
+		$structure_number = $sess['structure_number'];
+		$layer_name = $sess['layer_name'];
+		
+		$data['file_url'] = $this->m_tool->getToolImage2('PIN');
+		$transaction_number = $this->session->userdata('transaction_number');
+		$data['projects'] = $this->m_project->getProjectByTransId($transaction_number);
+		
+		// DIE
+		$tool_code = 'DIE';
+		$rules2 = $this->m_rule->getRulesAndParams3($tool_code);
+		$minimum_DIE = 0;
+		$maximum_DIE = 0;
+		$paramDIE = array();
+		if(!empty($rules2))
+		{
+			//print_r($rules2); die();
+			// minimum
+			$r1 = $rules2[0];
+			$formula1 = $r1->rp_formula;
+			for ($c=0; $c<sizeof($colsMex); $c++) {
+				for ($d=0; $d<sizeof($colsMex); $d++) {
+					$formula1 = str_replace($colsMex[$d], $valsMex[$d], $formula1);
+				}
+			}
+			$minimum_DIE = $this->my_func->getFormulaValue($structure_number, $layer_name, $r1->pio_id, $formula1, $r1->param_code, $r1->rule_id, $sess['diaintercouche']);
+			// maximum
+			$r2 = $rules2[1];
+			$formula2 = $r2->rp_formula;
+			for ($c=0; $c<sizeof($colsMex); $c++) {
+				for ($d=0; $d<sizeof($colsMex); $d++) {
+					$formula2 = str_replace($colsMex[$d], $valsMex[$d], $formula2);
+				}
+			}
+			$maximum_DIE = $this->my_func->getFormulaValue($structure_number, $layer_name, $r2->pio_id, $formula2, $r2->param_code, $r2->rule_id, $sess['diaintercouche']);
+			
+			//echo $r1->rp_formula .'|'. $r2->rp_formula; die;
+			
+			for ($p=3; $p<=10; $p++) {
+				if (isset($rules2[$p-1]) && !empty($rules2[$p-1])) {
+					$rX = $rules2[$p-1];
+					$paramDIE[] = $this->my_func->getFormulaValue($structure_number, $layer_name, $rX->pio_id, $rX->rp_formula, $rX->param_code, $rX->rule_id, $sess['diaintercouche']);
+				}
+			}
+		}
+		
+		$data['nominal_type_results_DIE'] = $this->m_tool->getToolingMaster4('DIE', 'DIE', $minimum_DIE, $maximum_DIE, 'ID');
+		
+		$data['minimum_DIE'] = $minimum_DIE;
+		$data['maximum_DIE'] = $maximum_DIE;
+		$data['paramDIE'] = $paramDIE;
+		
+		$data['layer_ps_mex_column'] = $this->m_layer_ps_mex_column->getAll();
+		
+		$tools = $this->m_tool->getToolFromLayerName($sess['layer_name']);
+		$data['layer_name'] = $sess['layer_name'];
+		
+		//print_r($tools);
+		
+		if (!empty($tools)) {
+			foreach ($tools as $to) {
+				//if ($to->tool_code != $tool_code) {
+					$data['file_url_others'][] = $this->m_tool->getToolImage1($to->tool_id);
+				//}
+			}
+		}
+		
+		//print_r($data['file_url_others']); die();
+		
+		echo $this->load->view('tool/ajax/getPageDie', $data, true);
 	}
 	
 	function __readExcelToolingMasterDB($create=1, $insert=1)

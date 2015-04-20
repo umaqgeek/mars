@@ -673,7 +673,29 @@ class My_Func
 		$rp_formula = (!empty($tool)) ? ($tool[0]->rp_formula) : ('0');
 		$pio_id = (!empty($tool)) ? ($tool[0]->pio_id) : (1);
 		
-		return $rp_formula;
+		$pecah = explode(' ', $rp_formula);
+		$size_pecah = sizeof($pecah);
+		$formula = '';
+		for ($i=0; $i<$size_pecah; $i++) {
+			if (is_numeric($pecah[$i]) || $this->isSymbol($pecah[$i])) {
+				$formula .= $pecah[$i];
+			} else {
+				if ($pecah[$i] != '') {
+					
+					$CI->db->select('*');
+					$CI->db->from('layer_ps_mex_column lpmc');
+					$CI->db->where('lpmc.lpmc_name', $pecah[$i]);
+					$q = $CI->db->get();
+					if ($q->num_rows() > 0) {
+						$formula .= $pecah[$i];
+					} else {
+						$formula .= $this->getVariableValue($structure_number, $layer_name, -1, $pecah[$i], array());
+					}
+				}
+			}
+		}
+		
+		return $formula;
 	}
 	
 	public function getFormulaValue($structure_number, $layer_name, $pio_id, $formula, $param_code, $rule_id, $sess_value)
@@ -747,11 +769,41 @@ class My_Func
 	
 	function isSymbol($vcode)
 	{
-		if ($vcode == '+' || $vcode == '-'  || $vcode == '*'  || $vcode == '/'  || $vcode == '('  || $vcode == ')') {
-			return true;
-		} else {
-			return false;
+		$CI = $this->obj;
+		$bol = false;
+		
+		$symbArr = array('+', '-', '*', '/', '(', ')', 'pow(', 'sqrt(', ',');
+		foreach ($symbArr as $sa) {
+			$pos = strpos($vcode, $sa);
+			if ($pos === false) {
+				$bol = false;
+			} else {
+				$bol = true;
+				return $bol;
+			}
 		}
+		
+		/*if ($vcode == '+' || $vcode == '-'  || $vcode == '*'  || $vcode == '/'  || $vcode == '('  || $vcode == ')') {
+			$bol = true;
+			return $bol;
+		} else {
+			$bol = false;
+		}*/
+		
+		/*
+		$CI->db->select('*');
+		$CI->db->from('layer_ps_mex_column lpmc');
+		$CI->db->where('lpmc.lpmc_name', $vcode);
+		$q = $CI->db->get();
+		if ($q->num_rows() > 0) {
+			$bol = true;
+			return $bol;
+		} else {
+			$bol = false;
+		}
+		*/
+		
+		return $bol;
 	}
 	
 	function getRangeIDNom($structure_number, $layer_name, $nom_col)
@@ -783,7 +835,7 @@ class My_Func
 		try {
 			$CI = $this->obj;
 			// check nom pitch
-			if (utf8_decode($vcode) == 'nom_pitch') {
+			if (utf8_decode($vcode) == 'nom_pitch' || utf8_decode($vcode) == 'emin' || utf8_decode($vcode) == 'emax') {
 				$CI->db->select('*');
 				$CI->db->from('imported_project');
 				$CI->db->where('structure', $structure_number);
@@ -796,7 +848,15 @@ class My_Func
 					$CI->db->where('material_code', $codemp);
 					$query = $CI->db->get();
 					$col1 = $query->result();
-					return $col1[0]->nom_pitch;
+					if (utf8_decode($vcode) == 'nom_pitch') {
+						return $col1[0]->nom_pitch;
+					} else if (utf8_decode($vcode) == 'emin') {
+						return $col1[0]->emin;
+					} else if (utf8_decode($vcode) == 'emax') {
+						return $col1[0]->emax;
+					} else {
+						return 0;
+					}
 				} else {
 					return 0;
 				}
@@ -823,13 +883,14 @@ class My_Func
 				} else if (sizeof($query1->result()) > 0) {
 					return 0;
 				} else {
-					$symbolsOperator = array("pow(", ",", "sqrt(");
+					$symbolsOperator = array("pow(", ",", "sqrt(",);
 					$symbolsEminmax = array("emin", "emax");
-					if (in_array($vcode, $symbolsOperator)) {
+					if (in_array($vcode, $symbolsOperator) || $this->isSymbol($vcode)) {
 						return $vcode;
 					} else if (in_array($vcode, $symbolsEminmax)) {
 						return 0;
 					} else {
+						echo "|".$vcode."|";
 						$vcode = explode("_", utf8_decode($vcode));
 						//$tool_id = $vcode[1];
 						$tool_code = $vcode[1];

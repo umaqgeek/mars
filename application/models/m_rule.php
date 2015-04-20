@@ -226,8 +226,9 @@ class M_rule extends CI_Model  {
 			$this->db->from('rule_param');
 			$this->db->join('rule', 'rule.rule_id = rule_param.rule_id');
 			$this->db->join('param', 'param.param_id = rule_param.param_id');
-			$this->db->like('param.param_tool_code',$param_tool_code);
+			$this->db->where('UPPER(param.param_tool_code)', strtoupper($param_tool_code));
 			$this->db->group_by('param.param_id');
+			$this->db->order_by('rule.rule_id','asc'); 
 			$this->db->order_by('param.param_number','asc'); 
  			$query = $this->db->get();
  			

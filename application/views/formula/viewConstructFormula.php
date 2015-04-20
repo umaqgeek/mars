@@ -263,7 +263,7 @@
 </script>
 <div class="row">
     <div class="col-sm-12">
-        <input type="text" id="formula" name="formula" value="<?=$formula?>" disabled="disabled" placeholder="formula is here" />
+        <textarea id="formula" name="formula" disabled="disabled" placeholder="formula is here"><?=$formula?></textarea>
         <button type="button" id="delete_formula">&lt;&lt;Delete</button>
         <!-- <input type="text" id="field-rp_formula" name="rp_formula" disabled="disabled" placeholder="formula is here"/>-->
     </div>
@@ -276,7 +276,9 @@
         <input type='hidden' id='field-rule_id' value='".$v->rule_id."' name='rule_id' />"; }*/ ?>
 
         <a id="clearformula" href="#!">Clear Formula</a><br />
-        <a class="addon" nilai="nom_pitch" href="#!">Add Nom Pitch</a>&nbsp;
+        <a class="addon" nilai="nom_pitch" href="#!">Add Nom Pitch</a><br />
+        <a class="addon" nilai="emin" href="#!">Add E-Min</a><br />
+        <a class="addon" nilai="emax" href="#!">Add E-Max</a><br />
     </div>
 </div>
 <div class="row" style="margin-top:5%">

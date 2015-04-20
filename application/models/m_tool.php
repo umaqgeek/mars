@@ -208,10 +208,11 @@ class M_tool extends CI_Model  {
 		}
 	}
 	
-	public function getToolingMaster4($tooling_name, $tool_code='-', $minimum, $maximum)
+	public function getToolingMaster4($tooling_name, $tool_code='-', $minimum, $maximum, $IDOD)
 	{
-		//$minimum = 0;
-		//$maximum = 0;
+		$haha = ($IDOD == 'ID') ? ('D') : ('');
+		//$minimum = 1;
+		//$maximum = 10;
 		
 		//$sql = sprintf("SELECT * FROM tool WHERE tool_code LIKE '%%%s%%' ", $tool_code);
 		//$q1 = $this->db->query($sql);
@@ -221,52 +222,37 @@ class M_tool extends CI_Model  {
 		//	$maximum = $rr1[0]->max_range;
 		//}
 		
-		$sql = sprintf("SELECT * 
-					   FROM tool_nominal_type tnt, tool t, nominal_type nt 
-					   WHERE tnt.tool_id = t.tool_id 
-					   AND tnt.nt_id = nt.nt_id 
-					   AND t.tool_code LIKE '%%%s%%' 
-					   GROUP BY tnt.tnt_id ", $tool_code);
-		$q = $this->db->query($sql);
-		$rr = $q->result();
-		if (!empty($rr)) {
+		$arrNew = array();
 			
-			$arrNew = array();
-			
-			foreach ($rr as $r) {
-				$arrNew[] = array(
-					'nt_name' => 'OD'
-				);
-			}
+		$arrNew[] = array(
+			'nt_name' => $IDOD
+		);
+	
+		$sql = "SELECT *, 
+		`QUANTITY` AS qty_x, 
+		`DRAWING_NO` AS drwg_no_x, 
+		`TOOLING_NAME` AS tooling_name_x 
+		FROM tooling_master2 WHERE 1=1 ";
 		
-			$sql = "SELECT *, 
-			`QUANTITY` AS qty_x, 
-			`DRAWING_NO` AS drwg_no_x, 
-			`TOOLING_NAME` AS tooling_name_x 
-			FROM tooling_master2 WHERE 1=1 ";
-			
-			$sql .= sprintf(" AND `TOOLING_NAME` = '%s' ", $tooling_name);
-			
-			$siAN = sizeof($arrNew);
-			if ($siAN <= 0) {
-				return NULL;
-			}
-			
-			foreach ($arrNew as $an) {
-				$nt_name = $an['nt_name'];
-				$col_sql_min = (is_numeric($minimum)) ? ("CAST(%s AS DECIMAL(20, 1))") : ("%s");
-				$col_sql_max = (is_numeric($maximum)) ? ("CAST(%s AS DECIMAL(20, 1))") : ("%s");
-				$val_sql_min = (is_numeric($minimum)) ? ("CAST('%s' AS DECIMAL(20, 1))-1") : ("'%s' ");
-				$val_sql_max = (is_numeric($maximum)) ? ("CAST('%s' AS DECIMAL(20, 1))+1") : ("'%s' ");
-				$sql .= sprintf(" AND (".$col_sql_min." > ".$val_sql_min." AND ".$col_sql_max." < ".$val_sql_max.")", $nt_name, $minimum, $nt_name, $maximum);
-			}
-			
-			$query = $this->db->query($sql);
-			$result = $query->result();
-			return $result;
-		} else {
+		$sql .= sprintf(" AND `TOOLING_NAME` = '%s' ", $tooling_name);
+		
+		$siAN = sizeof($arrNew);
+		if ($siAN <= 0) {
 			return NULL;
 		}
+		
+		foreach ($arrNew as $an) {
+			$nt_name = $an['nt_name'];
+			$col_sql_min = (is_numeric($minimum)) ? ("CAST(%s AS DECIMAL(20, 1))") : ("%s");
+			$col_sql_max = (is_numeric($maximum)) ? ("CAST(%s AS DECIMAL(20, 1))") : ("%s");
+			$val_sql_min = (is_numeric($minimum)) ? ("CAST('%s' AS DECIMAL(20, 1))-1") : ("'%s' ");
+			$val_sql_max = (is_numeric($maximum)) ? ("CAST('%s' AS DECIMAL(20, 1))+1") : ("'%s' ");
+			$sql .= sprintf(" AND (".$col_sql_min." > ".$val_sql_min." AND ".$col_sql_max." < ".$val_sql_max.")", $nt_name, $minimum, $nt_name, $maximum);
+		}
+		
+		$query = $this->db->query($sql);
+		$result = $query->result();
+		return $result;
 	}
 
 	public function getToolingMaster($nominal_types=array())

@@ -230,6 +230,10 @@ foreach($tools as $r) {
 	}
 	$strFound = ($isFound === true) ? ("Found") : ("Not Found");
 	
+	if ( strpos(strtoupper($r->tool_code), 'PIN')!==false || strpos(strtoupper($r->tool_code), 'GAP')!==false || strpos(strtoupper($r->tool_code), 'DIE')!==false ) {
+		$strFound = "Not Calculated";
+	}
+	
 	if ($isFound) {
 		$drawingList = $this->my_func->getDrawingList($r->tool_id);
 		$arrDrawing = array_merge($arrDrawing, $drawingList);
@@ -237,10 +241,11 @@ foreach($tools as $r) {
 	
 	// $boolMPList: list tools based on MP Code List
 	// $range: list tools based on ID Nom Range
-	if($boolMPList == true || ($range >= $r->min_range && $range <= $r->max_range)) {
+	if(($boolMPList == true || ($range >= $r->min_range && $range <= $r->max_range) || 1==1)
+		&& ( strpos(strtoupper($r->tool_code), 'GAP')===false && strpos(strtoupper($r->tool_code), 'DIE')===false )) {
 ?>
 
-							<tr value="<?php echo $r->tool_id; ?>|<?php echo $r->tool_code; ?>">
+							<tr value="<?php echo $r->tool_id; ?>|<?php echo $r->tool_code; ?>|d">
 								<td><?php echo $r->tool_code; ?></td>
                               	<td><?php echo $r->tool_description; ?></td>
                                 <td><?php echo $strFound; ?></td>
