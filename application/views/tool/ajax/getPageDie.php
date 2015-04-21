@@ -53,6 +53,11 @@ if (!empty($file_url_others)) {
 			?>
             <div class="row">
                <div class="col-sm-10">
+               
+               <?php if(empty($nominal_type_results_DIE)) { ?>
+                <div class="alert alert-warning alert-dismissible" role="alert">NO DATA FOUND IN MEX !!</div>
+              <?php } ?>
+               
                   <h2>Tool <?=$fuo->tool_code; ?></h2>
                   <div id="div<?=$fuo->tool_code; ?>">
                   <?php

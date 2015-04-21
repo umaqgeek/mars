@@ -1148,6 +1148,7 @@ class Admin extends MY_Controller
 		$crud->columns('param_number', 'param_code', 'param_tool_code', 'param_tol_min', 'param_tol_plus', 'nt_id', 'param_code_mex');
 		$crud->set_relation('tool_id', 'tool', 'tool_code');
 		$crud->set_relation('nt_id', 'nominal_type', 'nt_name');
+		$crud->set_relation('param_code', 'layer_ps_mex_column', 'lpmc_name');
 		
 		$crud->display_as('nt_id','MEX Code (Optional)');
 		$crud->display_as('param_code_mex','Other Code Name');
@@ -2322,7 +2323,12 @@ class Admin extends MY_Controller
 			for ($p=3; $p<=10; $p++) {
 				if (isset($rules1[$p-1]) && !empty($rules1[$p-1])) {
 					$rX = $rules1[$p-1];
-					$paramPIN[] = $this->my_func->getFormulaValue($structure_number, $layer_name, $rX->pio_id, $rX->rp_formula, $rX->param_code, $rX->rule_id, $sess['diaintercouche']);
+					$lpmc = $this->m_layer_ps_mex_column->get($rX->param_code);
+					$param_code = (!empty($lpmc)) ? ($lpmc[0]->lpmc_name) : ('-');
+					$paramPIN[] = array(
+						'param' => $param_code,
+						'value' => $this->my_func->getFormulaValue($structure_number, $layer_name, $rX->pio_id, $rX->rp_formula, $rX->param_code, $rX->rule_id, $sess['diaintercouche'])
+					);
 				}
 			}
 		}
@@ -2381,6 +2387,7 @@ class Admin extends MY_Controller
 	{
 		$valsMex = $this->input->post('valsMex');
 		$colsMex = $this->input->post('colsMex');
+		//print_r($this->input->post()); die();
 		
 		$this->load->model("m_rule");
 		$this->load->model("m_tool");

@@ -98,21 +98,70 @@ $(document).ready(function() {
 	   valsMex[11] = '<?=$minimum_DIE; ?>';
 	   valsMex[12] = '<?=$maximum_DIE; ?>';
 	   
-	   $.ajax({
-			type: "POST",
-			data: {valsMex:valsMex, colsMex:colsMex},
-			url: "<?=site_url('admin/getPageDie'); ?>",
-			success: function(data){
-				$("#paparDie").html( data );
-			}
-		});
-	   
 	   	var valueBesar = '-';
 		var minPIN = '<?=$minimum_PIN; ?>';
 		var maxPIN = '<?=$maximum_PIN; ?>';
 		var minDIE = '<?=$minimum_DIE; ?>';
 		var maxDIE = '<?=$maximum_DIE; ?>';
-   
+		
+		<?php if(empty($nominal_type_results_PIN)) { ?>
+			<?php for($p=3; $p<=10; $p++) { if( isset($paramPIN[$p-3]) ) { ?>
+		valsMex[<?=$p-3; ?>] = '<?=$paramPIN[$p-3]['value']; ?>';
+		colsMex[<?=$p-3; ?>] = '<?=$paramPIN[$p-3]['param']; ?>';
+			<?php } } ?>
+		// minimum gap
+		 strTemp = '<?=$this->my_func->getFormulaValue_PS($structure_number, $layer_name, 'GAP', 1); ?>';
+		 pecahArr = strTemp.split(' ');
+		 a = '';
+		 for (i=0; i<pecahArr.length; i++) {
+			 a += pecahArr[i] + ' ';
+		 }
+		 for (i=0; i<colsMex.length; i++) {
+			 for (j=0; j<colsMex.length; j++) {
+				 a = a.replace( colsMex[j] , valsMex[j] );
+			 }
+		 }
+		 //alert( a );
+		 a = a.replace('sqrt', 'Math.sqrt');
+		 a = a.replace('pow', 'Math.pow');
+		 $("#GAP_1").val( a +' = '+ eval(a) );
+		 valsMex[9] = eval(a);
+		 
+		 // maximum gap
+		 strTemp = '<?=$this->my_func->getFormulaValue_PS($structure_number, $layer_name, 'GAP', 2); ?>';
+		 pecahArr = strTemp.split(' ');
+		 a = '';
+		 for (i=0; i<pecahArr.length; i++) {
+			 a += pecahArr[i] + ' ';
+		 }
+		 for (i=0; i<colsMex.length; i++) {
+			 for (j=0; j<colsMex.length; j++) {
+				 a = a.replace( colsMex[j] , valsMex[j] );
+			 }
+		 }
+		 //alert( a );
+		 a = a.replace('sqrt', 'Math.sqrt');
+		 a = a.replace('pow', 'Math.pow');
+		 $("#GAP_2").val( a +' = '+ eval(a) );
+		 valsMex[10] = eval(a);
+		 
+		 strTemp = '<?=$this->my_func->getFormulaValue_PS($structure_number, $layer_name, 'DIE', 1); ?>';
+		 $("#DIE_1").val( strTemp );
+		 strTemp = '<?=$this->my_func->getFormulaValue_PS($structure_number, $layer_name, 'DIE', 2); ?>';
+		 $("#DIE_2").val( strTemp );
+		 
+		<?php } ?>
+		
+		$.ajax({
+			  type: "POST",
+			  data: {valsMex:valsMex, colsMex:colsMex},
+			  url: "<?=site_url('admin/getPageDie'); ?>",
+			  success: function(data){
+				  $("#paparDie").html( data );
+			  }
+		  });
+
+
    		$('#example tbody').on( 'click', 'tr', function () {
            if ( $(this).hasClass('selected') ) {
                $(this).removeClass('selected');
@@ -124,8 +173,7 @@ $(document).ready(function() {
 		   
 		   var value = $(this).attr('value').split('|');
 		   valueBesar = value;
-		   var colsMex = [];
-		   var valsMex = [];
+		   
 		   for (i=0; i<value.length; i++) {
 			   valsMex[i] = value[i];
 		   }
@@ -210,7 +258,7 @@ $(document).ready(function() {
 		
 		var printPINx = [];
 		<?php for($p=3; $p<=10; $p++) { if( isset($paramPIN[$p-3]) ) { ?>
-		printPINx[<?=($p-3); ?>] = '<?=$paramPIN[$p-3]; ?>';
+		printPINx[<?=($p-3); ?>] = ['<?=$paramPIN[$p-3]['param']; ?>', '<?=$paramPIN[$p-3]['value']; ?>'];
 		<?php } } ?>
 		
 		$("#printPIN").click(function() {
@@ -246,6 +294,10 @@ $(document).ready(function() {
 
 <div class="row">
    <div class="col-sm-10 col-sm-offset-2">
+      
+      <?php if(empty($nominal_type_results_PIN)) { ?>
+      	<div class="alert alert-warning alert-dismissible" role="alert">NO DATA FOUND IN MEX !!</div>
+      <?php } ?>
       
       <div class="row">
                <div class="col-sm-12">
@@ -323,6 +375,7 @@ $(document).ready(function() {
 			<table id="example_other" class="display" cellspacing="0" width="100%" style="cursor:pointer;">
             	<thead>
                 	<tr>
+                    	<th>No.</th>
                         <th>Parameter</th>
                         <th>Value</th>
                     </tr>
@@ -330,8 +383,9 @@ $(document).ready(function() {
                 <tbody>
                 	<?php for($p=3; $p<=10; $p++) { if( isset($paramPIN[$p-3]) ) { ?>
                 	<tr>
-                    	<td>Param <?=$p; ?></td>
-                        <td><?=$paramPIN[$p-3]; ?></td>
+                    	<td><?=$p-2; ?></td>
+                    	<td><?=$paramPIN[$p-3]['param']; ?></td>
+                        <td><?=$paramPIN[$p-3]['value']; ?></td>
                     </tr>
                     <?php } } ?>
                 </tbody>

@@ -22,6 +22,7 @@ $(document).ready(function() {
                <table id="example" class="display" cellspacing="0" width="100%" style="cursor:pointer;" border="1">
             	<thead>
                 	<tr>
+                    	<td><strong>No.</strong></td>
                         <td><strong>Parameter</strong></td>
                         <td><strong>Value</strong></td>
                     </tr>
@@ -29,8 +30,9 @@ $(document).ready(function() {
                 <tbody>
                 	<?php for($p=3; $p<=10; $p++) { if( isset($printPINx[$p-3]) ) { ?>
                 	<tr>
-                    	<td>Param <?=$p; ?></td>
-                        <td><?=$printPINx[$p-3]; ?></td>
+                    	<td><?=$p-2; ?></td>
+                        <td><?=$printPINx[$p-3][0]; ?></td>
+                        <td><?=$printPINx[$p-3][1]; ?></td>
                     </tr>
                     <?php } } ?>
                 </tbody>
