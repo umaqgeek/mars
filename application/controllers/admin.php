@@ -646,6 +646,42 @@ class Admin extends MY_Controller
 	{
 		return "nc_" . $row->nc_id;
 	}
+        
+        public function ruleLayerManagement()
+        {
+                $this->load->view('template/header');
+		$this->load->view('template/nav');
+		$data['sidebar'] = $this->load->view('template/sidebar');
+		$crud = new grocery_CRUD();
+                
+                $crud->set_subject('Rule Layer Management');
+		$crud->set_theme('datatables');
+                
+                $crud->set_table('layer_rule_setup');
+                $crud->set_relation('lrst_id', 'lrs_type', 'lrst_desc');
+                $crud->display_as('lrs_rule_name', 'Rule Name')
+                        ->display_as('lrs_property', 'Property')
+                        ->display_as('lrst_id', 'Rule Type')
+                        ->display_as('lrs_value', 'Value');
+                $crud->unset_columns('lrs_status');
+                $crud->unset_fields('lrs_status');
+                try
+		{
+			$output = $crud->render();
+		}
+
+		catch(Exception $e)
+		{
+			show_error($e->getMessage());
+		}
+
+		$this->_generate_table_rule_layer_management($output);
+        }
+        
+        function _generate_table_rule_layer_management($output = null)
+	{
+		$this->load->view('layer/viewRuleLayerManagement.php', $output);
+	}
 
 	public function layerManagement()
 	{
@@ -664,6 +700,9 @@ class Admin extends MY_Controller
 
 		$crud->display_as('layer_description', 'Layer Name');
 		$crud->set_table('layer');
+                
+                $crud->set_relation_n_n('Setup_Rule', 'layer_match_rule', 'layer_rule_setup', 'layer_id', 'lrs_id', 'lrs_rule_name');
+                
 		try
 		{
 			$output = $crud->render();

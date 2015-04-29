@@ -11,6 +11,7 @@
 						 'Home'=>site_url('admin'),
                          'User Management'=>site_url('admin/usermanagement'),
                          'Tool Management'=>site_url('admin/toolManagement'),
+                         'Rule Layer Management'=>site_url('admin/ruleLayerManagement'),
                          'Layer Management'=>site_url('admin/layerManagement'),
                          'Layer Tool Management'=>site_url('admin/layerToolManagement'),
 						 
