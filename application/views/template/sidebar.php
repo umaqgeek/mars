@@ -13,7 +13,7 @@
                          'Tool Management'=>site_url('admin/toolManagement'),
                          'Rule Layer Management'=>site_url('admin/ruleLayerManagement'),
                          'Layer Management'=>site_url('admin/layerManagement'),
-                         'Layer Tool Management'=>site_url('admin/layerToolManagement'),
+                         //'Layer Tool Management'=>site_url('admin/layerToolManagement'),
 						 
                          'Admissible-Pressure Management'=>site_url('admin/admisPresMngmnt'),
 						 

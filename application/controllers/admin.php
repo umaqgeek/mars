@@ -703,6 +703,8 @@ class Admin extends MY_Controller
                 
                 $crud->set_relation_n_n('Setup_Rule', 'layer_match_rule', 'layer_rule_setup', 'layer_id', 'lrs_id', 'lrs_rule_name');
                 
+                $crud->set_relation_n_n('tool_code', 'layer_tool', 'tool', 'layer_id', 'tool_id', 'tool_code', 'priority');
+                
 		try
 		{
 			$output = $crud->render();
