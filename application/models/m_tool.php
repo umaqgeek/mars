@@ -1,5 +1,10 @@
 <?php
 class M_tool extends CI_Model  {
+    
+    public function updateTool($tool_id, $data) {
+        $this->db->where('tool_id', $tool_id);
+        return $this->db->update('tool', $data);
+    }
 	
 	public function getToolDetail($tool_id)
 	{

@@ -187,7 +187,8 @@ if (isset($sess['layer_name']) && !empty($sess['layer_name'])) {
 
  <div class="row">
     	<div class="col-md-2 col-md-offset-2 main">
-    		<button class="btn btn-lg btn-primary btn-block" name="search" type="button" onclick="history.back(-1);">Back</button>
+    		<button class="btn btn-lg btn-primary btn-block" name="search" type="button" 
+                        onclick="location.href='<?=  site_url('admin/displayLayerDirect'); ?>';">Back</button>
         </div>
     </div>
 
@@ -239,6 +240,10 @@ foreach($tools as $r) {
 	
 	if ( strpos(strtoupper($r->tool_code), 'PIN')!==false || strpos(strtoupper($r->tool_code), 'GAP')!==false || strpos(strtoupper($r->tool_code), 'DIE')!==false ) {
 		$strFound = "Not Calculated";
+                $valCal = $r->value_calculated;
+                if ($valCal != '' && $valCal != NULL && !empty($valCal)) {
+                    $strFound = "Calculated";
+                }
 	}
 	
 	if ($isFound) {

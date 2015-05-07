@@ -48,7 +48,8 @@ function confirmation() {
  
  	<div class="row">
     	<div class="col-md-2 col-md-offset-2 main">
-    		<button class="btn btn-lg btn-primary btn-block" name="search" type="button" onclick="history.back(-1);">Back</button>
+    		<button class="btn btn-lg btn-primary btn-block" name="search" type="button" 
+                        onclick="location.href='<?=  site_url('admin/structureNumber'); ?>';">Back</button>
         </div>
     </div>
 

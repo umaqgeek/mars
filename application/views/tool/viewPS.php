@@ -281,6 +281,56 @@ $(document).ready(function() {
 				}
 			});
 		});
+                
+                $("#confirm").click(function() {
+                
+                    var val1 = valueBesar[0];
+                    var bol1 = false;
+                    if (val1 != '-') {
+                        // selected
+                        bol1 = true;
+                        for (i=0; i<valueBesar.length; i++) {
+                            val1 += valueBesar[i] + ',';
+                        }
+                    } else {
+                        // not selected
+                        val1 = '';
+                        for (i=0; i<printPINx.length; i++) {
+                            val1 += printPINx[i][1] + ',';
+                        }
+                    }
+                    
+                    var bol2 = false;
+                    if (bol1 == false) {
+                        bol2 = confirm('VALUE NOT PICK! Are you sure want to confirm?');
+                    } else {
+                        bol2 = confirm('Are you sure want to confirm?');
+                    }
+                    
+                    var selected_tool_id = '<?=$selected_tool_id; ?>';
+                    //alert(selected_tool_id);
+                    
+                    if (bol2) {
+
+                        $.ajax({
+                                    type: "POST",
+                                    data: {
+                                            val1:val1,
+                                            tool_id:selected_tool_id
+                                    },
+                                    url: "<?=site_url('admin/setToolValueCalculated'); ?>",
+                                    success: function(data){    
+                                        //alert(data);
+                                        if (data == 1) {
+                                            location.href='<?=site_url('admin/DisplayTool/') ?>';
+                                        } else {
+                                            alert('Value not defined!');
+                                        }
+                                    }
+                            });
+                    }
+                
+                });
    
 });
    
@@ -288,7 +338,8 @@ $(document).ready(function() {
 
  <div class="row">
     	<div class="col-md-2 col-md-offset-2 main">
-    		<button class="btn btn-lg btn-primary btn-block" name="search" type="button" onclick="history.back(-1);">Back</button>
+    		<button class="btn btn-lg btn-primary btn-block" name="search" type="button" 
+                        onclick="location.href='<?=  site_url('admin/DisplayTool'); ?>';">Back</button>
         </div>
     </div>
 

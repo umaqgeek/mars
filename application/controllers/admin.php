@@ -489,6 +489,9 @@ class Admin extends MY_Controller
 		$crud->set_field_upload('file_url', 'assets/uploads/files');
 		$crud->unset_texteditor('tool_description', 'full_text');
 		
+                $crud->field_type('value_calculated', 'hidden', '');
+                //$crud->columns('tool_code', 'tool_name', 'image', 'min_range', 'max_range', 'nc_id', 'nt_id', 'tm_id');
+                
 		//$crud->set_table_title('Tools Management');
 		$crud->set_subject('Tools Management');
 		
@@ -2345,6 +2348,7 @@ class Admin extends MY_Controller
 		// PIN
 		$tool_code = 'PIN';
 		$selected_tool_id = $sess['selected_tool_id'];
+                $data['selected_tool_id'] = $selected_tool_id;
 		$selected_tool = $this->m_tool->getToolDetail($selected_tool_id);
 		$tool_code = (!empty($selected_tool)) ? ($selected_tool[0]->tool_code) : ($tool_code);
 		$rules1 = $this->m_rule->getRulesAndParams3($tool_code);
@@ -2401,6 +2405,18 @@ class Admin extends MY_Controller
 		$this->load->view('tool/viewPS', $data);
 		$this->load->view('template/footer_datatable');
 	}
+        
+        public function setToolValueCalculated() {
+            $this->load->model("m_tool");
+            $val1 = $this->input->post('val1');
+            $tool_id = $this->input->post('tool_id');
+            $bol = $this->m_tool->updateTool($tool_id, array('value_calculated'=>$val1));
+            if ($bol) {
+                echo 1;
+            } else {
+                echo 2;
+            }
+        }
 	
 	public function printPage($page='set', $val='') {
 		if ($page == 'set') {
