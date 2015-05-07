@@ -2633,6 +2633,8 @@ class Admin extends MY_Controller
 		}
 		
 		$data['cumMass'] = $this->m_imported_project->getCumMass($structure_number);
+                
+                $data['ruleLayer'] = $this->m_layer->getLayerMatchRule($layer_id);
 
 		$this->load->view('tool/toolFromLayerView', $data);
 		$this->load->view('template/footer_datatable');
@@ -2641,6 +2643,11 @@ class Admin extends MY_Controller
 		$this->session->unset_userdata('diaintercouche');
 		*/
 	}
+        
+        public function showTableLayerRule($lrs_id=-1)
+        {
+            
+        }
 	
 	public function test_math()
 	{

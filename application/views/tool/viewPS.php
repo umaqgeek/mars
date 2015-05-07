@@ -293,6 +293,12 @@ $(document).ready(function() {
     </div>
 
 <div class="row">
+    	<div class="col-md-2 col-md-offset-2 main">
+        <button class="btn btn-lg btn-primary btn-block" name="confirm" type="button" id="confirm">Confirm</button>
+    </div>
+</div>
+
+<div class="row">
    <div class="col-sm-10 col-sm-offset-2">
       
       <?php if(empty($nominal_type_results_PIN)) { ?>
@@ -439,3 +445,4 @@ if (!empty($file_url_others)) {
                </div>
    </div>
 </div>
+    

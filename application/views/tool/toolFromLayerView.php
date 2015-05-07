@@ -1,5 +1,12 @@
 <script>
    $(document).ready(function() {
+       
+       $(".chooseVal").click(function() {
+            var val1=$(this).attr("value");
+            var url="<?=site_url('admin/showTableLayerRule'); ?>/"+val1;
+            newwindow=window.open(url,'name','height=600,width=1000,scrollbars=1');
+       });
+       
        var table = $('#example').DataTable();
      
        $('#example tbody').on( 'click', 'tr', function () {
@@ -221,7 +228,7 @@ $ii=0;
 $arrDrawing = array();
 foreach($tools as $r) { 
 	$range = $this->my_func->getRangeIDNom($structure_number, $sess['layer_name'], $r->nc_name);
-	$boolMPList = $this->my_func->getRangeMPListCode($structure_number, $sess['layer_name'], $r->tool_id);
+        $boolMPList = $this->my_func->getRangeMPListCode($structure_number, $sess['layer_name'], $r->tool_id);
 	$isFound = false;
 	if (strtoupper($r->tool_code) != strtoupper('DIE')
 	&& strtoupper($r->tool_code) != strtoupper('GAP')
@@ -241,7 +248,7 @@ foreach($tools as $r) {
 	
 	// $boolMPList: list tools based on MP Code List
 	// $range: list tools based on ID Nom Range
-	if(($boolMPList == true || ($range >= $r->min_range && $range <= $r->max_range) || 1==1)
+        if(($boolMPList == true || ($range >= $r->min_range && $range <= $r->max_range) || 1==1 )
 		&& ( strpos(strtoupper($r->tool_code), 'GAP')===false && strpos(strtoupper($r->tool_code), 'DIE')===false )) {
 ?>
 
@@ -396,6 +403,42 @@ echo (date("d-m-Y", $t));
                      <tr>
                         <td colspan="4">&nbsp;</td>
                      </tr>
+                     
+                     <?php
+                     if (strpos(strtoupper($sess['layer_name']), strtoupper("SHEATH")) !== false) {
+                         //true sheath
+                     ?>
+                     <tr>
+                         <td colspan="4">Particular Instructions</td>
+                     </tr>
+                     <?php
+                     if (!empty($ruleLayer)) {
+                         $irl=1;
+                         foreach ($ruleLayer as $rl) {
+                             ?>
+                     <tr>
+                         <td><?=$irl++; ?>.</td>
+                         <td><?=$rl->lrs_property; ?></td>
+                         <td colspan="2">
+                         <?php 
+                         if ($rl->lrst_id == 1) {
+                            echo $rl->lrs_value;
+                         } else {
+                             ?>
+                             <button type="button" class="chooseVal" value="<?=$rl->lrs_id; ?>">Choose Value</button>
+                             <?php
+                         }
+                         ?></td>
+                     </tr>
+                     <?php
+                         }
+                     }
+                     ?>
+                     <?php
+                     } else {
+                         //false sheath
+                     ?>
+                     
                      <tr>
                         <td>Particular Instructions</td>
                         <td>cell is row 18, column 1</td>
@@ -405,6 +448,8 @@ echo (date("d-m-Y", $t));
                      <tr>
                        <td colspan="4">&nbsp;</td>
                      </tr>
+                     
+                     
                      <tr>
                        <td colspan="2">CRIMPING ROLLERS</td>
                        <td>Dwg nr.</td>
@@ -485,6 +530,10 @@ echo (date("d-m-Y", $t));
                      <tr>
                        <td colspan="4"><img src="<?=base_url(); ?>assets/images/bawah_roller_set.png" alt="" /></td>
                      </tr>
+                     <?php
+                     } 
+                     ?>
+                     
                   </tbody>
                </table>
 </div>

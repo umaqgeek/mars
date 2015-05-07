@@ -97,7 +97,7 @@ class My_Func
 		if ($rule_id != false) {
 			$rules = $CI->m_rule->getRulesAndParams2($rule_id);
 		}
-		
+                
 		$nts = array();
 		if(!empty($rules)) {
 			foreach($rules as $r) {
@@ -503,9 +503,7 @@ class My_Func
 		return $result;
 	}
 
-	public
-
-	function checkRule($data = array())
+	public function checkRule($data = array())
 	{
 
 		// fetch how many rules attached to the selected tool
@@ -632,9 +630,7 @@ class My_Func
 		else return 0 + $compute();
 	}
 
-	public
-
-	function calculateRuleCondition($idnom, $var1, $var2)
+	public function calculateRuleCondition($idnom, $var1, $var2)
 	{
 		/*$whole=array();
 
@@ -890,7 +886,6 @@ class My_Func
 					} else if (in_array($vcode, $symbolsEminmax)) {
 						return 0;
 					} else {
-						echo "|".$vcode."|";
 						$vcode = explode("_", utf8_decode($vcode));
 						//$tool_id = $vcode[1];
 						$tool_code = $vcode[1];

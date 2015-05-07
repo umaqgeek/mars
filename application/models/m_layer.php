@@ -41,6 +41,17 @@ class M_layer extends CI_Model  {
 		    
 		}
 	}
+        
+        public function getLayerMatchRule($layer_id=-1)
+	{
+		$this->db->select('*');
+		$this->db->from('layer_rule_setup lrs, layer_match_rule lmr, layer l');
+		$this->db->where('lrs.lrs_id = lmr.lrs_id');
+		$this->db->where('l.layer_id = lmr.layer_id');
+		$this->db->where('l.layer_id', $layer_id);
+		$query = $this->db->get();
+		return $query->result();
+	}
 	
 	public function getLayersDetail($layer_id=-1)
 	{
