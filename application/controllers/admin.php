@@ -21,6 +21,35 @@ class Admin extends MY_Controller
 		$hasil = create_function("", "return (" . $ayat . ");"); // calculate
 		echo $ayat . " = " . (0 + $hasil()); // output
 	}
+        
+        function _viewpage($page='dashboard', $data=array())
+        {
+            $this->load->view('template/header');
+            $this->load->view('template/nav');
+            $data['sidebar'] = $this->load->view('template/sidebar');
+            $this->load->view($page, $data);
+            $this->load->view('template/footer');
+        }
+        
+        function updateTTN()
+        {
+            $this->load->model('m_tool');
+            $arr = $this->input->post();    
+            $tool_id = $arr['tool_id'];
+            for ($i=0; $i<$arr['bil']; $i++) {
+                $ttn_id = $arr['ttn_id_'.$i];
+                $ttnt_id = $arr['ttnt_id_'.$i];
+                $ttn_value = ($ttnt_id == 1) ? 
+                        ($arr['range1_'.$i] . "," . $arr['range2_'.$i]) : 
+                    (($ttnt_id == 2) ? ($arr['range1_'.$i]) : ("-"));
+                $data_ttn = array(
+                    'ttnt_id' => $ttnt_id,
+                    'ttn_value' => $ttn_value
+                );
+                $this->m_tool->editTTN($ttn_id, $data_ttn);
+            }
+            redirect(site_url('admin/setupNominalRules/'.$tool_id));
+        }
 
 	public function index()
 	{
@@ -462,6 +491,18 @@ class Admin extends MY_Controller
 	{
 		$this->load->view('tool_nominal/viewToolNominalTypeManagement.php', $output);
 	}
+        
+        public function setupNominalRules($tool_id=-1)
+        {
+            if ($tool_id != -1) {
+                $this->load->model('m_tool');
+                $data['tool_tool_nominal'] = $this->m_tool->getToolNC($tool_id);
+                $data['tool_tool_nominal_type'] = $this->m_tool->getTTNType();
+                $this->_viewpage('tool/setupNominalColRules1', $data);
+            } else {
+                redirect(site_url('admin/toolManagement'));
+            }
+        }
 
 	public function toolManagement()
 	{
@@ -494,8 +535,17 @@ class Admin extends MY_Controller
                 
 		//$crud->set_table_title('Tools Management');
 		$crud->set_subject('Tools Management');
-		
-		try
+                
+                $id = $this->uri->segment(4);
+                $crud->set_lang_string('update_success_message', '
+                        <script type="text/javascript">
+                         window.location = "' . site_url('admin/setupNominalRules/'.$id) . '";
+                        </script>
+                        <div style="display:none">
+                        '
+               );
+
+               try
 		{
 			$output = $crud->render();
 		}

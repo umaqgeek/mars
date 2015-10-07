@@ -12,6 +12,9 @@
     <link href="<?php echo base_url('assets/css/bootstrap.css') ?>" rel="stylesheet">
     <link href="<?php echo base_url('assets/css/bootigniter.css') ?>" rel="stylesheet">
     <link href="<?php echo base_url('assets/css/dashboard.css') ?>" rel="stylesheet">
+    
+    <script src="<?=base_url().'assets/js/jquery-1.11.1.js'; ?>"></script>
+    
     <!--[if lt IE 9]>
     <![endif]-->
   </head>

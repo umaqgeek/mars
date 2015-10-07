@@ -397,6 +397,33 @@ class M_tool extends CI_Model  {
 		$result=$query->result();
 		return $result;
 	}
+        
+        public function getToolNC($tool_id=-1)
+	{
+		$this->db->select('*');
+		$this->db->from('tool_tool_nominal ttn');
+		$this->db->join('nominal_column nc', 'nc.nc_id = ttn.nc_id', 'left');
+		$this->db->join('tool tol', 'ttn.tool_id = tol.tool_id', 'left');
+		$this->db->where('ttn.tool_id', $tool_id);
+		$this->db->group_by('ttn.ttn_id');
+		$query = $this->db->get();
+		$result=$query->result();
+		return $result;
+	}
+        
+        public function getTTNType()
+        {
+            $this->db->select('*');
+		$this->db->from('tool_tool_nominal_type ttnt');
+		$query = $this->db->get();
+		$result=$query->result();
+		return $result;
+        }
+        
+        public function editTTN($id, $data) {
+            $this->db->where('ttn_id', $id);
+            return $this->db->update('tool_tool_nominal', $data);
+        }
 
 	public function getToolImage($tool_id)
 	{
