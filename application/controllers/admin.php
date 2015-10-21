@@ -34,14 +34,15 @@ class Admin extends MY_Controller
         function updateTTN()
         {
             $this->load->model('m_tool');
-            $arr = $this->input->post();    
+            $arr = $this->input->post();
+            //print_r($arr); die();
             $tool_id = $arr['tool_id'];
             for ($i=0; $i<$arr['bil']; $i++) {
                 $ttn_id = $arr['ttn_id_'.$i];
                 $ttnt_id = $arr['ttnt_id_'.$i];
                 $ttn_value = ($ttnt_id == 1) ? 
                         ($arr['range1_'.$i] . "," . $arr['range2_'.$i]) : 
-                    (($ttnt_id == 2) ? ($arr['range1_'.$i]) : ("-"));
+                    (($ttnt_id == 2 || $ttnt_id == 3) ? ($arr['range1_'.$i]) : ("-"));
                 $data_ttn = array(
                     'ttnt_id' => $ttnt_id,
                     'ttn_value' => $ttn_value

@@ -19,6 +19,8 @@
                 $i = 0;
                 if (isset($tool_tool_nominal) && !empty($tool_tool_nominal)) {
                     foreach ($tool_tool_nominal as $ttn) {
+                        
+                        //print_r($ttn);
                 ?>
                 <tr>
                     <td><?=$ttn->nc_name; ?></td>
@@ -43,9 +45,35 @@
                         echo "Range 1: ".$pecah[0]."<br />Range 2: ".$pecah[1];
                     } else if ($ttn->ttnt_id == 2) {
                         echo "Constant Value: ".$ttn->ttn_value;
+                    } else if ($ttn->ttnt_id == 3) {
+                        $ttn_value = $ttn->ttn_value;
+                        $pe = explode(";", $ttn_value);
+                        echo "List:-<br />";
+                        $ip = 1;
+                        foreach ($pe as $p) {
+                            echo $ip . ". " . $p . "<br />";
+                            $ip+=1;
+                        }
                     }
                     ?></td>
-                    <td id="papar_<?=$ttn->ttn_id; ?>">-&nbsp;</td>
+                    <td id="papar_<?=$ttn->ttn_id; ?>">
+                    <?php
+                    if ($ttn->ttnt_id == 1) {
+                        $ttn_value = $ttn->ttn_value;
+                        $pecah = explode(",", $ttn_value);
+                        echo "<input type='text' name='range1_".$i."' class='form-control' placeholder='Insert the range 1.' value='".$pecah[0]."' />"
+                                . "<input type='text' name='range2_".$i."' class='form-control' placeholder='Insert the range 2.' value='".$pecah[1]."' />";
+                    } else if ($ttn->ttnt_id == 2) { 
+                        echo "<input type='text' name='range1_".$i."' class='form-control' placeholder='Insert the constant value.' value='".$ttn->ttn_value."' />"
+                                . "<input type='hidden' name='range2_".$i."' value='-' />";
+                    } else if ($ttn->ttnt_id == 3) { 
+                        echo "<input type='text' name='range1_".$i."' class='form-control' placeholder='Insert the list. Example: item1; item2; item3' value='".$ttn->ttn_value."' />"
+                                . "<input type='hidden' name='range2_".$i."' value='-' />";
+                    } else {
+                        echo "-&nbsp;";
+                    }
+                    ?>
+                    </td>
                 </tr>
                 <?php $i += 1; } } ?>
             </tbody>
@@ -73,7 +101,8 @@ $(document).ready(function() {
             str = "<input type='text' name='range1_"+ii+"' class='form-control' placeholder='Insert the constant value.' />\n\
                 <input type='hidden' name='range2_"+ii+"' value='-' />";
         } else if (type == '3') {
-            
+            str = "<input type='text' name='range1_"+ii+"' class='form-control' placeholder='Insert the list. Example: item1; item2; item3' />\n\
+                <input type='hidden' name='range2_"+ii+"' value='-' />";
         }
         $("#papar_"+id).html(str);
     });
