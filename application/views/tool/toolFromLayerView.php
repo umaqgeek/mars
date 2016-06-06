@@ -403,7 +403,7 @@ echo (date("d-m-Y", $t));
                      </tr>
                      <tr>
                         <td>Machine</td>
-                        <td colspan="3"><?=$layer_detail[0]->machine_code; ?></td>
+                        <td colspan="3"><?=(isset($layer_detail[0]->machine_code)?($layer_detail[0]->machine_code):("")); ?></td>
                      </tr>
                      <tr>
                         <td colspan="4">&nbsp;</td>
@@ -445,11 +445,31 @@ echo (date("d-m-Y", $t));
                      ?>
                      
                      <tr>
-                        <td>Particular Instructions</td>
-                        <td>cell is row 18, column 1</td>
-                        <td>cell is row 18, column 2</td>
-                        <td>cell is row 18, column 3</td>
+                         <td colspan="4">Particular Instructions</td>
                      </tr>
+                     <?php
+                     if (!empty($ruleLayer)) {
+                         $irl=1;
+                         foreach ($ruleLayer as $rl) {
+                             ?>
+                     <tr>
+                         <td><?=$irl++; ?>.</td>
+                         <td><?=$rl->lrs_property; ?></td>
+                         <td colspan="2">
+                         <?php 
+                         if ($rl->lrst_id == 1) {
+                            echo $rl->lrs_value;
+                         } else {
+                             ?>
+                             <button type="button" class="chooseVal" value="<?=$rl->lrs_id; ?>">Choose Value</button>
+                             <?php
+                         }
+                         ?></td>
+                     </tr>
+                     <?php
+                         }
+                     }
+                     ?>
                      <tr>
                        <td colspan="4">&nbsp;</td>
                      </tr>

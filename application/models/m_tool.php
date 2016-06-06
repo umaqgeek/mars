@@ -411,6 +411,19 @@ class M_tool extends CI_Model  {
 		return $result;
 	}
         
+        public function getLrsNC($lrs_id=-1)
+	{
+		$this->db->select('*');
+		$this->db->from('lrs_nominal ln');
+		$this->db->join('nominal_column nc', 'nc.nc_id = ln.nc_id', 'left');
+		$this->db->join('layer_rule_setup lrs', 'lrs.lrs_id = ln.lrs_id', 'left');
+		$this->db->where('ln.lrs_id', $lrs_id);
+		$this->db->group_by('ln.ln_id');
+		$query = $this->db->get();
+		$result=$query->result();
+		return $result;
+	}
+        
         public function getTTNType()
         {
             $this->db->select('*');
@@ -425,6 +438,11 @@ class M_tool extends CI_Model  {
             return $this->db->update('tool_tool_nominal', $data);
         }
 
+        public function editTTN2($id, $data) {
+            $this->db->where('ln_id', $id);
+            return $this->db->update('lrs_nominal', $data);
+        }
+        
 	public function getToolImage($tool_id)
 	{
 		$this->db->select('file_url');

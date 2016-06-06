@@ -51,6 +51,27 @@ class Admin extends MY_Controller
             }
             redirect(site_url('admin/setupNominalRules/'.$tool_id));
         }
+        
+        function updateTTN2()
+        {
+            $this->load->model('m_tool');
+            $arr = $this->input->post();
+            //print_r($arr); die();
+            $lrs_id = $arr['lrs_id'];
+            for ($i=0; $i<$arr['bil']; $i++) {
+                $ln_id = $arr['ln_id_'.$i];
+                $ttnt_id = $arr['ttnt_id_'.$i];
+                $ln_value = ($ttnt_id == 1) ? 
+                        ($arr['range1_'.$i] . "," . $arr['range2_'.$i]) : 
+                    (($ttnt_id == 2 || $ttnt_id == 3) ? ($arr['range1_'.$i]) : ("-"));
+                $data_ln = array(
+                    'ttnt_id' => $ttnt_id,
+                    'ln_value' => $ln_value
+                );
+                $this->m_tool->editTTN2($ln_id, $data_ln);
+            }
+            redirect(site_url('admin/setupNominalRules2/'.$lrs_id));
+        }
 
 	public function index()
 	{
@@ -504,6 +525,18 @@ class Admin extends MY_Controller
                 redirect(site_url('admin/toolManagement'));
             }
         }
+        
+        public function setupNominalRules2($lrs_id=-1)
+        {
+            if ($lrs_id != -1) {
+                $this->load->model('m_tool');
+                $data['tool_tool_nominal'] = $this->m_tool->getLrsNC($lrs_id);
+                $data['tool_tool_nominal_type'] = $this->m_tool->getTTNType();
+                $this->_viewpage('tool/setupNominalColRules2', $data);
+            } else {
+                redirect(site_url('admin/ruleLayerManagement'));
+            }
+        }
 
 	public function toolManagement()
 	{
@@ -708,17 +741,32 @@ class Admin extends MY_Controller
 		$data['sidebar'] = $this->load->view('template/sidebar');
 		$crud = new grocery_CRUD();
                 
-                $crud->set_subject('Rule Layer Management');
+                $crud->set_subject('Setup Sheet Management');
 		$crud->set_theme('datatables');
                 
                 $crud->set_table('layer_rule_setup');
                 $crud->set_relation('lrst_id', 'lrs_type', 'lrst_desc');
+                
+                $crud->set_relation_n_n('Layer', 'layer_match_rule', 'layer', 'lrs_id', 'layer_id', 'layer_description');
+                $crud->set_relation_n_n('Nominal_Column', 'lrs_nominal', 'nominal_column', 'lrs_id', 'nc_id', 'nc_name');
+                
                 $crud->display_as('lrs_rule_name', 'Rule Name')
                         ->display_as('lrs_property', 'Property')
                         ->display_as('lrst_id', 'Rule Type')
                         ->display_as('lrs_value', 'Value');
-                $crud->unset_columns('lrs_status');
-                $crud->unset_fields('lrs_status');
+                
+                $crud->unset_columns('lrs_status', 'lrs_value');
+                $crud->unset_fields('lrs_status', 'lrs_value');
+                
+                $id = $this->uri->segment(4);
+                $crud->set_lang_string('update_success_message', '
+                        <script type="text/javascript">
+                         window.location = "' . site_url('admin/setupNominalRules2/'.$id) . '";
+                        </script>
+                        <div style="display:none">
+                        '
+               );
+                
                 try
 		{
 			$output = $crud->render();
@@ -755,7 +803,7 @@ class Admin extends MY_Controller
 		$crud->display_as('layer_description', 'Layer Name');
 		$crud->set_table('layer');
                 
-                $crud->set_relation_n_n('Setup_Rule', 'layer_match_rule', 'layer_rule_setup', 'layer_id', 'lrs_id', 'lrs_rule_name');
+//                $crud->set_relation_n_n('Setup_Rule', 'layer_match_rule', 'layer_rule_setup', 'layer_id', 'lrs_id', 'lrs_rule_name');
                 
                 $crud->set_relation_n_n('tool_code', 'layer_tool', 'tool', 'layer_id', 'tool_id', 'tool_code', 'priority');
                 
